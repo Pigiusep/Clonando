@@ -4,7 +4,6 @@
   box-sizing: border-box;
 }
 body {
-  background-color: black;
   color: white;
   font-family: Helvetica, sans-serif;
 }
@@ -12,14 +11,14 @@ body {
 .contain {
   display: grid;
   grid-template-columns: 20% 80%;
-  grid-template-rows: 300px 600px;
+  grid-template-rows: 430px 600px;
 }
 
 .item1 {
   grid-row: 2 span;
   display: grid;
   background-color: #171b2f;
-  grid-template-rows: 100px repeat(11, 40px) repeat(5, 70px);
+  grid-template-rows: 100px repeat(11, 40px) repeat(5, 50px);
 }
 
 /* AQUÍ TERMINA LA DIVISIÓN GENERAL */
@@ -62,8 +61,8 @@ body {
 .img-friend {
   border-radius: 100px;
   margin-left: 20px;
-  height: 60px;
-  width: 60px;
+  height: 40px;
+  width: 40px;
 }
 
 .nick-friend {
@@ -76,6 +75,83 @@ body {
 
 .item2 iframe {
   width: 100%;
-  height: 100%;
+  height: 300px;
   background-image: url("images/bg-video.jpg");
 }
+.item2 {
+  border-bottom: 1px solid gray;
+  color: #7a7e83;
+}
+.item2 .views {
+  color: #cbcbcb;
+  font-weight: bold;
+}
+.info-video {
+  padding: 15px;
+}
+.item2 .btns {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+}
+.item2 .add-list {
+  background-color: #f31d1f;
+  border: 1px solid #f31d1f;
+  border-radius: 8px;
+  color: white;
+  height: 30px;
+  width: 120px;
+}
+.btns button {
+  cursor: pointer;
+  background-color: #fff;
+}
+.btn-share {
+  border: none;
+  background-color: #fff;
+  margin-left: 50px;
+}
+
+.btn-share img {
+  height: 20px;
+  display: block;
+  margin: 0 auto;
+}
+.btn-down {
+  border: none;
+  background-color: #fff;
+  margin-left: 40px;
+  margin-right: 80px;
+}
+
+.btn-down img {
+  height: 20px;
+  display: block;
+  margin: 0 auto;
+}
+.btns .tags {
+  border-radius: 15px;
+  margin-left: 10px;
+  height: 30px;
+  width: 80px;
+  display: flex;
+  align-content: center;
+  justify-content: center;
+  border: none;
+  color: white;
+}
+
+#tag1 {
+  background-color: #a35bfd;
+}
+#tag2 {
+  background-color: #17e9c4;
+}
+#tag3 {
+  background-color: #e61127;
+}
+#tag4 {
+  background-color: #f23589;
+}
+
+/* aquí termina la  tercera parte de la web */
