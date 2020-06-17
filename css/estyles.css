@@ -11,7 +11,7 @@ body {
 .contain {
   display: grid;
   grid-template-columns: 20% 80%;
-  grid-template-rows: 430px 600px;
+  grid-template-rows: 430px 500px;
 }
 
 .item1 {
@@ -135,7 +135,7 @@ body {
   height: 30px;
   width: 80px;
   display: flex;
-  align-content: center;
+  align-items: center;
   justify-content: center;
   border: none;
   color: white;
@@ -155,3 +155,88 @@ body {
 }
 
 /* aquí termina la  tercera parte de la web */
+
+/* empieza el item 3 */
+
+.item3 {
+  display: flex;
+  color: black;
+  height: 500px;
+}
+
+.contain-comments {
+  width: 50%;
+  display: grid;
+  grid-template-rows: 40px 50px repeat(5, 50px);
+  grid-template-columns: 450px;
+  justify-content: start;
+  align-content: flex-start;
+  margin-top: 15px;
+}
+.comments h4 {
+  color: #858793;
+  padding: 10px;
+  padding-left: 30px;
+}
+#add {
+  background-color: #f2f2f2;
+  border-radius: 10px;
+}
+.add-comment {
+  margin: auto;
+  margin-left: 5px;
+  width: 300px;
+  border: none;
+  background-color: #f2f2f2;
+  font-size: 15px;
+  outline: none;
+}
+.comments img {
+  margin: 5px;
+  margin-left: 20px;
+  margin-right: 2px;
+  border-radius: 50px;
+  border: none;
+}
+.comments {
+  display: flex;
+  margin-left: 50px;
+}
+
+.comment-nick {
+  font-size: 15px;
+  font-weight: bold;
+}
+
+.suggestions {
+  width: 40%;
+  color: black;
+}
+.comment {
+  font-size: 12px;
+}
+.box-comment {
+  height: 40px;
+  width: 100%;
+  display: grid;
+  justify-content: start;
+  align-items: center;
+  margin-left: 15px;
+}
+
+/* aquí empieza la segunda parte del item 3 */
+
+.contain-suggestion {
+  display: grid;
+
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.suggestions h3 {
+  margin-top: 15px;
+}
+
+.contain-suggestion img {
+  border-radius: 5px;
+}
