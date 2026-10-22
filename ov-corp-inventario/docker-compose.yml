@@ -13,10 +13,14 @@ services:
       TRUST_PROXY: "1"
     volumes:
       - datos:/app/data
-    expose:
-      - "3000"
+    # Solo accesible desde el propio servidor: lo publica Caddy o, si el servidor ya tiene
+    # Nginx/Apache en los puertos 80 y 443, ese servidor web (lo configura deploy/instalar.sh).
+    ports:
+      - "127.0.0.1:${PUERTO_LOCAL:-3080}:3000"
 
+  # Proxy HTTPS propio. Se activa con COMPOSE_PROFILES=caddy en .env cuando los puertos 80 y 443 están libres.
   caddy:
+    profiles: [caddy]
     image: caddy:2.8
     restart: unless-stopped
     ports:

@@ -127,6 +127,7 @@ cd ~/ov-corp-inventario && docker compose logs app | grep -A1 "Usuario administr
 
 | Síntoma | Causa probable |
 |---|---|
+| `Bind for 0.0.0.0:80 failed: port is already allocated` | El servidor ya tiene otro programa web en el puerto 80 (Nginx, Apache o un panel). Vuelve a ejecutar el comando de instalación: detecta Nginx o Apache y publica el subdominio a través de ellos, sin tocar los otros sitios. Si es otro programa, el instalador muestra cuál es. |
 | El navegador dice "No se puede acceder al sitio" | El registro DNS no existe o todavía no se propaga. Revisa con `nslookup`. |
 | Error de certificado o "conexión no privada" | Caddy no pudo emitir el certificado: el DNS no apunta al VPS, los puertos 80/443 están cerrados, o Cloudflare está en modo proxy (nube naranja). Revisa `docker compose logs caddy`. |
 | "La cámara solo funciona si el sistema se abre con https://" | Se abrió por IP o con `http://`. Usa siempre `https://inventario.ovcorp.com.pe`. |

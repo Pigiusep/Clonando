@@ -69,18 +69,49 @@ if [ -z "$ip_dns" ] || [ "$ip_dns" != "$ip_servidor" ]; then
 fi
 
 paso "4/5 Firewall"
-if command -v ufw >/dev/null 2>&1; then
-  # Se abre el puerto SSH por el que estás conectado (aunque no sea el 22) para no quedar fuera.
-  puerto_ssh="${SSH_CONNECTION:+${SSH_CONNECTION##* }}"
-  ufw allow OpenSSH >/dev/null
-  [ -n "$puerto_ssh" ] && ufw allow "${puerto_ssh}/tcp" >/dev/null
+if command -v ufw >/dev/null 2>&1 && ufw status | grep -q "Status: active"; then
   ufw allow 80/tcp >/dev/null
   ufw allow 443/tcp >/dev/null
-  ufw --force enable >/dev/null
-  echo "Abiertos: SSH${puerto_ssh:+ (puerto $puerto_ssh)}, 80 y 443. Todo lo demás, cerrado."
+  echo "Firewall activo: se permitieron los puertos 80 y 443."
 else
-  aviso "ufw no está instalado: verifica que solo estén abiertos los puertos de SSH, 80 y 443."
+  # No se activa un firewall nuevo: podría cortar otros servicios que ya usa este servidor.
+  echo "ufw no está activo; no se cambia. Verifica en el panel del proveedor que 80 y 443 estén abiertos."
 fi
+
+paso "4b/5 Publicación web (puertos 80 y 443)"
+PUERTO_LOCAL="${PUERTO_LOCAL:-3080}"
+command -v ss >/dev/null 2>&1 || { apt-get update -qq && apt-get install -y -qq iproute2; }
+poner_env() { # poner_env CLAVE VALOR: agrega o reemplaza una línea del .env
+  if grep -q "^$1=" .env; then sed -i "s|^$1=.*|$1=$2|" .env; else printf '%s=%s\n' "$1" "$2" >> .env; fi
+}
+quien_usa() { # nombre del proceso que escucha en un puerto TCP (vacío si está libre)
+  ss -ltnpH "sport = :$1" 2>/dev/null | grep -o 'users:(("[^"]*' | head -1 | cut -d'"' -f2
+}
+caddy_propio=0
+if [ -n "$(docker compose ps -q --status running caddy 2>/dev/null)" ]; then caddy_propio=1; fi
+dueno="$(quien_usa 80)"; [ -n "$dueno" ] || dueno="$(quien_usa 443)"
+if [ "$caddy_propio" = "1" ] || [ -z "$dueno" ]; then
+  modo=caddy
+elif [[ "$dueno" == nginx* ]]; then
+  modo=nginx
+elif [[ "$dueno" == apache2* || "$dueno" == httpd* ]]; then
+  modo=apache
+else
+  echo "Programa que usa el puerto 80/443: $dueno"
+  if [ "$dueno" = "docker-proxy" ]; then
+    docker ps --format '  contenedor {{.Names}} -> {{.Ports}}' | grep -E ':(80|443)->' || true
+  fi
+  error "Los puertos 80/443 los usa '$dueno' y no sé configurarlo solo. Envía este mensaje para resolverlo; no se cambió nada."
+fi
+echo "Puertos 80/443: ${dueno:-libres}. Modo de publicación: $modo"
+poner_env PUERTO_LOCAL "$PUERTO_LOCAL"
+if [ "$modo" = "caddy" ]; then
+  poner_env COMPOSE_PROFILES caddy
+else
+  poner_env COMPOSE_PROFILES ""
+  docker compose rm -sf caddy >/dev/null 2>&1 || true
+fi
+export COMPOSE_PROFILES="$( [ "$modo" = caddy ] && echo caddy || true )"
 
 paso "5/5 Levantar el sistema"
 docker compose up -d --build --remove-orphans
@@ -98,6 +129,71 @@ if [ "$sano" != "1" ]; then
   error "La aplicación no respondió. Revisa los logs de arriba."
 fi
 docker image prune -f >/dev/null
+
+if [ "$modo" = "nginx" ]; then
+  paso "Configurando Nginx para ${DOMINIO}"
+  if [ -d /etc/nginx/sites-available ]; then
+    conf="/etc/nginx/sites-available/${DOMINIO}"; enlace="/etc/nginx/sites-enabled/${DOMINIO}"
+  else
+    conf="/etc/nginx/conf.d/${DOMINIO}.conf"; enlace=""
+  fi
+  # Solo se crea si no existe: certbot le agrega luego la parte de HTTPS y no hay que pisarla.
+  if [ ! -f "$conf" ]; then
+    cat > "$conf" <<NGINX
+# Inventario OV Corp (creado por deploy/instalar.sh). Solo afecta a ${DOMINIO}.
+server {
+    listen 80;
+    listen [::]:80;
+    server_name ${DOMINIO};
+    client_max_body_size 12m;
+    location / {
+        proxy_pass http://127.0.0.1:${PUERTO_LOCAL};
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
+    }
+}
+NGINX
+  fi
+  [ -n "$enlace" ] && ln -sf "$conf" "$enlace"
+  nginx -t || error "La configuración de Nginx tiene un error (ver arriba). No se recargó Nginx."
+  systemctl reload nginx
+  command -v certbot >/dev/null 2>&1 || { apt-get update -qq && apt-get install -y -qq certbot python3-certbot-nginx; }
+  certbot --nginx -d "$DOMINIO" -m "$ACME_EMAIL" --agree-tos --non-interactive --redirect --keep-until-expiring \
+    || error "No se pudo obtener el certificado HTTPS. Revisa que el DNS de ${DOMINIO} apunte a este servidor."
+elif [ "$modo" = "apache" ]; then
+  paso "Configurando Apache para ${DOMINIO}"
+  a2enmod -q proxy proxy_http headers >/dev/null
+  conf="/etc/apache2/sites-available/${DOMINIO}.conf"
+  if [ ! -f "$conf" ]; then
+    cat > "$conf" <<APACHE
+# Inventario OV Corp (creado por deploy/instalar.sh). Solo afecta a ${DOMINIO}.
+<VirtualHost *:80>
+    ServerName ${DOMINIO}
+    ProxyPreserveHost On
+    ProxyPass / http://127.0.0.1:${PUERTO_LOCAL}/
+    ProxyPassReverse / http://127.0.0.1:${PUERTO_LOCAL}/
+    RequestHeader set X-Forwarded-Proto expr=%{REQUEST_SCHEME}
+    LimitRequestBody 12582912
+</VirtualHost>
+APACHE
+  fi
+  a2ensite -q "${DOMINIO}.conf" >/dev/null
+  apachectl configtest || error "La configuración de Apache tiene un error (ver arriba). No se recargó Apache."
+  systemctl reload apache2
+  command -v certbot >/dev/null 2>&1 || { apt-get update -qq && apt-get install -y -qq certbot python3-certbot-apache; }
+  certbot --apache -d "$DOMINIO" -m "$ACME_EMAIL" --agree-tos --non-interactive --redirect --keep-until-expiring \
+    || error "No se pudo obtener el certificado HTTPS. Revisa que el DNS de ${DOMINIO} apunte a este servidor."
+fi
+
+paso "Comprobando https://${DOMINIO}"
+if curl -fsS --retry 10 --retry-delay 3 --retry-all-errors -o /dev/null "https://${DOMINIO}/salud"; then
+  echo "Responde correctamente por HTTPS."
+else
+  aviso "Todavía no responde por HTTPS desde el propio servidor. Si usas Caddy, el certificado puede tardar un minuto:"
+  aviso "revisa con: docker compose logs --tail 30 caddy"
+fi
 
 echo
 echo "Listo: https://${DOMINIO}"
