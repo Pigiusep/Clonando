@@ -96,6 +96,10 @@ elif [[ "$dueno" == nginx* ]]; then
   modo=nginx
 elif [[ "$dueno" == apache2* || "$dueno" == httpd* ]]; then
   modo=apache
+elif [ "$dueno" = "docker-proxy" ] \
+  && caddy_ajeno="$(docker ps --filter publish=80 --format '{{.Names}} {{.Image}}' | awk '$2 ~ /caddy/ {print $1; exit}')" \
+  && [ -n "$caddy_ajeno" ]; then
+  modo=caddy-existente
 else
   echo "Programa que usa el puerto 80/443: $dueno"
   if [ "$dueno" = "docker-proxy" ]; then
@@ -105,6 +109,28 @@ else
 fi
 echo "Puertos 80/443: ${dueno:-libres}. Modo de publicación: $modo"
 poner_env PUERTO_LOCAL "$PUERTO_LOCAL"
+if [ "$modo" = "caddy-existente" ]; then
+  red_externa="$(docker inspect -f '{{range $k, $v := .NetworkSettings.Networks}}{{$k}} {{end}}' "$caddy_ajeno" | awk '{print $1}')"
+  [ -n "$red_externa" ] || error "No se encontró la red Docker del contenedor $caddy_ajeno."
+  echo "Se usará el Caddy existente '$caddy_ajeno' (red Docker: $red_externa)."
+  cat > docker-compose.proxy-externo.yml <<YAML
+# Generado por deploy/instalar.sh: une la app a la red del Caddy que ya usa los puertos 80/443.
+services:
+  app:
+    networks:
+      default: {}
+      proxy_externo:
+        aliases: [inventario-app]
+networks:
+  proxy_externo:
+    external: true
+    name: ${red_externa}
+YAML
+  poner_env COMPOSE_FILE "docker-compose.yml:docker-compose.proxy-externo.yml"
+else
+  poner_env COMPOSE_FILE "docker-compose.yml"
+fi
+export COMPOSE_FILE="$(grep '^COMPOSE_FILE=' .env | cut -d= -f2-)"
 if [ "$modo" = "caddy" ]; then
   poner_env COMPOSE_PROFILES caddy
 else
@@ -130,7 +156,42 @@ if [ "$sano" != "1" ]; then
 fi
 docker image prune -f >/dev/null
 
-if [ "$modo" = "nginx" ]; then
+if [ "$modo" = "caddy-existente" ]; then
+  paso "Agregando ${DOMINIO} al Caddy existente ($caddy_ajeno)"
+  caddyfile="$(docker inspect -f '{{range .Mounts}}{{if eq .Destination "/etc/caddy/Caddyfile"}}{{.Source}}{{end}}{{end}}' "$caddy_ajeno")"
+  if [ -z "$caddyfile" ]; then
+    dir_caddy="$(docker inspect -f '{{range .Mounts}}{{if eq .Destination "/etc/caddy"}}{{.Source}}{{end}}{{end}}' "$caddy_ajeno")"
+    [ -n "$dir_caddy" ] && caddyfile="$dir_caddy/Caddyfile"
+  fi
+  [ -n "$caddyfile" ] && [ -f "$caddyfile" ] \
+    || error "No se encontró en el servidor el Caddyfile de $caddy_ajeno. No se cambió su configuración."
+  echo "Caddyfile: $caddyfile"
+  if grep -q "^${DOMINIO//./\\.}[[:space:]]*{" "$caddyfile"; then
+    echo "${DOMINIO} ya estaba configurado en ese Caddyfile."
+  else
+    respaldo="${caddyfile}.respaldo-$(date +%Y%m%d-%H%M%S)"
+    cp -p "$caddyfile" "$respaldo"
+    echo "Respaldo: $respaldo"
+    # Se agrega al final (sin reemplazar el archivo) para no afectar los sitios que ya tiene.
+    cat >> "$caddyfile" <<CADDY
+
+# Inventario OV Corp (agregado por ov-corp-inventario/deploy/instalar.sh)
+${DOMINIO} {
+	encode zstd gzip
+	reverse_proxy inventario-app:3000
+}
+CADDY
+    if ! docker exec "$caddy_ajeno" caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile; then
+      cat "$respaldo" > "$caddyfile"
+      error "La configuración nueva no era válida; se restauró el Caddyfile original."
+    fi
+  fi
+  docker exec "$caddy_ajeno" caddy reload --config /etc/caddy/Caddyfile --adapter caddyfile \
+    || error "Caddy no pudo recargar la configuración (ver arriba)."
+  echo "Caddy recargado. Los demás sitios de ese Caddy siguen igual."
+  aviso "Si el proyecto de '$caddy_ajeno' se vuelve a desplegar y reemplaza su Caddyfile, agrega también este bloque en ese proyecto:"
+  printf '  %s {\n    encode zstd gzip\n    reverse_proxy inventario-app:3000\n  }\n' "$DOMINIO"
+elif [ "$modo" = "nginx" ]; then
   paso "Configurando Nginx para ${DOMINIO}"
   if [ -d /etc/nginx/sites-available ]; then
     conf="/etc/nginx/sites-available/${DOMINIO}"; enlace="/etc/nginx/sites-enabled/${DOMINIO}"
