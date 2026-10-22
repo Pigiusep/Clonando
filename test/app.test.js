@@ -45,6 +45,8 @@ test('los POST sin token CSRF válido se rechazan', async () => {
   await agente.post('/productos').type('form').send({ nombre: 'Sin token' }).expect(403);
   await agente.post('/productos').type('form').send({ _csrf: 'falso', nombre: 'Token falso' }).expect(403);
   await agente.post('/api/movimientos').send({ codigo: 'X', tipo: 'entrada', cantidad: 1 }).expect(403);
+  await agente.post('/productos').set('Origin', 'https://otro-sitio.example').type('form')
+    .send({ _csrf: token, nombre: 'Origen ajeno' }).expect(403);
   await agente.post('/productos').type('form').send({ _csrf: token, nombre: 'Con token' }).expect(302);
 });
 

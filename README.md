@@ -46,16 +46,12 @@ npm run dev               # http://localhost:3000 (se reinicia al guardar cambio
 
 Al arrancar por primera vez, la consola muestra el **usuario `admin` y una contraseña temporal**, que hay que cambiar en el primer ingreso. En `localhost` la cámara funciona sin HTTPS.
 
-### Producción con Docker (recomendado)
+### Producción: https://inventario.ovcorp.com.pe
 
-Requisitos: un servidor con Docker (un VPS desde unos USD 5–6 al mes) y un dominio o subdominio que apunte a él.
+La guía paso a paso está en **[docs/DESPLIEGUE.md](docs/DESPLIEGUE.md)**: servidor, registro DNS del subdominio, instalación e instalación en los celulares. En resumen:
 
-```bash
-cp .env.example .env
-# Edita .env: DOMINIO=inventario.tuempresa.pe y SESSION_SECRET=$(openssl rand -hex 32)
-docker compose up -d
-docker compose logs app    # aquí aparece la contraseña temporal del admin
-```
+1. Crea un registro DNS **A** `inventario` → IP del servidor.
+2. En el servidor: `git clone …`, luego `sudo ./deploy/instalar.sh`.
 
 Caddy obtiene y renueva el certificado HTTPS automáticamente. Sin HTTPS los celulares **no permiten usar la cámara**.
 
@@ -121,7 +117,9 @@ views/                       plantillas EJS
 public/js/escaner.js         cámara, pistola y teclado
 public/sw.js                 service worker (app instalable, sin cachear datos)
 test/                        pruebas automáticas
-deploy/Caddyfile             proxy HTTPS
+deploy/Caddyfile             proxy HTTPS para inventario.ovcorp.com.pe
+deploy/instalar.sh           instalación guiada en el servidor
+docs/DESPLIEGUE.md           guía de publicación
 ```
 
 ### Siguientes pasos posibles

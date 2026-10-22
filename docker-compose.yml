@@ -1,5 +1,5 @@
-# Producción con HTTPS automático (necesario para usar la cámara del celular).
-# Uso: copia .env.example a .env, completa DOMINIO y SESSION_SECRET, y ejecuta: docker compose up -d
+# Producción en https://inventario.ovcorp.com.pe con HTTPS automático (necesario para la cámara del celular).
+# Instalación guiada: sudo ./deploy/instalar.sh   (detalles en docs/DESPLIEGUE.md)
 services:
   app:
     build: .
@@ -20,7 +20,8 @@ services:
       - "80:80"
       - "443:443"
     environment:
-      DOMINIO: ${DOMINIO:?Define DOMINIO en .env}
+      DOMINIO: ${DOMINIO:-inventario.ovcorp.com.pe}
+      ACME_EMAIL: ${ACME_EMAIL:?Define ACME_EMAIL en .env (correo para avisos del certificado HTTPS)}
     volumes:
       - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy_datos:/data

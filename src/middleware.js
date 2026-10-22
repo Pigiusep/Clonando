@@ -32,10 +32,21 @@ function csrf(req, res, next) {
   verificarCsrf(req, res, next);
 }
 
+// Si el navegador envía Origin, debe ser este mismo sitio (defensa adicional recomendada por OWASP).
+function origenValido(req) {
+  const origen = req.get('origin');
+  if (!origen) return true;
+  try {
+    return new URL(origen).host === req.get('host');
+  } catch {
+    return false;
+  }
+}
+
 function verificarCsrf(req, res, next) {
   const enviado = String(req.get('x-csrf-token') || req.body?._csrf || '');
   const esperado = req.session.csrf || '';
-  const valido = enviado.length === esperado.length && esperado.length > 0
+  const valido = origenValido(req) && enviado.length === esperado.length && esperado.length > 0
     && crypto.timingSafeEqual(Buffer.from(enviado), Buffer.from(esperado));
   if (valido) return next();
   if (esApi(req)) return res.status(403).json({ error: 'Token de seguridad inválido. Recarga la página.' });
