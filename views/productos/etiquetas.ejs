@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Etiquetas QR · Inventario OV Corp</title>
+  <link rel="stylesheet" href="/static/css/etiquetas.css">
+</head>
+<body>
+  <div class="no-imprimir">
+    <p>Usa <strong>Ctrl + P</strong> (o el menú Imprimir del navegador) para imprimir en hojas A4 o en papel de etiquetas.
+       <%= productos.length %> producto(s), <%= copias %> copia(s) de cada uno.</p>
+    <form method="get">
+      <% if (productos.length && productos.length < 200) { %>
+        <input type="hidden" name="ids" value="<%= productos.map((p) => p.id).join(',') %>">
+      <% } %>
+      <label>Copias por producto <input type="number" name="copias" min="1" max="50" value="<%= copias %>"></label>
+      <button type="submit">Actualizar</button>
+    </form>
+  </div>
+  <div class="hoja">
+    <% for (const p of productos) { for (let i = 0; i < copias; i++) { %>
+      <div class="etiqueta">
+        <img src="<%= p.qr %>" alt="">
+        <div>
+          <strong><%= p.codigo %></strong>
+          <span><%= p.nombre %></span>
+          <% if (p.ubicacion) { %><small><%= p.ubicacion %></small><% } %>
+        </div>
+      </div>
+    <% } } %>
+  </div>
+</body>
+</html>

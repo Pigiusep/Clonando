@@ -1,0 +1,62 @@
+<%- include('partials/cabecera', { titulo: 'Escanear' }) %>
+<h1>Escanear</h1>
+
+<div class="modos" role="radiogroup" aria-label="Tipo de operación">
+  <label><input type="radio" name="modo" value="consulta" checked> Consultar</label>
+  <label><input type="radio" name="modo" value="entrada"> Entrada</label>
+  <label><input type="radio" name="modo" value="salida"> Salida</label>
+  <label><input type="radio" name="modo" value="ajuste"> Conteo</label>
+</div>
+
+<div class="escaner">
+  <section class="tarjeta">
+    <form id="form-codigo" class="formulario" autocomplete="off">
+      <label>Código
+        <input id="codigo" inputmode="text" placeholder="Escanea con la pistola o escribe el código y presiona Enter" autofocus>
+      </label>
+      <small>Funciona con lectores USB/Bluetooth (pistolas), que escriben el código como un teclado.</small>
+    </form>
+    <label class="opcion"><input type="checkbox" id="rapido"> Registro rápido: cada lectura suma 1 sin confirmar (entradas y salidas)</label>
+    <div class="acciones">
+      <button type="button" id="btn-camara" class="boton secundario">Usar cámara</button>
+      <button type="button" id="btn-detener" class="boton secundario" hidden>Detener cámara</button>
+    </div>
+    <div id="lector" class="lector"></div>
+    <p id="aviso-camara" class="aviso error" hidden></p>
+  </section>
+
+  <section class="tarjeta" id="panel-producto" hidden>
+    <h2 id="p-nombre"></h2>
+    <dl class="datos">
+      <dt>Código</dt><dd id="p-codigo"></dd>
+      <dt>Ubicación</dt><dd id="p-ubicacion"></dd>
+      <dt>Stock</dt><dd><strong id="p-stock"></strong></dd>
+    </dl>
+    <form id="form-movimiento" class="formulario" hidden>
+      <label><span id="etiqueta-cantidad">Cantidad</span>
+        <input id="cantidad" type="number" step="any" min="0" value="1" required>
+      </label>
+      <label>Nota (opcional) <input id="nota" placeholder="Guía, factura, motivo…"></label>
+      <button class="boton grande" type="submit" id="btn-registrar">Registrar</button>
+    </form>
+    <a id="p-enlace" class="boton secundario" href="#">Ver ficha</a>
+  </section>
+
+  <section class="tarjeta" id="panel-no-existe" hidden>
+    <h2>Código no registrado</h2>
+    <p>No existe un producto con el código <strong id="ne-codigo"></strong>.</p>
+    <a id="ne-crear" class="boton" href="#">Crear producto con este código</a>
+  </section>
+</div>
+
+<h2>Lecturas de esta sesión</h2>
+<div class="desplazable">
+<table class="tabla">
+  <thead><tr><th>Hora</th><th>Código</th><th>Producto</th><th>Operación</th><th class="num">Stock</th></tr></thead>
+  <tbody id="historial"><tr class="vacio-fila"><td colspan="5">Aún no hay lecturas.</td></tr></tbody>
+</table>
+</div>
+
+<script src="/static/vendor/html5-qrcode.min.js"></script>
+<script src="/static/js/escaner.js"></script>
+<%- include('partials/pie') %>

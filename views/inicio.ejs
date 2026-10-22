@@ -1,0 +1,32 @@
+<%- include('partials/cabecera', { titulo: 'Inicio' }) %>
+<h1>Resumen</h1>
+<div class="indicadores">
+  <div class="indicador"><span><%= resumen.totalProductos %></span>Productos activos</div>
+  <a class="indicador <%= resumen.bajoMinimo.length ? 'alerta' : '' %>" href="/productos?bajo=1">
+    <span><%= resumen.bajoMinimo.length %></span>Bajo stock mínimo
+  </a>
+  <div class="indicador"><span><%= dinero(resumen.valorizado) %></span>Inventario valorizado (a costo)</div>
+  <div class="indicador"><span><%= resumen.movimientosHoy %></span>Movimientos hoy</div>
+</div>
+
+<div class="acciones">
+  <a class="boton grande" href="/escanear">Escanear producto</a>
+  <a class="boton grande secundario" href="/productos/nuevo">Nuevo producto</a>
+</div>
+
+<% if (resumen.bajoMinimo.length) { %>
+<h2>Reponer pronto</h2>
+<table class="tabla">
+  <thead><tr><th>Código</th><th>Producto</th><th class="num">Stock</th><th class="num">Mínimo</th></tr></thead>
+  <tbody>
+  <% for (const p of resumen.bajoMinimo.slice(0, 15)) { %>
+    <tr><td><%= p.codigo %></td><td><a href="/productos/<%= p.id %>"><%= p.nombre %></a></td>
+      <td class="num alerta"><%= num(p.stock) %></td><td class="num"><%= num(p.stock_minimo) %></td></tr>
+  <% } %>
+  </tbody>
+</table>
+<% } %>
+
+<h2>Últimos movimientos</h2>
+<%- include('partials/tabla-movimientos', { movimientos: ultimos, mostrarProducto: true }) %>
+<%- include('partials/pie') %>

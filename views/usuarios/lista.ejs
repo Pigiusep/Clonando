@@ -1,0 +1,41 @@
+<%- include('../partials/cabecera', { titulo: 'Usuarios' }) %>
+<h1>Usuarios</h1>
+<table class="tabla">
+  <thead><tr><th>Usuario</th><th>Nombre</th><th>Rol</th><th>Estado</th><th>Acciones</th></tr></thead>
+  <tbody>
+  <% for (const u of usuarios) { %>
+    <tr class="<%= u.activo ? '' : 'inactivo' %>">
+      <td><%= u.usuario %></td><td><%= u.nombre %></td><td><%= u.rol %></td>
+      <td><%= u.activo ? 'Activo' : 'Desactivado' %></td>
+      <td class="acciones">
+        <% if (u.id !== usuario.id) { %>
+        <form method="post" action="/usuarios/<%= u.id %>/estado">
+          <input type="hidden" name="activo" value="<%= u.activo ? '0' : '1' %>">
+          <button class="boton secundario" type="submit"><%= u.activo ? 'Desactivar' : 'Activar' %></button>
+        </form>
+        <% } %>
+        <form method="post" action="/usuarios/<%= u.id %>/password" class="en-linea">
+          <input name="password" type="password" minlength="8" placeholder="Nueva contraseña" autocomplete="new-password" required>
+          <button class="boton secundario" type="submit">Cambiar</button>
+        </form>
+      </td>
+    </tr>
+  <% } %>
+  </tbody>
+</table>
+
+<h2>Nuevo usuario</h2>
+<% if (error) { %><div class="aviso error"><%= error %></div><% } %>
+<form method="post" action="/usuarios" class="formulario columnas">
+  <label>Usuario <input name="usuario" value="<%= datos.usuario || '' %>" required></label>
+  <label>Nombre <input name="nombre" value="<%= datos.nombre || '' %>" required></label>
+  <label>Contraseña <input name="password" type="password" minlength="8" autocomplete="new-password" required></label>
+  <label>Rol
+    <select name="rol">
+      <option value="operador" <%= datos.rol !== 'admin' ? 'selected' : '' %>>Operador (registra movimientos y productos)</option>
+      <option value="admin" <%= datos.rol === 'admin' ? 'selected' : '' %>>Administrador (además: usuarios, importar, desactivar)</option>
+    </select>
+  </label>
+  <div class="acciones completo"><button class="boton" type="submit">Crear usuario</button></div>
+</form>
+<%- include('../partials/pie') %>

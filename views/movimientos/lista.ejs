@@ -1,0 +1,20 @@
+<%- include('../partials/cabecera', { titulo: 'Movimientos' }) %>
+<% const qs = new URLSearchParams(Object.entries(filtros).filter(([, v]) => v)).toString(); %>
+<div class="encabezado">
+  <h1>Movimientos</h1>
+  <a class="boton secundario" href="/excel/movimientos.xlsx<%= qs ? '?' + qs : '' %>">Exportar a Excel</a>
+</div>
+<form method="get" class="filtros">
+  <select name="tipo">
+    <option value="">Todos los tipos</option>
+    <% for (const t of ['entrada', 'salida', 'ajuste']) { %>
+      <option value="<%= t %>" <%= filtros.tipo === t ? 'selected' : '' %>><%= t %></option>
+    <% } %>
+  </select>
+  <label>Desde <input type="date" name="desde" value="<%= filtros.desde %>"></label>
+  <label>Hasta <input type="date" name="hasta" value="<%= filtros.hasta %>"></label>
+  <button class="boton secundario" type="submit">Filtrar</button>
+</form>
+<%- include('../partials/tabla-movimientos', { movimientos, mostrarProducto: true }) %>
+<% if (movimientos.length === 500) { %><p class="nota">Se muestran los 500 más recientes. Exporta a Excel para ver todos.</p><% } %>
+<%- include('../partials/pie') %>

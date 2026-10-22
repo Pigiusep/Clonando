@@ -1,0 +1,25 @@
+<% const editando = !!producto.id; %>
+<%- include('../partials/cabecera', { titulo: editando ? 'Editar producto' : 'Nuevo producto' }) %>
+<h1><%= editando ? 'Editar producto' : 'Nuevo producto' %></h1>
+<% if (error) { %><div class="aviso error"><%= error %></div><% } %>
+<form method="post" action="<%= editando ? `/productos/${producto.id}` : '/productos' %>" class="formulario columnas">
+  <label>Código *
+    <input name="codigo" value="<%= producto.codigo || '' %>" required>
+    <small>Puede ser el código de barras del fabricante o uno interno (ej. P0001). Es lo que guarda la etiqueta QR.</small>
+  </label>
+  <label>Nombre * <input name="nombre" value="<%= producto.nombre || '' %>" required></label>
+  <label>Categoría <input name="categoria" value="<%= producto.categoria || '' %>"></label>
+  <label>Unidad <input name="unidad" value="<%= producto.unidad || 'UND' %>"></label>
+  <label>Costo (<%= moneda %>) <input name="costo" type="number" step="any" min="0" value="<%= producto.costo ?? 0 %>"></label>
+  <label>Precio (<%= moneda %>) <input name="precio" type="number" step="any" min="0" value="<%= producto.precio ?? 0 %>"></label>
+  <label>Stock mínimo <input name="stock_minimo" type="number" step="any" min="0" value="<%= producto.stock_minimo ?? 0 %>"></label>
+  <label>Ubicación <input name="ubicacion" value="<%= producto.ubicacion || '' %>" placeholder="Ej. Estante A-01"></label>
+  <div class="acciones completo">
+    <button class="boton" type="submit">Guardar</button>
+    <a class="boton secundario" href="<%= editando ? `/productos/${producto.id}` : '/productos' %>">Cancelar</a>
+  </div>
+  <% if (!editando) { %>
+    <p class="nota completo">El stock inicial se registra después como una "entrada" o un "ajuste" desde la ficha del producto.</p>
+  <% } %>
+</form>
+<%- include('../partials/pie') %>
