@@ -1,0 +1,50 @@
+<%- include('../partials/cabecera', { titulo: producto.nombre }) %>
+<div class="encabezado">
+  <h1><%= producto.nombre %> <% if (!producto.activo) { %><span class="etiqueta salida">desactivado</span><% } %></h1>
+  <div class="acciones">
+    <a class="boton secundario" href="/productos/<%= producto.id %>/editar">Editar</a>
+    <a class="boton secundario" href="/productos/etiquetas?ids=<%= producto.id %>" target="_blank">Imprimir etiqueta</a>
+    <% if (usuario.rol === 'admin') { %>
+    <form method="post" action="/productos/<%= producto.id %>/estado"><input type="hidden" name="_csrf" value="<%= csrf %>">
+      <input type="hidden" name="activo" value="<%= producto.activo ? '0' : '1' %>">
+      <button class="boton secundario" type="submit"><%= producto.activo ? 'Desactivar' : 'Reactivar' %></button>
+    </form>
+    <% } %>
+  </div>
+</div>
+
+<div class="ficha">
+  <div class="tarjeta">
+    <dl class="datos">
+      <dt>Código</dt><dd><%= producto.codigo %></dd>
+      <dt>Categoría</dt><dd><%= producto.categoria || '—' %></dd>
+      <dt>Ubicación</dt><dd><%= producto.ubicacion || '—' %></dd>
+      <dt>Stock</dt><dd class="<%= producto.stock <= producto.stock_minimo ? 'alerta' : '' %>"><strong><%= num(producto.stock) %> <%= producto.unidad %></strong></dd>
+      <dt>Stock mínimo</dt><dd><%= num(producto.stock_minimo) %></dd>
+      <dt>Costo / Precio</dt><dd><%= dinero(producto.costo) %> / <%= dinero(producto.precio) %></dd>
+    </dl>
+  </div>
+  <div class="tarjeta qr">
+    <img src="<%= qr %>" alt="Código QR de <%= producto.codigo %>" width="160" height="160">
+    <small><%= producto.codigo %></small>
+  </div>
+</div>
+
+<% if (producto.activo) { %>
+<h2>Registrar movimiento</h2>
+<form method="post" action="/productos/<%= producto.id %>/movimientos" class="formulario en-linea"><input type="hidden" name="_csrf" value="<%= csrf %>">
+  <select name="tipo" required>
+    <option value="entrada">Entrada (+)</option>
+    <option value="salida">Salida (−)</option>
+    <option value="ajuste">Ajuste (conteo físico)</option>
+  </select>
+  <input name="cantidad" type="number" step="any" min="0" placeholder="Cantidad" required>
+  <input name="nota" placeholder="Nota (opcional): guía, factura, motivo…">
+  <button class="boton" type="submit">Registrar</button>
+</form>
+<p class="nota">En "Ajuste" escribe la cantidad que contaste físicamente; el sistema registra la diferencia.</p>
+<% } %>
+
+<h2>Historial</h2>
+<%- include('../partials/tabla-movimientos', { movimientos, mostrarProducto: false }) %>
+<%- include('../partials/pie') %>

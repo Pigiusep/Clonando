@@ -1,0 +1,11 @@
+<%- include('partials/cabecera', { titulo: 'Ingresar' }) %>
+<section class="tarjeta login">
+  <h1>Inventario OV Corp</h1>
+  <% if (error) { %><div class="aviso error"><%= error %></div><% } %>
+  <form method="post" action="/login" class="formulario"><input type="hidden" name="_csrf" value="<%= csrf %>">
+    <label>Usuario <input name="usuario" value="<%= usuarioIngresado %>" autocomplete="username" required autofocus></label>
+    <label>Contraseña <input name="password" type="password" autocomplete="current-password" required></label>
+    <button type="submit" class="boton">Ingresar</button>
+  </form>
+</section>
+<%- include('partials/pie') %>

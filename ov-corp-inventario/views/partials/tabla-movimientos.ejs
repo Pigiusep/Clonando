@@ -1,0 +1,26 @@
+<% if (!movimientos.length) { %>
+  <p class="vacio">Aún no hay movimientos.</p>
+<% } else { %>
+<div class="desplazable">
+<table class="tabla">
+  <thead><tr>
+    <th>Fecha</th>
+    <% if (mostrarProducto) { %><th>Producto</th><% } %>
+    <th>Tipo</th><th class="num">Cantidad</th><th>Usuario</th><th>Origen</th><th>Nota</th>
+  </tr></thead>
+  <tbody>
+  <% for (const m of movimientos) { %>
+    <tr>
+      <td class="fecha"><%= m.creado_en %></td>
+      <% if (mostrarProducto) { %><td><a href="/productos/<%= m.producto_id %>"><%= m.codigo %> · <%= m.nombre %></a></td><% } %>
+      <td><span class="etiqueta <%= m.tipo %>"><%= m.tipo %></span></td>
+      <td class="num"><%= m.tipo === 'salida' ? '-' : (m.cantidad > 0 && m.tipo === 'ajuste' ? '+' : '') %><%= num(m.cantidad) %> <%= m.unidad %></td>
+      <td><%= m.usuario || '—' %></td>
+      <td><%= m.origen %></td>
+      <td><%= m.nota %></td>
+    </tr>
+  <% } %>
+  </tbody>
+</table>
+</div>
+<% } %>

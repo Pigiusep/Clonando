@@ -1,0 +1,96 @@
+name: Desplegar
+
+# Publica en https://inventario.ovcorp.com.pe cada vez que la CI pasa en main.
+# También se puede lanzar a mano: pestaña Actions → Desplegar → Run workflow.
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Nunca dos despliegues al mismo tiempo.
+concurrency:
+  group: produccion
+  cancel-in-progress: false
+
+jobs:
+  desplegar:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    environment:
+      name: produccion
+      url: https://inventario.ovcorp.com.pe
+    env:
+      VPS_HOST: ${{ secrets.VPS_HOST }}
+      VPS_USER: ${{ secrets.VPS_USER }}
+      VPS_PORT: ${{ secrets.VPS_PORT || '22' }}
+      CARPETA: ov-corp-inventario
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+
+      - name: Revisar secretos
+        env:
+          VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+          ACME_EMAIL: ${{ secrets.ACME_EMAIL }}
+        run: |
+          faltan=""
+          for s in VPS_HOST VPS_USER VPS_SSH_KEY ACME_EMAIL; do
+            [ -n "${!s}" ] || faltan="$faltan $s"
+          done
+          if [ -n "$faltan" ]; then
+            echo "::error::Faltan secretos del repositorio:$faltan (ver docs/DESPLIEGUE.md)"
+            exit 1
+          fi
+
+      - name: Configurar SSH
+        env:
+          VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+          VPS_HOST_KEY: ${{ secrets.VPS_HOST_KEY }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$VPS_SSH_KEY" > ~/.ssh/despliegue
+          chmod 600 ~/.ssh/despliegue
+          # Huella del servidor: si está guardada como secreto se usa esa (más seguro); si no, se lee del servidor.
+          if [ -n "$VPS_HOST_KEY" ]; then
+            printf '%s\n' "$VPS_HOST_KEY" > ~/.ssh/known_hosts
+          else
+            ssh-keyscan -p "$VPS_PORT" -H "$VPS_HOST" > ~/.ssh/known_hosts
+          fi
+          cat > ~/.ssh/config <<EOF
+          Host vps
+            HostName $VPS_HOST
+            User $VPS_USER
+            Port $VPS_PORT
+            IdentityFile ~/.ssh/despliegue
+            IdentitiesOnly yes
+            StrictHostKeyChecking yes
+          EOF
+
+      - name: Copiar el código al servidor
+        run: |
+          ssh vps "mkdir -p ~/$CARPETA"
+          # Nunca se tocan en el servidor: .env (secretos) ni data/ (base de datos).
+          rsync -az --delete \
+            --exclude '.git/' --exclude 'node_modules/' --exclude 'data/' --exclude '.env' --exclude 'certs/' \
+            ./ "vps:~/$CARPETA/"
+
+      - name: Instalar o actualizar
+        env:
+          ACME_EMAIL: ${{ secrets.ACME_EMAIL }}
+          ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD_INICIAL }}
+        run: |
+          # Los valores viajan por la entrada estándar, no en la línea de comandos (no quedan en el historial).
+          printf 'ACME_EMAIL=%q\nADMIN_PASSWORD=%q\n' "$ACME_EMAIL" "$ADMIN_PASSWORD" | ssh vps \
+            "cd ~/$CARPETA && set -a && . /dev/stdin && set +a && sudo -E NO_INTERACTIVO=1 ./deploy/instalar.sh"
+
+      - name: Verificar que responde por HTTPS
+        run: |
+          curl -fsS --retry 12 --retry-delay 10 --retry-all-errors https://inventario.ovcorp.com.pe/salud
+          echo
+          echo "Publicado en https://inventario.ovcorp.com.pe"

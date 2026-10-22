@@ -1,0 +1,15 @@
+# Proxy HTTPS para https://inventario.ovcorp.com.pe (o el DOMINIO definido en .env).
+# Caddy obtiene y renueva solo el certificado de Let's Encrypt y redirige http:// a https://.
+# Requisito: el registro DNS del subdominio debe apuntar a este servidor y los puertos 80 y 443 deben estar abiertos.
+{
+	email {$ACME_EMAIL}
+}
+
+{$DOMINIO} {
+	encode zstd gzip
+	reverse_proxy app:3000
+	log {
+		output stdout
+		format json
+	}
+}

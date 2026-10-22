@@ -1,0 +1,55 @@
+<%- include('partials/cabecera', { titulo: 'Excel' }) %>
+<h1>Importar y exportar Excel</h1>
+
+<% if (resultado) { %>
+<section class="tarjeta">
+  <h2>Resultado de la importación</h2>
+  <ul>
+    <li><strong><%= resultado.creados %></strong> producto(s) nuevos</li>
+    <li><strong><%= resultado.actualizados %></strong> producto(s) actualizados</li>
+    <li><strong><%= resultado.ajustesStock %></strong> ajuste(s) de stock</li>
+    <li>Columnas reconocidas: <%= resultado.columnas.join(', ') %></li>
+  </ul>
+  <% if (resultado.idsCreados.length) { %>
+    <p class="acciones">
+      <a class="boton" href="/productos/etiquetas?ids=<%= resultado.idsCreados.join(',') %>" target="_blank">Imprimir etiquetas de los <%= resultado.idsCreados.length %> productos nuevos</a>
+    </p>
+  <% } %>
+  <% if (resultado.errores.length) { %>
+    <div class="aviso error"><%= resultado.errores.length %> fila(s) no se importaron:</div>
+    <table class="tabla">
+      <thead><tr><th>Fila</th><th>Problema</th></tr></thead>
+      <tbody><% for (const e of resultado.errores) { %><tr><td><%= e.fila %></td><td><%= e.mensaje %></td></tr><% } %></tbody>
+    </table>
+  <% } %>
+</section>
+<% } %>
+
+<div class="ficha">
+  <section class="tarjeta">
+    <h2>Importar productos</h2>
+    <% if (usuario.rol === 'admin') { %>
+    <ol>
+      <li>Descarga la <a href="/excel/plantilla.xlsx">plantilla</a> o usa su Excel actual.</li>
+      <li>Solo es obligatoria la columna <strong>Nombre</strong>. También se reconocen:
+        Código, Categoría, Unidad, Costo, Precio, Stock mínimo, Stock y Ubicación.</li>
+      <li><strong>Si no hay código</strong>, el sistema asigna uno automático (P00001, P00002…).
+        Al volver a importar, las filas sin código se reconocen por el nombre, así que no se duplican.</li>
+      <li>Si hay columna <strong>Stock</strong>, se registra un ajuste para que el stock quede igual al del Excel.</li>
+    </ol>
+    <form method="post" action="/excel/importar" enctype="multipart/form-data" class="formulario"><input type="hidden" name="_csrf" value="<%= csrf %>">
+      <input type="file" name="archivo" accept=".xlsx,.csv" required>
+      <button class="boton" type="submit">Importar</button>
+    </form>
+    <% } else { %>
+      <p>Solo un administrador puede importar productos.</p>
+    <% } %>
+  </section>
+  <section class="tarjeta">
+    <h2>Exportar</h2>
+    <p><a class="boton secundario" href="/excel/productos.xlsx">Productos con stock actual</a></p>
+    <p><a class="boton secundario" href="/excel/movimientos.xlsx">Todos los movimientos</a></p>
+    <p class="nota">Para exportar movimientos de un rango de fechas, filtra en <a href="/movimientos">Movimientos</a> y usa su botón de exportar.</p>
+  </section>
+</div>
+<%- include('partials/pie') %>

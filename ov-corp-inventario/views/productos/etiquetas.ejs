@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Etiquetas QR · Inventario OV Corp</title>
+  <link rel="stylesheet" href="/static/css/etiquetas.css">
+</head>
+<body class="formato-<%= formato %>">
+  <div class="no-imprimir">
+    <form method="get">
+      <% if (ids) { %><input type="hidden" name="ids" value="<%= ids %>"><% } %>
+      <label>Formato
+        <select name="formato">
+          <option value="a4" <%= formato === 'a4' ? 'selected' : '' %>>Hoja A4 adhesiva (21 etiquetas de 70 × 42 mm o 63,5 × 38 mm)</option>
+          <option value="rollo" <%= formato === 'rollo' ? 'selected' : '' %>>Impresora térmica (rollo de 50 × 25 mm)</option>
+        </select>
+      </label>
+      <label>Copias <input type="number" name="copias" min="1" max="50" value="<%= copias %>"></label>
+      <button type="submit">Actualizar</button>
+    </form>
+    <p><%= productos.length %> producto(s), ordenados por ubicación. Imprime con <strong>Ctrl + P</strong>:
+      <% if (formato === 'a4') { %>tamaño A4, márgenes "Ninguno", escala 100 %.
+      <% } else { %>elige la impresora térmica y el tamaño de papel 50 × 25 mm, márgenes "Ninguno".<% } %>
+    </p>
+  </div>
+  <div class="hoja">
+    <% for (const p of productos) { for (let i = 0; i < copias; i++) { %>
+      <div class="etiqueta">
+        <img src="<%= p.qr %>" alt="">
+        <div class="texto">
+          <span class="nombre"><%= p.nombre %></span>
+          <strong class="codigo"><%= p.codigo %></strong>
+          <% if (p.ubicacion) { %><small><%= p.ubicacion %></small><% } %>
+        </div>
+      </div>
+    <% } } %>
+  </div>
+</body>
+</html>

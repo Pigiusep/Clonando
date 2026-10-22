@@ -1,0 +1,44 @@
+<%- include('../partials/cabecera', { titulo: 'Productos' }) %>
+<div class="encabezado">
+  <h1>Productos</h1>
+  <div class="acciones">
+    <a class="boton" href="/productos/nuevo">Nuevo producto</a>
+    <a class="boton secundario" href="/productos/etiquetas" target="_blank">Imprimir etiquetas QR</a>
+    <a class="boton secundario" href="/excel/productos.xlsx">Exportar a Excel</a>
+  </div>
+</div>
+
+<form method="get" class="filtros">
+  <input type="search" name="q" value="<%= buscar %>" placeholder="Buscar por código, nombre, categoría o ubicación">
+  <label><input type="checkbox" name="bajo" value="1" <%= soloBajoMinimo ? 'checked' : '' %>> Solo bajo mínimo</label>
+  <label><input type="checkbox" name="inactivos" value="1" <%= incluirInactivos ? 'checked' : '' %>> Incluir desactivados</label>
+  <button class="boton secundario" type="submit">Filtrar</button>
+</form>
+
+<% if (!productos.length) { %>
+  <p class="vacio">No hay productos<%= buscar ? ' que coincidan con la búsqueda' : '' %>. Puedes crearlos uno por uno o <a href="/excel">importarlos desde Excel</a>.</p>
+<% } else { %>
+<div class="desplazable">
+<table class="tabla">
+  <thead><tr>
+    <th>Código</th><th>Nombre</th><th>Categoría</th><th>Ubicación</th>
+    <th class="num">Stock</th><th class="num">Mínimo</th><th class="num">Costo</th>
+  </tr></thead>
+  <tbody>
+  <% for (const p of productos) { %>
+    <tr class="<%= p.activo ? '' : 'inactivo' %>">
+      <td><%= p.codigo %></td>
+      <td><a href="/productos/<%= p.id %>"><%= p.nombre %></a></td>
+      <td><%= p.categoria %></td>
+      <td><%= p.ubicacion %></td>
+      <td class="num <%= p.stock <= p.stock_minimo ? 'alerta' : '' %>"><%= num(p.stock) %> <%= p.unidad %></td>
+      <td class="num"><%= num(p.stock_minimo) %></td>
+      <td class="num"><%= dinero(p.costo) %></td>
+    </tr>
+  <% } %>
+  </tbody>
+</table>
+</div>
+<p class="nota"><%= productos.length %> producto(s)</p>
+<% } %>
+<%- include('../partials/pie') %>

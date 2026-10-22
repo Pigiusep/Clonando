@@ -1,0 +1,33 @@
+# Producción en https://inventario.ovcorp.com.pe con HTTPS automático (necesario para la cámara del celular).
+# Instalación guiada: sudo ./deploy/instalar.sh   (detalles en docs/DESPLIEGUE.md)
+services:
+  app:
+    build: .
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      NODE_ENV: production
+      TRUST_PROXY: "1"
+    volumes:
+      - datos:/app/data
+    expose:
+      - "3000"
+
+  caddy:
+    image: caddy:2.8
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      DOMINIO: ${DOMINIO:-inventario.ovcorp.com.pe}
+      ACME_EMAIL: ${ACME_EMAIL:?Define ACME_EMAIL en .env (correo para avisos del certificado HTTPS)}
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_datos:/data
+    depends_on:
+      - app
+
+volumes:
+  datos:
+  caddy_datos:

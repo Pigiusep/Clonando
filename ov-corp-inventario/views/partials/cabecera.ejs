@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="csrf-token" content="<%= csrf %>">
+  <meta name="theme-color" content="#1f5fbf">
+  <title><%= typeof titulo !== 'undefined' ? titulo + ' · ' : '' %>Inventario OV Corp</title>
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="icon" href="/static/img/icono.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/static/img/icono-180.png">
+  <link rel="stylesheet" href="/static/css/app.css">
+  <script src="/static/js/registrar-sw.js" defer></script>
+</head>
+<body>
+<% if (usuario) { %>
+<header class="barra">
+  <a class="marca" href="/">OV Corp · Inventario</a>
+  <nav>
+    <a href="/escanear" class="<%= ruta.startsWith('/escanear') ? 'activo' : '' %>">Escanear</a>
+    <a href="/productos" class="<%= ruta.startsWith('/productos') ? 'activo' : '' %>">Productos</a>
+    <a href="/movimientos" class="<%= ruta.startsWith('/movimientos') ? 'activo' : '' %>">Movimientos</a>
+    <a href="/excel" class="<%= ruta.startsWith('/excel') ? 'activo' : '' %>">Excel</a>
+    <% if (usuario.rol === 'admin') { %>
+      <a href="/usuarios" class="<%= ruta.startsWith('/usuarios') ? 'activo' : '' %>">Usuarios</a>
+    <% } %>
+  </nav>
+  <form method="post" action="/logout" class="salir">
+    <input type="hidden" name="_csrf" value="<%= csrf %>">
+    <a href="/cuenta/password" title="Cambiar mi contraseña"><%= usuario.nombre %></a>
+    <button type="submit" class="boton secundario">Salir</button>
+  </form>
+</header>
+<% } %>
+<main>
+<% if (flash) { %>
+  <div class="aviso <%= flash.tipo %>" role="status"><%= flash.mensaje %></div>
+<% } %>
