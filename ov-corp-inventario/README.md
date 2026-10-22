@@ -51,8 +51,8 @@ Al arrancar por primera vez, la consola muestra el **usuario `admin` y una contr
 La guía paso a paso está en **[docs/DESPLIEGUE.md](docs/DESPLIEGUE.md)**: servidor, registro DNS del subdominio, instalación e instalación en los celulares. En resumen:
 
 1. Crea un registro DNS **A** `inventario` → IP del servidor.
-2. En el servidor: `git clone …`, luego `sudo ./deploy/instalar.sh`.
-   También se puede publicar en **automático desde GitHub Actions** en cada cambio a `main` (`.github/workflows/desplegar.yml`, configuración única en la guía).
+2. **Automático (recomendado):** GitHub Actions publica en cada cambio a esta carpeta en `master` o `claude/untitled-session-hbq806` (`.github/workflows/inventario.yml` en la raíz del repositorio). Requiere configurar una vez los secretos indicados en la guía.
+   **Manual:** en el servidor, `git clone https://github.com/pigiusep/clonando.git`, luego `cd clonando/ov-corp-inventario && sudo ./deploy/instalar.sh`.
 
 Caddy obtiene y renueva el certificado HTTPS automáticamente. Sin HTTPS los celulares **no permiten usar la cámara**.
 
@@ -102,7 +102,7 @@ npm test          # pruebas (node:test + supertest), base de datos en memoria
 npm run check     # lint + pruebas + auditoría de dependencias
 ```
 
-GitHub Actions ejecuta lo mismo en cada push y pull request, y además construye la imagen Docker.
+GitHub Actions (`.github/workflows/inventario.yml`, en la raíz del repositorio `pigiusep/clonando`) ejecuta lo mismo en cada push y pull request que toque esta carpeta, construye la imagen Docker y publica en el servidor.
 
 ```
 server.js                    arranque, HTTPS opcional y apagado ordenado

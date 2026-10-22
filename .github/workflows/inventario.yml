@@ -1,26 +1,54 @@
-name: Desplegar
+name: Inventario OV Corp
 
-# Publica en https://inventario.ovcorp.com.pe cada vez que la CI pasa en main.
-# También se puede lanzar a mano: pestaña Actions → Desplegar → Run workflow.
+# Verifica y publica el sistema que está en ov-corp-inventario/ en https://inventario.ovcorp.com.pe.
+# Se publica en cada push a master o a claude/untitled-session-hbq806 que toque esa carpeta,
+# o a mano desde Actions → "Inventario OV Corp" → Run workflow.
 on:
-  workflow_run:
-    workflows: [CI]
-    types: [completed]
-    branches: [main]
+  push:
+    branches: [master, claude/untitled-session-hbq806]
+    paths: ['ov-corp-inventario/**', '.github/workflows/inventario.yml']
+  pull_request:
+    paths: ['ov-corp-inventario/**', '.github/workflows/inventario.yml']
   workflow_dispatch:
 
 permissions:
   contents: read
 
-# Nunca dos despliegues al mismo tiempo.
-concurrency:
-  group: produccion
-  cancel-in-progress: false
+defaults:
+  run:
+    working-directory: ov-corp-inventario
 
 jobs:
-  desplegar:
-    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+  verificar:
     runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: ov-corp-inventario/.nvmrc
+          cache: npm
+          cache-dependency-path: ov-corp-inventario/package-lock.json
+      - run: npm ci
+      - run: npm run lint
+      - run: npm test
+      - name: Dependencias sin vulnerabilidades altas
+        run: npm audit --omit=dev --audit-level=high
+
+  docker:
+    runs-on: ubuntu-latest
+    needs: verificar
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -t ov-corp-inventario .
+
+  desplegar:
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    needs: [verificar, docker]
+    # Nunca dos despliegues al mismo tiempo.
+    concurrency:
+      group: produccion
+      cancel-in-progress: false
     environment:
       name: produccion
       url: https://inventario.ovcorp.com.pe
@@ -31,10 +59,9 @@ jobs:
       CARPETA: ov-corp-inventario
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
 
       - name: Revisar secretos
+        id: secretos
         env:
           VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
           ACME_EMAIL: ${{ secrets.ACME_EMAIL }}
@@ -44,11 +71,14 @@ jobs:
             [ -n "${!s}" ] || faltan="$faltan $s"
           done
           if [ -n "$faltan" ]; then
-            echo "::error::Faltan secretos del repositorio:$faltan (ver docs/DESPLIEGUE.md)"
-            exit 1
+            echo "::warning::No se publicó: faltan los secretos$faltan (ver ov-corp-inventario/docs/DESPLIEGUE.md)."
+            echo "listo=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "listo=true" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Configurar SSH
+        if: steps.secretos.outputs.listo == 'true'
         env:
           VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
           VPS_HOST_KEY: ${{ secrets.VPS_HOST_KEY }}
@@ -73,14 +103,16 @@ jobs:
           EOF
 
       - name: Copiar el código al servidor
+        if: steps.secretos.outputs.listo == 'true'
         run: |
           ssh vps "mkdir -p ~/$CARPETA"
           # Nunca se tocan en el servidor: .env (secretos) ni data/ (base de datos).
           rsync -az --delete \
-            --exclude '.git/' --exclude 'node_modules/' --exclude 'data/' --exclude '.env' --exclude 'certs/' \
+            --exclude 'node_modules/' --exclude 'data/' --exclude '.env' --exclude 'certs/' \
             ./ "vps:~/$CARPETA/"
 
       - name: Instalar o actualizar
+        if: steps.secretos.outputs.listo == 'true'
         env:
           ACME_EMAIL: ${{ secrets.ACME_EMAIL }}
           ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD_INICIAL }}
@@ -90,6 +122,7 @@ jobs:
             "cd ~/$CARPETA && set -a && . /dev/stdin && set +a && sudo -E NO_INTERACTIVO=1 ./deploy/instalar.sh"
 
       - name: Verificar que responde por HTTPS
+        if: steps.secretos.outputs.listo == 'true'
         run: |
           curl -fsS --retry 12 --retry-delay 10 --retry-all-errors https://inventario.ovcorp.com.pe/salud
           echo

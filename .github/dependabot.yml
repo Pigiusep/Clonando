@@ -1,7 +1,7 @@
 version: 2
 updates:
   - package-ecosystem: npm
-    directory: /
+    directory: /ov-corp-inventario
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
@@ -10,6 +10,6 @@ updates:
     schedule:
       interval: monthly
   - package-ecosystem: docker
-    directory: /
+    directory: /ov-corp-inventario
     schedule:
       interval: monthly

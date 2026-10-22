@@ -44,8 +44,8 @@ Conéctate al VPS por SSH y ejecuta:
 
 ```bash
 sudo apt update && sudo apt install -y git
-git clone https://github.com/pigiusep/ov-corp-inventario.git
-cd ov-corp-inventario
+git clone https://github.com/pigiusep/clonando.git
+cd clonando/ov-corp-inventario
 sudo ./deploy/instalar.sh
 ```
 
@@ -61,7 +61,7 @@ Abre **https://inventario.ovcorp.com.pe**, ingresa con `admin` y esa contraseña
 
 ## 3-B. Despliegue automático desde GitHub (recomendado)
 
-Con esto, cada cambio que se sube a la rama `main` pasa las pruebas y se publica solo en el servidor, sin entrar por SSH. Se configura **una sola vez**.
+El código está en el repositorio `pigiusep/clonando`, carpeta `ov-corp-inventario/`. Con esto, cada cambio en esa carpeta que se sube a `master` o a `claude/untitled-session-hbq806` pasa las pruebas y se publica solo en el servidor, sin entrar por SSH. Se configura **una sola vez**.
 
 **a) En el servidor:** conéctate por SSH y crea una llave exclusiva para GitHub:
 
@@ -78,7 +78,7 @@ Después de copiarla a GitHub, borra la llave privada del servidor (la pública 
 rm ~/.ssh/github_despliegue
 ```
 
-**b) En GitHub:** en el repositorio, ve a *Settings → Secrets and variables → Actions → New repository secret* y crea:
+**b) En GitHub:** en el repositorio `pigiusep/clonando`, ve a *Settings → Secrets and variables → Actions → New repository secret* y crea:
 
 | Secreto | Valor |
 |---|---|
@@ -90,7 +90,7 @@ rm ~/.ssh/github_despliegue
 | `ADMIN_PASSWORD_INICIAL` | *(opcional)* contraseña temporal del primer administrador: 10 o más caracteres, solo letras, números y `. _ @ # % + = ! , : -`. Se pide cambiarla en el primer ingreso. |
 | `VPS_PORT` | *(opcional)* solo si SSH no usa el puerto 22 |
 
-**c) Desplegar:** en *Actions → Desplegar → Run workflow*, o simplemente sube un cambio a `main`. El flujo copia el código, conserva `.env` y la base de datos, reconstruye, reinicia y comprueba que `https://inventario.ovcorp.com.pe/salud` responda.
+**c) Desplegar:** en *Actions → Inventario OV Corp → Run workflow* (elige la rama), o sube un cambio a la carpeta. Mientras falten los secretos, el paso de publicar se omite con un aviso, sin marcar error. El flujo copia el código, conserva `.env` y la base de datos, reconstruye, reinicia y comprueba que `https://inventario.ovcorp.com.pe/salud` responda.
 
 Si no definiste `ADMIN_PASSWORD_INICIAL`, la contraseña temporal del administrador **no** aparece en GitHub, por seguridad. Se ve en el servidor con:
 
