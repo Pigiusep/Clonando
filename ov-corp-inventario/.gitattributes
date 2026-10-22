@@ -1,0 +1,4 @@
+# Los scripts de shell siempre con saltos de línea LF, aunque se clonen en Windows.
+*.sh text eol=lf
+Dockerfile text eol=lf
+deploy/Caddyfile text eol=lf
