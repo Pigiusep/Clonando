@@ -68,6 +68,9 @@ h2 { font-size: 1.2rem; margin: 1.5rem 0 0.75rem; }
 
 .tarjeta { background: var(--superficie); border: 1px solid var(--borde); border-radius: 10px; padding: 16px; }
 .login { max-width: 380px; margin: 10vh auto 0; }
+.angosta { max-width: 480px; }
+.salir a { color: var(--suave); text-decoration: none; }
+.boton:disabled { opacity: 0.6; cursor: progress; }
 
 .formulario { display: grid; gap: 12px; }
 .formulario label { display: grid; gap: 4px; font-weight: 600; font-size: 0.95rem; }
@@ -83,7 +86,8 @@ input[type="checkbox"], input[type="radio"] { width: auto; }
 .filtros { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px; }
 .filtros input[type="search"] { flex: 1; min-width: 220px; }
 
-.aviso { padding: 10px 14px; border-radius: 6px; margin-bottom: 12px; }
+.aviso { padding: 10px 14px; border-radius: 6px; margin-bottom: 12px; background: var(--fondo); border: 1px solid var(--borde); }
+.aviso.ok, .aviso.error { border: 0; }
 .aviso.ok { background: var(--exito-fondo); color: var(--exito); }
 .aviso.error { background: var(--error-fondo); color: var(--error); }
 

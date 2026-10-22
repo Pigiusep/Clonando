@@ -1,0 +1,32 @@
+# Producción con HTTPS automático (necesario para usar la cámara del celular).
+# Uso: copia .env.example a .env, completa DOMINIO y SESSION_SECRET, y ejecuta: docker compose up -d
+services:
+  app:
+    build: .
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      NODE_ENV: production
+      TRUST_PROXY: "1"
+    volumes:
+      - datos:/app/data
+    expose:
+      - "3000"
+
+  caddy:
+    image: caddy:2.8
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      DOMINIO: ${DOMINIO:?Define DOMINIO en .env}
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_datos:/data
+    depends_on:
+      - app
+
+volumes:
+  datos:
+  caddy_datos:

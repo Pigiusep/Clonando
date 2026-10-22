@@ -1,83 +1,133 @@
 # Inventario OV Corp
 
-Sistema web de inventario para reemplazar el control en Excel. Incluye productos, entradas, salidas, conteos físicos, alertas de stock mínimo, escaneo con QR o código de barras, etiquetas QR imprimibles, importación del Excel actual y exportación de reportes.
+Aplicación web de inventario para reemplazar el control en Excel. Se usa desde el celular: se escanea el código QR del producto con la cámara y se registra la entrada, la salida o el conteo físico. También se puede instalar en la pantalla de inicio del celular como una app.
 
-- **Stack:** Node.js 20+, Express, SQLite (un solo archivo, sin instalar un servidor de base de datos) y vistas EJS.
-- **Usuarios:** `admin` (todo) y `operador` (productos y movimientos; no puede importar, desactivar ni gestionar usuarios).
+**Funciones:** productos con **código automático** (P00001, P00002…), etiquetas QR para hoja A4 o impresora térmica, escaneo con cámara, pistola lectora o teclado, stock calculado a partir de los movimientos, alertas de stock mínimo, importación del Excel actual (aunque no tenga códigos), exportación a Excel, usuarios con roles y bitácora de seguridad.
 
-## Puesta en marcha
+**Stack:** Node.js 22, Express 5, SQLite (better-sqlite3), vistas EJS sin frameworks de frontend, html5-qrcode y Docker con Caddy para HTTPS automático.
+
+---
+
+## Cómo se usa
+
+1. **Migrar:** en *Excel → Importar*, sube el Excel actual. Solo necesita la columna **Nombre**. A cada producto se le asigna un código automático; si ya trae código de barras, se respeta.
+2. **Etiquetar:** usa el botón *Imprimir etiquetas de los productos nuevos*. Las etiquetas salen ordenadas por ubicación para pegarlas recorriendo el almacén.
+3. **Operar:** en *Escanear* (también desde el celular), elige **Salida**, **Entrada** o **Conteo**, abre la cámara, apunta al QR, escribe la cantidad y registra.
+4. **Controlar:** el inicio muestra los productos bajo el mínimo. *Movimientos* tiene el historial completo y se exporta a Excel.
+
+### Códigos de producto
+
+- Si el código se deja vacío, el sistema asigna el siguiente libre: `P` más 5 dígitos. Se configura con `PREFIJO_CODIGO` y `DIGITOS_CODIGO`.
+- El correlativo **solo avanza**: un código impreso nunca se le asigna a otro producto, ni siquiera si el original se desactiva.
+- El código no contiene datos que cambien (precio, ubicación). Esos datos están en la ficha.
+- Al reimportar un Excel sin códigos, las filas se reconocen por **nombre exacto**, así que no se duplican. Si hay dos productos con el mismo nombre, se pide agregar la columna Código.
+
+### Etiquetas
+
+En *Productos → Imprimir etiquetas QR* hay dos formatos:
+
+| Formato | Papel | Cuándo conviene |
+|---|---|---|
+| **A4** | Hojas adhesivas de 21 etiquetas (70 × 42 mm o 63,5 × 38 mm) en cualquier impresora láser o de tinta | Para empezar sin comprar equipo. |
+| **Rollo** | Impresora térmica de etiquetas con rollo de 50 × 25 mm | Si se etiqueta seguido. No usa tinta y las etiquetas son más resistentes. |
+
+Para productos pequeños o a granel (tornillos, cables), la etiqueta va en el **estante o gaveta**, no en cada unidad.
+
+---
+
+## Instalación
+
+### Desarrollo
 
 ```bash
 npm install
-cp .env.example .env      # opcional: edita la clave del admin y SESSION_SECRET
-npm start                 # http://localhost:3000
-npm test                  # pruebas automáticas
+npm run dev               # http://localhost:3000 (se reinicia al guardar cambios)
 ```
 
-La primera vez se crea el usuario `admin` con clave `admin123`, o con los valores de `ADMIN_USER` y `ADMIN_PASSWORD` si los definiste. **Cámbiala apenas ingreses**, en *Usuarios*.
+Al arrancar por primera vez, la consola muestra el **usuario `admin` y una contraseña temporal**, que hay que cambiar en el primer ingreso. En `localhost` la cámara funciona sin HTTPS.
 
-La base de datos queda en `data/inventario.db`. Para respaldarla basta con copiar ese archivo.
+### Producción con Docker (recomendado)
 
-## Migrar desde el Excel actual
+Requisitos: un servidor con Docker (un VPS desde unos USD 5–6 al mes) y un dominio o subdominio que apunte a él.
 
-1. Entra a **Excel → Importar productos** con el usuario admin.
-2. Sube el `.xlsx` o `.csv`. Solo necesita las columnas **Código** y **Nombre**. También reconoce Categoría, Unidad, Costo, Precio, Stock mínimo, Stock y Ubicación, con o sin tildes y con sinónimos como "Descripción", "SKU", "Existencias" o "Almacén" (ver `src/services/excel.js`).
-3. Si el código ya existe, se actualizan sus datos. Si trae **Stock**, se registra un *ajuste* para que el stock quede igual al del Excel, así que reimportar el mismo archivo no duplica cantidades.
-4. Las filas con problemas, como un código vacío o un número inválido, se listan y no detienen el resto.
-
-Antes de importar conviene limpiar el Excel: una fila por producto, un código único, sin celdas combinadas y la primera hoja con los datos.
-
-## Cómo se registran los movimientos con escáner
-
-El stock **no se edita a mano**. Se calcula sumando los movimientos (entrada `+`, salida `−` y ajuste por conteo), así cada cambio queda con fecha, usuario, origen y nota. El sistema no permite salidas mayores al stock disponible.
-
-La pantalla **Escanear** acepta tres formas de leer un código, y todas terminan en el mismo flujo:
-
-| Opción | Qué se necesita | Cuándo conviene |
-|---|---|---|
-| **Pistola lectora USB o Bluetooth** | Un lector de códigos de barras y QR (desde unos S/ 60–150). Funciona como un teclado: "escribe" el código y presiona Enter. | Almacén con mucho movimiento. Es la opción más rápida y confiable y **no necesita HTTPS ni permisos**. Elige un modelo "2D" para leer QR y códigos de barras. |
-| **Cámara del celular, tablet o laptop** | El navegador (Chrome o Safari) y que el sistema se abra con **https://** | Sin hardware extra. Lee QR y códigos de barras (EAN-13, Code 128 y otros). |
-| **Escribir el código** | Nada | Respaldo cuando la etiqueta está dañada. También puedes buscar por nombre en *Productos*. |
-
-Flujo en pantalla:
-
-1. Elige la operación: **Consultar**, **Entrada**, **Salida** o **Conteo** (ajuste por inventario físico).
-2. Escanea. Aparece el producto con su stock; ingresa la cantidad y presiona *Registrar*.
-3. **Registro rápido** (opcional): en entradas y salidas, cada lectura suma 1 unidad sin confirmar. Sirve para recibir o despachar unidad por unidad con la pistola.
-4. Si el código no existe, ofrece crear el producto con ese código ya completado.
-5. Hay un sonido y una vibración distintos para lectura correcta o error, para no tener que mirar la pantalla.
-
-### ¿Qué código lleva cada producto?
-
-- **Si el producto ya trae código de barras del fabricante** (EAN-13 en la caja), usa ese número como *Código* en el sistema y no necesitas etiquetas.
-- **Si no trae código**, asigna uno interno (`P0001`, `P0002`…) e imprime etiquetas QR en *Productos → Imprimir etiquetas QR*. La hoja está pensada para A4 con 21 etiquetas autoadhesivas de 63,5 × 38 mm, aunque también sirve en papel normal para recortar. El QR contiene solo el código, así que lo lee cualquier lector.
-- Para estantes o cajas, puedes poner una etiqueta por ubicación y anotar la ubicación en el producto.
-
-### Sobre la cámara y HTTPS
-
-Por seguridad, los navegadores **solo permiten usar la cámara en sitios con HTTPS** (o en `localhost`). Opciones:
-
-1. **Publicarlo en internet con HTTPS** (lo más simple): Render, Railway o Fly.io dan HTTPS automático. Usa un disco persistente para `data/`.
-2. **Red local de la oficina:** genera un certificado con [mkcert](https://github.com/FiloSottile/mkcert) para la IP del servidor e inicia con `SSL_KEY=certs/key.pem SSL_CERT=certs/cert.pem npm start`. Cada celular debe confiar en el certificado raíz de mkcert. Otra opción es poner Caddy delante como proxy.
-3. **Sin HTTPS:** las pistolas lectoras y la escritura manual siguen funcionando. Solo la cámara queda desactivada, y la pantalla lo explica.
-
-## Estructura
-
-```
-server.js                 arranque (HTTP o HTTPS)
-src/app.js                configuración de Express, sesión y rutas
-src/db.js                 esquema SQLite y admin inicial
-src/services/inventario.js reglas de stock y movimientos
-src/services/excel.js     importar/exportar Excel y CSV
-src/routes/               páginas y API (/api usada por el escáner)
-views/                    plantillas EJS
-public/js/escaner.js      lector: pistola, cámara (html5-qrcode) y teclado
-test/                     pruebas (node --test)
+```bash
+cp .env.example .env
+# Edita .env: DOMINIO=inventario.tuempresa.pe y SESSION_SECRET=$(openssl rand -hex 32)
+docker compose up -d
+docker compose logs app    # aquí aparece la contraseña temporal del admin
 ```
 
-## Ideas para siguientes versiones
+Caddy obtiene y renueva el certificado HTTPS automáticamente. Sin HTTPS los celulares **no permiten usar la cámara**.
+
+**Solo red local (sin internet):** en `deploy/Caddyfile` descomenta `tls internal` y usa la IP del servidor como `DOMINIO`. Luego instala en cada celular el certificado raíz de Caddy.
+
+### Respaldos
+
+Toda la información está en un solo archivo SQLite, dentro del volumen `datos` (`/app/data/inventario.db`). Un respaldo diario basta, por ejemplo con cron:
+
+```bash
+docker compose exec app node -e "require('better-sqlite3')('/app/data/inventario.db').backup('/app/data/respaldo-'+new Date().toISOString().slice(0,10)+'.db')"
+```
+
+Copia esos archivos fuera del servidor (Google Drive, otro disco) y prueba de vez en cuando restaurar uno.
+
+---
+
+## Seguridad
+
+| Riesgo | Medida |
+|---|---|
+| Contraseñas robadas o débiles | bcrypt (costo 12). Política NIST: mínimo 10 caracteres, rechaza contraseñas comunes o que contengan el usuario. Las contraseñas temporales se cambian obligatoriamente en el primer ingreso. |
+| Fuerza bruta | Máximo 10 intentos fallidos cada 15 minutos por IP y usuario. Los bloqueos quedan en la bitácora. |
+| Enumeración de usuarios | Mismo mensaje y mismo tiempo de respuesta si el usuario existe o no. |
+| Robo o fijación de sesión | Cookie `HttpOnly`, `SameSite=Strict` y `Secure` con HTTPS. Nueva sesión al ingresar. Vence tras 8 h sin uso. Al cambiar la contraseña o desactivar a un usuario se cierran sus otras sesiones. |
+| CSRF | Token aleatorio por sesión en todos los formularios y en la API del escáner, comparado en tiempo constante. |
+| XSS | Las plantillas escapan todo por defecto. CSP estricta sin scripts en línea (`script-src 'self'`). El escáner usa `textContent`. |
+| Inyección SQL | Todas las consultas usan parámetros, y la búsqueda escapa `%` y `_`. |
+| Permisos | Roles `admin` y `operador` verificados en el servidor. El usuario se vuelve a leer en cada petición, así que los cambios aplican de inmediato. |
+| Datos inválidos | Validación de tipos, rangos y largos en el servidor. Límites de tamaño para formularios (100 KB), JSON (20 KB) y archivos (10 MB). |
+| Filtrado de información | Los errores inesperados se registran en el log; al usuario solo se le muestra un mensaje genérico. Los logs ocultan cookies y contraseñas. |
+| Cabeceras HTTP | Helmet: CSP, HSTS (en producción), `nosniff`, `frame-ancestors 'none'`, `Referrer-Policy`. Las páginas con datos usan `Cache-Control: no-store`. |
+| Redirecciones abiertas | Solo se redirige a rutas del mismo sitio. |
+| Configuración insegura | En producción la app no arranca sin un `SESSION_SECRET` de 32 o más caracteres. Solo confía en `X-Forwarded-For` con `TRUST_PROXY=1`. |
+| Trazabilidad | Cada movimiento guarda usuario, fecha, origen y nota, y el stock no se edita directamente. La bitácora registra ingresos, intentos fallidos, cambios de usuarios, importaciones y productos desactivados. |
+| Dependencias | `npm audit` en CI y Dependabot semanal. Imagen Docker que corre sin root. |
+
+Para reportar una vulnerabilidad, ver [SECURITY.md](SECURITY.md).
+
+---
+
+## Desarrollo
+
+```bash
+npm run lint      # ESLint
+npm test          # pruebas (node:test + supertest), base de datos en memoria
+npm run check     # lint + pruebas + auditoría de dependencias
+```
+
+GitHub Actions ejecuta lo mismo en cada push y pull request, y además construye la imagen Docker.
+
+```
+server.js                    arranque, HTTPS opcional y apagado ordenado
+src/config.js                variables de entorno validadas al arrancar
+src/app.js                   Express: seguridad, sesión, rutas y manejo de errores
+src/middleware.js            CSRF, sesión, roles, auditoría y no-cache
+src/db.js                    esquema SQLite con migraciones versionadas y admin inicial
+src/services/inventario.js   reglas de negocio: códigos, stock y movimientos
+src/services/excel.js        importar y exportar Excel/CSV
+src/services/passwords.js    hash y política de contraseñas
+src/routes/                  páginas y API JSON (/api) que usa el escáner
+views/                       plantillas EJS
+public/js/escaner.js         cámara, pistola y teclado
+public/sw.js                 service worker (app instalable, sin cachear datos)
+test/                        pruebas automáticas
+deploy/Caddyfile             proxy HTTPS
+```
+
+### Siguientes pasos posibles
 
 - Varios almacenes y transferencias entre ellos.
 - Proveedores, órdenes de compra y costo promedio.
 - Lotes y fechas de vencimiento.
-- Modo sin conexión (PWA) para almacenes sin buena señal.
+- Deshacer el último movimiento (con registro de quién lo deshizo).
+- Autenticación en dos pasos para administradores.

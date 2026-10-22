@@ -1,20 +1,35 @@
-/* Hoja de etiquetas QR. Cada etiqueta mide 63,5 x 38 mm (formato común de 21 por hoja A4). */
-body { margin: 0; font: 12px/1.3 system-ui, sans-serif; color: #000; background: #fff; }
+* { box-sizing: border-box; }
+body { margin: 0; font: 12px/1.25 system-ui, sans-serif; color: #000; background: #fff; }
 .no-imprimir { padding: 12px 16px; background: #f1f3f6; border-bottom: 1px solid #ccc; font-size: 14px; }
-.no-imprimir form { display: flex; gap: 8px; align-items: center; }
-.hoja { display: grid; grid-template-columns: repeat(3, 63.5mm); gap: 0 2.5mm; padding: 10mm 7mm; }
-.etiqueta {
-  display: flex; gap: 2mm; align-items: center; width: 63.5mm; height: 38mm; padding: 2mm;
-  border: 1px dashed #bbb; overflow: hidden; break-inside: avoid;
-}
-.etiqueta img { width: 30mm; height: 30mm; flex: none; }
-.etiqueta div { display: grid; gap: 1mm; min-width: 0; }
-.etiqueta strong { font-size: 13px; word-break: break-all; }
-.etiqueta span { font-size: 11px; max-height: 4.2em; overflow: hidden; }
-.etiqueta small { color: #444; }
+.no-imprimir form { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; }
+.no-imprimir p { margin: 8px 0 0; }
+.etiqueta { display: flex; gap: 2mm; align-items: center; overflow: hidden; break-inside: avoid; border: 1px dashed #bbb; }
+.etiqueta img { flex: none; }
+.texto { display: grid; gap: 1mm; min-width: 0; }
+.nombre { font-weight: 700; overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical; }
+.codigo { font-family: ui-monospace, Menlo, Consolas, monospace; letter-spacing: 0.5px; }
+small { color: #333; }
+
+/* Hoja A4 de 21 etiquetas (3 x 7). Sirve para 70 x 42 mm y 63,5 x 38 mm. */
+.formato-a4 .hoja { display: grid; grid-template-columns: repeat(3, 70mm); grid-auto-rows: 42.3mm; width: 210mm; }
+.formato-a4 .etiqueta { padding: 3mm; }
+.formato-a4 .etiqueta img { width: 32mm; height: 32mm; }
+.formato-a4 .nombre { font-size: 13px; -webkit-line-clamp: 3; }
+.formato-a4 .codigo { font-size: 14px; }
+
+/* Rollo térmico: una etiqueta de 50 x 25 mm por página. */
+.formato-rollo .hoja { display: block; }
+.formato-rollo .etiqueta { width: 50mm; height: 25mm; padding: 1.5mm; break-after: page; }
+.formato-rollo .etiqueta:last-child { break-after: auto; }
+.formato-rollo .etiqueta img { width: 21mm; height: 21mm; }
+.formato-rollo .nombre { font-size: 9px; -webkit-line-clamp: 3; }
+.formato-rollo .codigo { font-size: 11px; }
+.formato-rollo small { font-size: 8px; }
 
 @media print {
-  @page { size: A4; margin: 0; }
   .no-imprimir { display: none; }
   .etiqueta { border-color: transparent; }
 }
+@page { size: A4; margin: 0; }
+@page rollo { size: 50mm 25mm; margin: 0; }
+.formato-rollo .hoja { page: rollo; }

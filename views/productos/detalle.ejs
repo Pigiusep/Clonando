@@ -5,7 +5,7 @@
     <a class="boton secundario" href="/productos/<%= producto.id %>/editar">Editar</a>
     <a class="boton secundario" href="/productos/etiquetas?ids=<%= producto.id %>" target="_blank">Imprimir etiqueta</a>
     <% if (usuario.rol === 'admin') { %>
-    <form method="post" action="/productos/<%= producto.id %>/estado">
+    <form method="post" action="/productos/<%= producto.id %>/estado"><input type="hidden" name="_csrf" value="<%= csrf %>">
       <input type="hidden" name="activo" value="<%= producto.activo ? '0' : '1' %>">
       <button class="boton secundario" type="submit"><%= producto.activo ? 'Desactivar' : 'Reactivar' %></button>
     </form>
@@ -32,7 +32,7 @@
 
 <% if (producto.activo) { %>
 <h2>Registrar movimiento</h2>
-<form method="post" action="/productos/<%= producto.id %>/movimientos" class="formulario en-linea">
+<form method="post" action="/productos/<%= producto.id %>/movimientos" class="formulario en-linea"><input type="hidden" name="_csrf" value="<%= csrf %>">
   <select name="tipo" required>
     <option value="entrada">Entrada (+)</option>
     <option value="salida">Salida (−)</option>

@@ -1,7 +1,7 @@
 const express = require('express');
 const QRCode = require('qrcode');
 const inv = require('../services/inventario');
-const { requiereAdmin } = require('../middleware');
+const { requiereAdmin, auditar } = require('../middleware');
 
 const router = express.Router();
 
@@ -22,7 +22,7 @@ router.get('/nuevo', (req, res) => {
 router.post('/', (req, res) => {
   try {
     const id = inv.crearProducto(req.app.locals.db, req.body);
-    req.flash('ok', 'Producto creado.');
+    req.flash('ok', `Producto creado con el código ${inv.obtenerProducto(req.app.locals.db, id).codigo}.`);
     res.redirect(`/productos/${id}`);
   } catch (err) {
     if (!(err instanceof inv.ErrorInventario)) throw err;
@@ -30,16 +30,21 @@ router.post('/', (req, res) => {
   }
 });
 
-// Etiquetas para imprimir: /productos/etiquetas?ids=1,2,3 (o todas si no se indica).
+// Etiquetas para imprimir: /productos/etiquetas?ids=1,2,3 (o todas las activas si no se indica).
+// formato=a4 (hoja adhesiva A4 de 21) o rollo (impresora térmica, una etiqueta de 50 x 25 mm por página).
 router.get('/etiquetas', async (req, res) => {
   const db = req.app.locals.db;
-  const ids = String(req.query.ids || '').split(',').map(Number).filter(Boolean);
+  const ids = String(req.query.ids || '').split(',').map(Number).filter((n) => Number.isInteger(n) && n > 0).slice(0, 2000);
   const productos = ids.length
     ? ids.map((id) => inv.obtenerProducto(db, id)).filter(Boolean)
     : inv.listarProductos(db);
+  // Ordenadas por ubicación para pegarlas recorriendo el almacén.
+  productos.sort((a, b) => a.ubicacion.localeCompare(b.ubicacion, 'es', { numeric: true })
+    || a.nombre.localeCompare(b.nombre, 'es'));
   const copias = Math.min(Math.max(Number(req.query.copias) || 1, 1), 50);
-  for (const p of productos) p.qr = await QRCode.toDataURL(p.codigo, { margin: 1, width: 240 });
-  res.render('productos/etiquetas', { productos, copias });
+  const formato = req.query.formato === 'rollo' ? 'rollo' : 'a4';
+  for (const p of productos) p.qr = await QRCode.toDataURL(p.codigo, { margin: 1, width: 240, errorCorrectionLevel: 'M' });
+  res.render('productos/etiquetas', { productos, copias, formato, ids: ids.join(',') });
 });
 
 router.get('/:id', async (req, res, next) => {
@@ -72,9 +77,12 @@ router.post('/:id', (req, res) => {
 
 router.post('/:id/estado', requiereAdmin, (req, res) => {
   const activo = req.body.activo === '1';
-  inv.cambiarEstadoProducto(req.app.locals.db, req.params.id, activo);
+  const producto = inv.obtenerProducto(req.app.locals.db, req.params.id);
+  if (!producto) return res.redirect('/productos');
+  inv.cambiarEstadoProducto(req.app.locals.db, producto.id, activo);
+  auditar(req, activo ? 'producto_reactivado' : 'producto_desactivado', producto.codigo);
   req.flash('ok', activo ? 'Producto reactivado.' : 'Producto desactivado.');
-  res.redirect(`/productos/${req.params.id}`);
+  res.redirect(`/productos/${producto.id}`);
 });
 
 router.post('/:id/movimientos', (req, res) => {

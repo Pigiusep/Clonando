@@ -1,0 +1,8 @@
+# Caddy obtiene y renueva solo el certificado HTTPS (Let's Encrypt) para el dominio.
+# Para usarlo solo en la red local (sin dominio público), cambia DOMINIO por la IP del
+# servidor y descomenta "tls internal"; luego instala en cada celular el certificado raíz de Caddy.
+{$DOMINIO} {
+	# tls internal
+	encode gzip
+	reverse_proxy app:3000
+}

@@ -51,7 +51,7 @@ async function leerFilas(buffer, nombreArchivo) {
   const hoja = libro.worksheets[0];
   if (!hoja) throw new inv.ErrorInventario('El archivo no tiene hojas.');
 
-  // La fila de encabezados es la primera que tenga una columna reconocible como "código".
+  // La fila de encabezados es la primera que tenga una columna reconocible como "nombre".
   let filaEncabezado = null;
   let mapa = {};
   hoja.eachRow((fila, numero) => {
@@ -61,10 +61,10 @@ async function leerFilas(buffer, nombreArchivo) {
       const campo = campoDeEncabezado(valorCelda(celda));
       if (campo && !(campo in candidato)) candidato[campo] = col;
     });
-    if (candidato.codigo && candidato.nombre) { filaEncabezado = numero; mapa = candidato; }
+    if (candidato.nombre) { filaEncabezado = numero; mapa = candidato; }
   });
   if (!filaEncabezado) {
-    throw new inv.ErrorInventario('No se encontraron las columnas "Código" y "Nombre" en la primera hoja.');
+    throw new inv.ErrorInventario('No se encontró la columna "Nombre" (o "Descripción", "Producto") en la primera hoja.');
   }
 
   const filas = [];
@@ -81,42 +81,65 @@ async function leerFilas(buffer, nombreArchivo) {
   return { filas, columnas: Object.keys(mapa) };
 }
 
+// Busca el producto que corresponde a una fila: por código si lo trae; si no, por nombre exacto.
+// Así se puede reimportar un Excel sin códigos sin duplicar productos.
+function productoDeFila(db, datos) {
+  if (String(datos.codigo ?? '').trim()) return inv.buscarPorCodigo(db, datos.codigo);
+  const coincidencias = inv.buscarPorNombre(db, datos.nombre);
+  if (coincidencias.length > 1) {
+    throw new inv.ErrorInventario(`Hay ${coincidencias.length} productos llamados "${datos.nombre}". Agrega la columna Código para distinguirlos.`);
+  }
+  return coincidencias[0];
+}
+
 /**
- * Importa productos. Si el código existe, actualiza sus datos; si no, lo crea.
+ * Importa productos. Si el producto existe (por código, o por nombre cuando la fila no trae código),
+ * actualiza sus datos; si no, lo crea, con código automático si no lo trae.
  * Si hay columna de stock, se registra un ajuste para dejar el stock en ese valor.
  * Las filas con error se reportan y no detienen al resto.
  */
 async function importarProductos(db, buffer, nombreArchivo, usuarioId) {
   const { filas, columnas } = await leerFilas(buffer, nombreArchivo);
-  const resultado = { creados: 0, actualizados: 0, ajustesStock: 0, errores: [], columnas };
+  const resultado = { creados: 0, actualizados: 0, ajustesStock: 0, errores: [], columnas, idsCreados: [] };
 
   for (const { numero, datos } of filas) {
     try {
-      db.transaction(() => {
-        const existente = inv.buscarPorCodigo(db, datos.codigo);
+      // Cada fila en su propia transacción: si algo falla, no queda a medias ni se cuenta.
+      const fila = db.transaction(() => {
+        const existente = productoDeFila(db, datos);
         let id;
         if (existente) {
-          // Solo se sobrescriben las columnas presentes en el archivo.
+          // Solo se sobrescriben las columnas presentes en el archivo; un código vacío conserva el actual.
           const combinado = { ...existente };
-          for (const c of columnas) if (c !== 'stock') combinado[c] = datos[c];
+          for (const c of columnas) {
+            if (c === 'stock' || (c === 'codigo' && !String(datos.codigo).trim())) continue;
+            combinado[c] = datos[c];
+          }
           inv.actualizarProducto(db, existente.id, combinado);
           id = existente.id;
-          resultado.actualizados++;
         } else {
           id = inv.crearProducto(db, datos);
-          resultado.creados++;
         }
+        let ajustado = false;
         if (columnas.includes('stock') && String(datos.stock).trim() !== '') {
-          const actual = inv.obtenerProducto(db, id).stock;
-          if (Number(datos.stock) !== actual) {
+          const objetivo = Number(String(datos.stock).replace(',', '.'));
+          if (objetivo !== inv.obtenerProducto(db, id).stock) {
             inv.registrarMovimiento(db, {
               productoId: id, tipo: 'ajuste', cantidad: datos.stock,
               nota: `Importación de ${nombreArchivo}`, origen: 'importacion', usuarioId,
             });
-            resultado.ajustesStock++;
+            ajustado = true;
           }
         }
+        return { id, creado: !existente, ajustado };
       })();
+      if (fila.creado) {
+        resultado.creados++;
+        resultado.idsCreados.push(fila.id);
+      } else {
+        resultado.actualizados++;
+      }
+      if (fila.ajustado) resultado.ajustesStock++;
     } catch (err) {
       if (!(err instanceof inv.ErrorInventario)) throw err;
       resultado.errores.push({ fila: numero, mensaje: err.message });

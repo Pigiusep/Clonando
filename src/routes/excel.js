@@ -2,7 +2,7 @@ const express = require('express');
 const multer = require('multer');
 const excel = require('../services/excel');
 const { filtros } = require('./movimientos');
-const { requiereAdmin } = require('../middleware');
+const { requiereAdmin, verificarCsrf, auditar } = require('../middleware');
 const { ErrorInventario } = require('../services/inventario');
 
 const router = express.Router();
@@ -24,7 +24,8 @@ router.get('/', (req, res) => {
   res.render('excel', { resultado: null });
 });
 
-router.post('/importar', requiereAdmin, subida.single('archivo'), async (req, res) => {
+// El token CSRF se verifica después de multer, que es quien lee el cuerpo multipart.
+router.post('/importar', requiereAdmin, subida.single('archivo'), verificarCsrf, async (req, res) => {
   if (!req.file) {
     req.flash('error', 'Selecciona un archivo .xlsx o .csv.');
     return res.redirect('/excel');
@@ -42,6 +43,7 @@ router.post('/importar', requiereAdmin, subida.single('archivo'), async (req, re
     req.flash('error', 'No se pudo leer el archivo. Verifica que sea un Excel (.xlsx) o CSV válido.');
     return res.redirect('/excel');
   }
+  auditar(req, 'importacion', `${req.file.originalname}: ${resultado.creados} nuevos, ${resultado.actualizados} actualizados, ${resultado.errores.length} errores`);
   res.render('excel', { resultado });
 });
 

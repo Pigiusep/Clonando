@@ -2,30 +2,31 @@
 <h1>Escanear</h1>
 
 <div class="modos" role="radiogroup" aria-label="Tipo de operación">
-  <label><input type="radio" name="modo" value="consulta" checked> Consultar</label>
+  <label><input type="radio" name="modo" value="salida" checked> Salida</label>
   <label><input type="radio" name="modo" value="entrada"> Entrada</label>
-  <label><input type="radio" name="modo" value="salida"> Salida</label>
   <label><input type="radio" name="modo" value="ajuste"> Conteo</label>
+  <label><input type="radio" name="modo" value="consulta"> Consultar</label>
 </div>
 
 <div class="escaner">
   <section class="tarjeta">
-    <form id="form-codigo" class="formulario" autocomplete="off">
-      <label>Código
-        <input id="codigo" inputmode="text" placeholder="Escanea con la pistola o escribe el código y presiona Enter" autofocus>
-      </label>
-      <small>Funciona con lectores USB/Bluetooth (pistolas), que escriben el código como un teclado.</small>
-    </form>
-    <label class="opcion"><input type="checkbox" id="rapido"> Registro rápido: cada lectura suma 1 sin confirmar (entradas y salidas)</label>
     <div class="acciones">
-      <button type="button" id="btn-camara" class="boton secundario">Usar cámara</button>
-      <button type="button" id="btn-detener" class="boton secundario" hidden>Detener cámara</button>
+      <button type="button" id="btn-camara" class="boton grande">Abrir cámara</button>
+      <button type="button" id="btn-detener" class="boton secundario" hidden>Cerrar cámara</button>
     </div>
     <div id="lector" class="lector"></div>
     <p id="aviso-camara" class="aviso error" hidden></p>
+    <label class="opcion"><input type="checkbox" id="auto-camara"> Abrir la cámara al entrar a esta pantalla</label>
+
+    <form id="form-codigo" class="formulario" autocomplete="off">
+      <label>O escribe el código
+        <input id="codigo" inputmode="text" maxlength="64" placeholder="Código y Enter (también funciona con pistola lectora)">
+      </label>
+    </form>
+    <label class="opcion"><input type="checkbox" id="rapido"> Registro rápido: cada lectura suma 1 sin confirmar (entradas y salidas)</label>
   </section>
 
-  <section class="tarjeta" id="panel-producto" hidden>
+  <section class="tarjeta" id="panel-producto" hidden aria-live="polite">
     <h2 id="p-nombre"></h2>
     <dl class="datos">
       <dt>Código</dt><dd id="p-codigo"></dd>
@@ -34,18 +35,27 @@
     </dl>
     <form id="form-movimiento" class="formulario" hidden>
       <label><span id="etiqueta-cantidad">Cantidad</span>
-        <input id="cantidad" type="number" step="any" min="0" value="1" required>
+        <input id="cantidad" type="number" inputmode="decimal" step="any" min="0" value="1" required>
       </label>
-      <label>Nota (opcional) <input id="nota" placeholder="Guía, factura, motivo…"></label>
-      <button class="boton grande" type="submit" id="btn-registrar">Registrar</button>
+      <label>Nota (opcional) <input id="nota" maxlength="500" placeholder="Guía, factura, motivo…"></label>
+      <div class="acciones">
+        <button class="boton grande" type="submit" id="btn-registrar">Registrar</button>
+        <button class="boton secundario" type="button" id="btn-cancelar">Cancelar</button>
+      </div>
     </form>
-    <a id="p-enlace" class="boton secundario" href="#">Ver ficha</a>
+    <p class="acciones">
+      <button class="boton secundario" type="button" id="btn-siguiente" hidden>Escanear otro</button>
+      <a id="p-enlace" class="boton secundario" href="#">Ver ficha</a>
+    </p>
   </section>
 
   <section class="tarjeta" id="panel-no-existe" hidden>
     <h2>Código no registrado</h2>
     <p>No existe un producto con el código <strong id="ne-codigo"></strong>.</p>
-    <a id="ne-crear" class="boton" href="#">Crear producto con este código</a>
+    <p class="acciones">
+      <a id="ne-crear" class="boton" href="#">Crear producto con este código</a>
+      <button class="boton secundario" type="button" id="ne-siguiente">Escanear otro</button>
+    </p>
   </section>
 </div>
 

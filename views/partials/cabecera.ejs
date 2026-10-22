@@ -2,9 +2,15 @@
 <html lang="es">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="csrf-token" content="<%= csrf %>">
+  <meta name="theme-color" content="#1f5fbf">
   <title><%= typeof titulo !== 'undefined' ? titulo + ' · ' : '' %>Inventario OV Corp</title>
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="icon" href="/static/img/icono.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/static/img/icono-180.png">
   <link rel="stylesheet" href="/static/css/app.css">
+  <script src="/static/js/registrar-sw.js" defer></script>
 </head>
 <body>
 <% if (usuario) { %>
@@ -20,12 +26,13 @@
     <% } %>
   </nav>
   <form method="post" action="/logout" class="salir">
-    <span><%= usuario.nombre %></span>
+    <input type="hidden" name="_csrf" value="<%= csrf %>">
+    <a href="/cuenta/password" title="Cambiar mi contraseña"><%= usuario.nombre %></a>
     <button type="submit" class="boton secundario">Salir</button>
   </form>
 </header>
 <% } %>
 <main>
 <% if (flash) { %>
-  <div class="aviso <%= flash.tipo %>"><%= flash.mensaje %></div>
+  <div class="aviso <%= flash.tipo %>" role="status"><%= flash.mensaje %></div>
 <% } %>

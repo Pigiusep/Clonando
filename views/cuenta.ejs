@@ -1,0 +1,20 @@
+<%- include('partials/cabecera', { titulo: 'Cambiar contraseña' }) %>
+<section class="tarjeta angosta">
+  <h1>Cambiar contraseña</h1>
+  <% if (obligatorio) { %>
+    <div class="aviso">Estás usando una contraseña temporal. Elige una propia para continuar.</div>
+  <% } %>
+  <% if (error) { %><div class="aviso error"><%= error %></div><% } %>
+  <form method="post" action="/cuenta/password" class="formulario">
+    <input type="hidden" name="_csrf" value="<%= csrf %>">
+    <input type="text" name="usuario" value="<%= usuario.usuario %>" autocomplete="username" hidden>
+    <label>Contraseña actual <input name="actual" type="password" autocomplete="current-password" required autofocus></label>
+    <label>Nueva contraseña
+      <input name="nueva" type="password" minlength="10" maxlength="72" autocomplete="new-password" required>
+      <small>Mínimo 10 caracteres. Una frase fácil de recordar funciona bien, por ejemplo "almacén azul de lima 2026".</small>
+    </label>
+    <label>Repite la nueva contraseña <input name="confirmacion" type="password" minlength="10" maxlength="72" autocomplete="new-password" required></label>
+    <button class="boton" type="submit">Guardar</button>
+  </form>
+</section>
+<%- include('partials/pie') %>
