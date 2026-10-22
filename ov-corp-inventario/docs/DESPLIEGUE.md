@@ -40,7 +40,15 @@ nslookup inventario.ovcorp.com.pe
 
 ## 3. Instalar en el servidor
 
-Conéctate al VPS por SSH y ejecuta:
+**Forma más simple (un solo comando).** Conéctate al VPS (`ssh root@179.236.250.122`) y pega:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/Pigiusep/Clonando/claude/untitled-session-hbq806/ov-corp-inventario/deploy/publicar.sh | sudo bash
+```
+
+Descarga el código en `/opt/ov-corp-inventario` y ejecuta la instalación guiada. Para actualizar a una versión nueva, se repite el mismo comando.
+
+**O paso a paso:** conéctate al VPS por SSH y ejecuta:
 
 ```bash
 sudo apt update && sudo apt install -y git

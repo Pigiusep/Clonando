@@ -1,5 +1,8 @@
 # Producción en https://inventario.ovcorp.com.pe con HTTPS automático (necesario para la cámara del celular).
 # Instalación guiada: sudo ./deploy/instalar.sh   (detalles en docs/DESPLIEGUE.md)
+# Nombre fijo: aunque se instale en otra carpeta, es el mismo sistema con los mismos datos.
+name: ov-corp-inventario
+
 services:
   app:
     build: .
