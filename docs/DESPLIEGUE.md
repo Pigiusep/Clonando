@@ -59,6 +59,45 @@ El script:
 
 Abre **https://inventario.ovcorp.com.pe**, ingresa con `admin` y esa contraseña, y cámbiala cuando te lo pida.
 
+## 3-B. Despliegue automático desde GitHub (recomendado)
+
+Con esto, cada cambio que se sube a la rama `main` pasa las pruebas y se publica solo en el servidor, sin entrar por SSH. Se configura **una sola vez**.
+
+**a) En el servidor:** conéctate por SSH y crea una llave exclusiva para GitHub:
+
+```bash
+ssh-keygen -t ed25519 -N "" -C "github-despliegue" -f ~/.ssh/github_despliegue
+cat ~/.ssh/github_despliegue.pub >> ~/.ssh/authorized_keys
+cat ~/.ssh/github_despliegue          # llave privada: cópiala completa, desde -----BEGIN hasta -----END
+for f in /etc/ssh/ssh_host_*_key.pub; do echo "179.236.250.122 $(cut -d' ' -f1,2 "$f")"; done   # huella del servidor
+```
+
+Después de copiarla a GitHub, borra la llave privada del servidor (la pública queda en `authorized_keys`):
+
+```bash
+rm ~/.ssh/github_despliegue
+```
+
+**b) En GitHub:** en el repositorio, ve a *Settings → Secrets and variables → Actions → New repository secret* y crea:
+
+| Secreto | Valor |
+|---|---|
+| `VPS_HOST` | `179.236.250.122` |
+| `VPS_USER` | `root` (o el usuario del VPS, que debe tener `sudo` sin contraseña) |
+| `VPS_SSH_KEY` | la llave privada del paso a) |
+| `VPS_HOST_KEY` | las líneas de la huella del servidor del paso a). Evita conectarse a un servidor falso. |
+| `ACME_EMAIL` | correo para avisos del certificado, por ejemplo `sistemas@ovcorp.com.pe` |
+| `ADMIN_PASSWORD_INICIAL` | *(opcional)* contraseña temporal del primer administrador: 10 o más caracteres, solo letras, números y `. _ @ # % + = ! , : -`. Se pide cambiarla en el primer ingreso. |
+| `VPS_PORT` | *(opcional)* solo si SSH no usa el puerto 22 |
+
+**c) Desplegar:** en *Actions → Desplegar → Run workflow*, o simplemente sube un cambio a `main`. El flujo copia el código, conserva `.env` y la base de datos, reconstruye, reinicia y comprueba que `https://inventario.ovcorp.com.pe/salud` responda.
+
+Si no definiste `ADMIN_PASSWORD_INICIAL`, la contraseña temporal del administrador **no** aparece en GitHub, por seguridad. Se ve en el servidor con:
+
+```bash
+cd ~/ov-corp-inventario && docker compose logs app | grep -A1 "Usuario administrador creado"
+```
+
 ## 4. Instalar la app en los celulares
 
 1. Abre `https://inventario.ovcorp.com.pe` en el celular: Chrome en Android o Safari en iPhone.

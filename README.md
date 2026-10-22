@@ -52,6 +52,7 @@ La guía paso a paso está en **[docs/DESPLIEGUE.md](docs/DESPLIEGUE.md)**: serv
 
 1. Crea un registro DNS **A** `inventario` → IP del servidor.
 2. En el servidor: `git clone …`, luego `sudo ./deploy/instalar.sh`.
+   También se puede publicar en **automático desde GitHub Actions** en cada cambio a `main` (`.github/workflows/desplegar.yml`, configuración única en la guía).
 
 Caddy obtiene y renueva el certificado HTTPS automáticamente. Sin HTTPS los celulares **no permiten usar la cámara**.
 
