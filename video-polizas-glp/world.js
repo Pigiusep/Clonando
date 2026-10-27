@@ -365,7 +365,7 @@ const WORLD = (() => {
   for (let i = 0; i < 8; i++) sm += `<circle class="pf" r="30" fill="#C9D6EA"/>`;
   smoke.innerHTML = sm;
   const puffs = [...smoke.querySelectorAll('.pf')];
-  const st = { beam: 0, walk: 0, point: 0, nod: 0, look: 0 };
+  const st = { beam: 0, walk: 0, point: 0, nod: 0, look: 0, thumb: 0 };
   function ambient(t) {
     flow.setAttribute('stroke-dashoffset', -t * 130);
     n1.setAttribute('transform', `rotate(${20 + Math.sin(t * 1.7) * 8 + Math.sin(t * 5.3) * 2})`);
@@ -390,7 +390,7 @@ const WORLD = (() => {
 
 // gestos del operario: tipo 'point' | 'nod' | 'look'
 function gesture(t, kind, d = 2.5) {
-  const k = { point: 'point', nod: 'nod', look: 'look' }[kind];
+  const k = { point: 'point', nod: 'nod', look: 'look', thumb: 'thumb' }[kind];
   tl.to(WORLD.st, { [k]: 1, duration: 0.5, ease: 'power2.out' }, t);
   tl.to(WORLD.st, { [k]: 0, duration: 0.5, ease: 'power2.inOut' }, t + d);
 }

@@ -75,7 +75,7 @@ tl.to('#prog i', { scaleX: 1, duration: TL.total, ease: 'none' }, 0);
 
   // protección de Solgas: zoom al profesional
   frame(S('e1b') - 0.4, 1960, 620, 1.35, 1450, 560, 1.2, 'expo.inOut');
-  gesture(S('e1b') + 0.4, 'nod', 1.8); gesture(W('e1b', 'terceros', -0.4), 'point', 2.6);
+  gesture(S('e1b') + 0.3, 'thumb', 2.6); gesture(W('e1b', 'terceros', -0.4), 'point', 2.6);
   beam(S('e1b'), 1); scrim(c, 'left', S('e1b') - 0.4, E('e1b'));
   const sh = at(c, 110, 170, ic('shield', 130, 'var(--cyan)'), '');
   pop(sh, S('e1b') + 0.1, { rot: -30 });
@@ -778,6 +778,7 @@ tl.to('#prog i', { scaleX: 1, duration: TL.total, ease: 'none' }, 0);
   frameCut(t3 - 0.3, 2200, 520, 0.45);
   cam.shot(t3 - 0.2, 2200, 560, 0.55, E('e9f') - t3, 'sine.inOut');
   scrim(c, 'top', t3 - 0.3, S('e9g'));
+  gesture(W('e9f', 'protección de terceros', -0.4), 'thumb', 3);
   const b1 = chip(c, 110, 160, 'factory', 'Operación responsable', 'c');
   const b2 = chip(c, 700, 160, 'people', 'Protección de terceros', 'o');
   const b3 = chip(c, 1300, 160, 'shield', 'Gestión de riesgos', 'g');
