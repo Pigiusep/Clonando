@@ -336,8 +336,10 @@ const WORLD = (() => {
   const camS = { x: 2000, y: 600, z: 0.45, rot: 0 };
   function shot(t, x, y, z, d = 1.4, ease = 'power3.inOut') { tl.to(camS, { x, y, z, duration: d, ease }, t); }
   function cut(t, x, y, z) { tl.set(camS, { x, y, z }, t); }
-  function applyCam() {
-    cam.setAttribute('transform', `translate(960 540) scale(${camS.z}) rotate(${camS.rot}) translate(${-camS.x} ${-camS.y})`);
+  function applyCam(t = 0) {
+    const hx = (Math.sin(t * 0.37) * 7 + Math.sin(t * 0.91) * 3) / camS.z, hy = (Math.sin(t * 0.53) * 5 + Math.sin(t * 1.3) * 2) / camS.z;
+    const hr = Math.sin(t * 0.29) * 0.35, hz = 1 + Math.sin(t * 0.21) * 0.012;
+    cam.setAttribute('transform', `translate(960 540) scale(${camS.z * hz}) rotate(${camS.rot + hr}) translate(${-camS.x - hx} ${-camS.y - hy})`);
     const gy = 540 + (G - camS.y) * camS.z;           // línea de suelo en pantalla
     const k = 0.5 + camS.z * 0.35, k2 = 0.6 + camS.z * 0.4;
     skyG.setAttribute('transform', `translate(0 ${gy - 880})`);
@@ -349,7 +351,7 @@ const WORLD = (() => {
   const flow = main.querySelector('#flow'), n1 = main.querySelector('#needle1');
   const nr = [main.querySelector('#needleR0'), main.querySelector('#needleR1')], flame = main.querySelector('#flame');
   const smoke = main.querySelector('#smoke'), led = main.querySelector('#vapLed');
-  const head = main.querySelector('#head'), arm = main.querySelector('#arm'), arm2 = main.querySelector('#arm2'), torso = main.querySelector('#torso'), lids = main.querySelector('#lids');
+  const head = main.querySelector('#head'), arm = main.querySelector('#arm'), arm2 = main.querySelector('#arm2'), torso = main.querySelector('#torso'), lids = main.querySelector('#lids'), finger = main.querySelector('#finger');
   const tab = main.querySelector('#tabScr'), beam = main.querySelector('#beamP');
   const pers = [...main.querySelectorAll('.pers')];
   const FX = 2785, FY = BY + 117;
@@ -357,7 +359,7 @@ const WORLD = (() => {
   for (let i = 0; i < 8; i++) sm += `<circle class="pf" r="30" fill="#C9D6EA"/>`;
   smoke.innerHTML = sm;
   const puffs = [...smoke.querySelectorAll('.pf')];
-  const st = { beam: 0, walk: 0 };
+  const st = { beam: 0, walk: 0, point: 0, nod: 0, look: 0 };
   function ambient(t) {
     flow.setAttribute('stroke-dashoffset', -t * 130);
     n1.setAttribute('transform', `rotate(${20 + Math.sin(t * 1.7) * 8 + Math.sin(t * 5.3) * 2})`);
@@ -377,16 +379,27 @@ const WORLD = (() => {
     torso.setAttribute('transform', `translate(0 ${br})`);
     arm.setAttribute('transform', `translate(0 ${br}) rotate(${Math.sin(t * 1.2) * 2} 44 -352)`);
     const tap = Math.max(0, Math.sin(t * 5.5)) * (Math.sin(t * 0.7) > 0 ? 1 : 0);   // toca la tablet con el lápiz
-    arm2.setAttribute('transform', `translate(0 ${br}) rotate(${Math.sin(t * 1.1) * 2.5 + tap * 1.5} -40 -356)`);
+    // gestos: señalar (brazo trasero se eleva hacia los equipos), asentir y mirar
+    const pt = st.point;
+    arm2.setAttribute('transform', `translate(0 ${br}) rotate(${Math.sin(t * 1.1) * 2.5 * (1 - pt) + pt * (112 + Math.sin(t * 3) * 4)} -40 -356)`);
+    finger.setAttribute('opacity', pt > 0.6 ? 1 : 0);
+    head.setAttribute('transform', `translate(0 ${br}) rotate(${Math.sin(t * 0.9) * 3 + Math.sin(t * 0.37) * 2 + st.nod * Math.sin(t * 7) * 5 - st.look * 9 - pt * 6} 0 -380)`);
     lids.setAttribute('opacity', (t % 3.7) < 0.13 || (t % 11.3) < 0.1 ? 1 : 0);   // parpadeo
     tab.setAttribute('opacity', 0.8 + Math.sin(t * 4) * 0.2);
     beam.setAttribute('opacity', st.beam * (0.6 + Math.sin(t * 9) * 0.25));
     pers.forEach((p, i) => p.setAttribute('transform', `translate(${[3700, 3760, 4040, 4330][i] + Math.sin(t * 0.6 + i * 2) * 40} ${G + Math.abs(Math.sin(t * 3 + i)) * -4})`));
   }
-  tickers.push(t => { applyCam(); ambient(t); });
+  tickers.push(t => { applyCam(t); ambient(t); });
 
   return { svg, main, cam: camS, shot, cut, callout, st, el: id => main.querySelector('#' + id) };
 })();
+
+// gestos del operario: tipo 'point' | 'nod' | 'look'
+function gesture(t, kind, d = 2.5) {
+  const k = { point: 'point', nod: 'nod', look: 'look' }[kind];
+  tl.to(WORLD.st, { [k]: 1, duration: 0.5, ease: 'power2.out' }, t);
+  tl.to(WORLD.st, { [k]: 0, duration: 0.5, ease: 'power2.inOut' }, t + d);
+}
 
 // callout con animación de aparición
 function showCallout(id, x, y, label, t, dur, dir = 1, color) {

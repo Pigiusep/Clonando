@@ -56,47 +56,59 @@ function OPERARIO() {
 
   <!-- brazo trasero (en reposo, sostiene un lapicero) -->
   <g id="arm2">
-    <path d="M-40 -356 Q-62 -330 -62 -284" stroke="${C.shirtS}" stroke-width="27" stroke-linecap="round" fill="none"/>
-    <path d="M-62 -284 Q-64 -254 -56 -232" stroke="${C.shirtS}" stroke-width="23" stroke-linecap="round" fill="none"/>
+    <path d="M-36 -362 C-54 -358 -66 -340 -68 -300 L-70 -280 C-62 -272 -52 -276 -52 -290 L-46 -330 Z" fill="${C.shirtS}"/>
+    <path d="M-62 -284 Q-64 -254 -56 -232" stroke="${C.shirtS}" stroke-width="21" stroke-linecap="round" fill="none"/>
     <path d="M-50 -350 Q-60 -326 -58 -290" stroke="${C.shirt}" stroke-width="5" fill="none" opacity=".55"/>
     <rect x="-66" y="-250" width="20" height="10" rx="3" fill="${C.shirt}"/>
     ${glove(-55, -222, 8)}
+    <g id="finger" opacity="0"><path d="M-58 -206 Q-60 -186 -56 -176 Q-52 -174 -50 -178 Q-50 -192 -50 -206 Z" fill="${C.glove}" stroke="${C.gloveS}" stroke-width="1.4"/></g>
     <rect x="-44" y="-238" width="5" height="34" rx="2" fill="#0B1530" transform="rotate(28 -42 -222)"/>
   </g>
-  <!-- cabeza -->
-  <g id="head">
-    <path d="M-10 -386 H12 V-364 Q0 -358 -10 -364 Z" fill="${C.skinS}"/>
-    <path d="M-25 -420 Q-27 -452 2 -456 Q33 -454 35 -424 Q37 -404 31 -393 Q22 -378 6 -376 Q-14 -378 -21 -392 Q-27 -404 -25 -420 Z" fill="${C.skin}"/>
-    <path d="M-25 -420 Q-27 -440 -14 -450 Q-20 -420 -12 -392 Q-8 -382 6 -376 Q-14 -378 -21 -392 Q-27 -404 -25 -420 Z" fill="${C.skinS}" opacity=".75"/>
-    <path d="M10 -378 Q24 -380 31 -393" stroke="${C.skinS}" stroke-width="3" fill="none"/>
-    <path d="M-30 -430 Q-36 -404 -24 -390 Q-18 -386 -14 -392 L-17 -410 Q-19 -422 -12 -432 Z" fill="${C.hair}"/><path d="M-4 -432 Q2 -428 6 -432" stroke="${C.hair}" stroke-width="3" fill="none"/>
-    <ellipse cx="-19" cy="-412" rx="6.5" ry="10" fill="${C.skinS}"/><path d="M-20 -418 Q-15 -412 -20 -405" stroke="${C.skinD}" stroke-width="1.8" fill="none"/>
-    <path d="M7 -430 Q16 -435 26 -430" stroke="${C.hair}" stroke-width="3.6" fill="none" stroke-linecap="round"/>
-    <path d="M-8 -429 Q-2 -432 3 -430" stroke="${C.hair}" stroke-width="3" fill="none" stroke-linecap="round"/>
-    <ellipse cx="17" cy="-419" rx="5.4" ry="3.8" fill="#fff"/><circle cx="18.4" cy="-419" r="2.8" fill="#4A2C1A"/><circle cx="18.4" cy="-419" r="1.3" fill="#120A05"/><circle cx="19.4" cy="-420.2" r=".9" fill="#fff"/>
-    <path d="M11.5 -421 Q17 -425 22.5 -421" stroke="#6B3E2A" stroke-width="1.6" fill="none"/>
-    <ellipse cx="-1" cy="-419" rx="3.6" ry="3.3" fill="#fff"/><circle cx="0" cy="-419" r="2.2" fill="#4A2C1A"/><circle cx=".6" cy="-419.8" r=".7" fill="#fff"/>
-    <g id="lids" opacity="0"><ellipse cx="17" cy="-419" rx="6" ry="4.4" fill="${C.skin}"/><path d="M11.5 -418.5 Q17 -416 22.5 -418.5" stroke="#6B3E2A" stroke-width="1.6" fill="none"/>
-      <ellipse cx="-1" cy="-419" rx="4.2" ry="3.9" fill="${C.skin}"/><path d="M-4 -418.5 Q-1 -417 2 -418.5" stroke="#6B3E2A" stroke-width="1.4" fill="none"/></g>
-    <path d="M24 -416 Q31 -404 27 -400 Q23 -397 19 -400" stroke="${C.skinD}" stroke-width="2" fill="none" stroke-linecap="round"/>
-    <ellipse cx="23" cy="-400" rx="5" ry="3" fill="#E8907A" opacity=".35"/>
-    <path d="M11 -390 Q19 -385 26 -391" stroke="${C.lips}" stroke-width="2.6" fill="none" stroke-linecap="round"/>
-    <path d="M14 -386 Q19 -384 23 -387" stroke="${C.skinS}" stroke-width="1.4" fill="none"/>
-    <path d="M-6 -428 H32 Q35 -428 34 -424 L32 -412 Q31 -410 28 -410 H10 Q7 -410 6 -414 L5 -420 H3 L2 -414 Q1 -410 -2 -410 H-6 Z" fill="#9FE3FF" opacity=".38" stroke="#1B2A4F" stroke-width="1.8"/>
-    <path d="M12 -426 L18 -414 M24 -426 L28 -418" stroke="#fff" stroke-width="1.6" opacity=".7"/>
-    <path d="M-6 -424 L-19 -418" stroke="#1B2A4F" stroke-width="2"/>
-    <path d="M-31 -430 Q-31 -472 4 -474 Q40 -472 41 -432 Z" fill="url(#helmet)"/>
-    <path d="M2 -474 Q6 -452 4 -432" stroke="#E0A500" stroke-width="7" fill="none"/>
-    <path d="M-36 -432 H50 Q60 -431 58 -425 H-36 Q-40 -428 -36 -432 Z" fill="#D99A00"/>
-    <path d="M-20 -458 Q-10 -468 4 -470" stroke="#fff" stroke-width="5" fill="none" opacity=".55" stroke-linecap="round"/>
-    <circle cx="24" cy="-450" r="8" fill="#fff"/><path d="M24 -455 V-445 M19 -450 H29" stroke="#12B76A" stroke-width="3.2"/>
-  </g>
+  <!-- cabeza (coordenadas locales: centro de la cara en 0,0; mentón y=36, coronilla y=-40) -->
+  <g id="head"><g transform="translate(4 -414)">
+    <path d="M-14 22 H15 L17 48 Q1 56 -15 48 Z" fill="${C.skinS}"/><path d="M-14 30 Q2 40 15 28" stroke="${C.skinD}" stroke-width="2" fill="none" opacity=".5"/>
+    <path d="M-30 -8 C-32 4 -29 12 -24 15 L-18 4 C-18 -4 -14 -10 -8 -12 Z" fill="${C.hair}"/>
+    <path d="M-28 -6 C-30 -30 -12 -40 6 -40 C24 -40 33 -26 32 -10 C32 -4 33 0 34 4 C34 14 30 24 22 31 C16 36 8 38 2 36 C-8 33 -18 26 -24 16 C-28 10 -29 2 -28 -6 Z" fill="${C.skin}"/>
+    <path d="M-24 16 C-18 26 -8 33 2 36 C-6 30 -11 22 -14 12 C-16 4 -16 -6 -14 -14 C-22 -10 -26 0 -24 16 Z" fill="${C.skinS}" opacity=".55"/>
+    <path d="M-28 -8 C-28 -16 -26 -21 -23 -24 L-17 -22 C-20 -16 -20 -10 -18 -4 Z" fill="${C.hair}"/>
+    <ellipse cx="-12" cy="0" rx="6.2" ry="9" fill="${C.skinS}"/>
+    <path d="M-12.5 -5.5 C-8.5 -3 -8.5 3.5 -12.5 5.5" stroke="${C.skinD}" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+    <path d="M-6 -12 V-4" stroke="${C.hair}" stroke-width="3" stroke-linecap="round"/>
+    <path d="M11 -17 Q18 -20.5 25 -16" stroke="${C.hair}" stroke-width="2.8" fill="none" stroke-linecap="round"/>
+    <path d="M-1 -16 Q3 -18 7 -16" stroke="${C.hair}" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+    <path d="M12 -6 Q18 -11 24 -6 Q18 -2 12 -6 Z" fill="#fff"/>
+    <circle cx="19" cy="-6.2" r="2.7" fill="#5A3520"/><circle cx="19" cy="-6.2" r="1.3" fill="#120A05"/><circle cx="20" cy="-7.2" r=".8" fill="#fff"/>
+    <path d="M11.5 -6.3 Q18 -11.4 24.5 -6.3" stroke="#4A2C1A" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    <path d="M-1 -6 Q3 -9.6 7 -6 Q3 -3.2 -1 -6 Z" fill="#fff"/>
+    <circle cx="4" cy="-6.1" r="2.1" fill="#5A3520"/><circle cx="4" cy="-6.1" r="1" fill="#120A05"/><circle cx="4.7" cy="-6.9" r=".6" fill="#fff"/>
+    <path d="M-1.4 -6.2 Q3 -10 7.4 -6.2" stroke="#4A2C1A" stroke-width="1.3" fill="none" stroke-linecap="round"/>
+    <g id="lids" opacity="0"><path d="M11 -6.5 Q18 -12 25 -6.5 Q18 -3 11 -6.5 Z" fill="${C.skin}"/><path d="M11.5 -5.6 Q18 -3.6 24.5 -5.6" stroke="#4A2C1A" stroke-width="1.5" fill="none"/>
+      <path d="M-1.6 -6.4 Q3 -10.4 7.6 -6.4 Q3 -3 -1.6 -6.4 Z" fill="${C.skin}"/><path d="M-1 -5.6 Q3 -4.2 7 -5.6" stroke="#4A2C1A" stroke-width="1.3" fill="none"/></g>
+    <path d="M31 -6 C35 0 40 7 39 11 C38.5 13.4 35 14 31.5 13 Z" fill="${C.skin}"/>
+    <path d="M39 11 C38 13.6 34.6 14 31 13" stroke="${C.skinD}" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+    <path d="M30 -2 C31 3 31 8 30 11" stroke="${C.skinS}" stroke-width="1.6" fill="none" opacity=".8"/>
+    <ellipse cx="24" cy="9" rx="4.6" ry="2.8" fill="#E8907A" opacity=".35"/>
+    <path d="M14 20.5 Q19.5 24.5 25.5 19.5" stroke="${C.lips}" stroke-width="2.3" fill="none" stroke-linecap="round"/>
+    <path d="M17 24.6 Q20 25.8 23 24.4" stroke="${C.skinS}" stroke-width="1.3" fill="none" stroke-linecap="round"/>
+    <path d="M-3 -13 H31 Q33.4 -13 32.8 -10 L31.4 -2.6 Q30.6 1 26.6 1 H14.6 Q11.4 1 10.4 -2 L9.6 -4.2 H8.4 L7.6 -2 Q6.6 1 3.6 1 H0.4 Q-3 1 -3 -3 Z" fill="#BFEFFF" opacity=".35"/>
+    <path d="M-3 -13 H31 Q33.4 -13 32.8 -10 L31.4 -2.6 Q30.6 1 26.6 1 H14.6 Q11.4 1 10.4 -2 L9.6 -4.2 H8.4 L7.6 -2 Q6.6 1 3.6 1 H0.4 Q-3 1 -3 -3 Z" fill="none" stroke="#1B2A4F" stroke-width="1.5" stroke-linejoin="round"/>
+    <path d="M-3 -13 H32" stroke="#1B2A4F" stroke-width="2.6" stroke-linecap="round"/>
+    <path d="M22 -11 L18 -2 M28 -11 L25.5 -5" stroke="#fff" stroke-width="1.3" opacity=".75" stroke-linecap="round"/>
+    <path d="M-3 -11 L-13 -6" stroke="#1B2A4F" stroke-width="1.8" stroke-linecap="round"/>
+    <g transform="translate(0 -5)"><path d="M-34 -20 C-34 -46 -14 -58 4 -58 C24 -58 40 -46 40 -22 Z" fill="url(#helmet)"/>
+    <path d="M4 -58 C7.5 -44 7.5 -32 6.5 -21" stroke="#E0A500" stroke-width="6" fill="none"/>
+    <path d="M-38 -23 H44 C52 -23 54 -19 50 -16 H-38 C-41 -17.5 -41 -21.5 -38 -23 Z" fill="#D99A00"/>
+    <path d="M-38 -16 H50" stroke="#B37E00" stroke-width="1.4"/>
+    <path d="M-22 -40 C-15 -50 -6 -54 2 -55" stroke="#fff" stroke-width="4" fill="none" opacity=".55" stroke-linecap="round"/>
+    <circle cx="24" cy="-38" r="7" fill="#fff"/><path d="M24 -42.5 V-33.5 M19.5 -38 H28.5" stroke="#12B76A" stroke-width="2.8"/></g>
+  </g></g>
 
   <!-- brazo delantero con tablet -->
   <g id="arm">
-    <path d="M42 -354 Q64 -332 62 -290" stroke="${C.shirt}" stroke-width="28" stroke-linecap="round" fill="none"/>
-    <path d="M62 -290 Q78 -282 104 -298" stroke="${C.shirt}" stroke-width="24" stroke-linecap="round" fill="none"/>
-    <path d="M50 -350 Q66 -330 66 -300" stroke="${C.shirtS}" stroke-width="5" fill="none" opacity=".6"/>
+    <path d="M36 -360 C56 -356 66 -338 70 -300 L68 -284 C60 -276 52 -280 50 -292 L46 -330 Z" fill="${C.shirt}"/>
+    <path d="M58 -350 C66 -336 70 -318 70 -300" stroke="${C.shirtS}" stroke-width="5" fill="none" opacity=".7"/>
+    <path d="M60 -290 Q80 -282 104 -298" stroke="${C.shirt}" stroke-width="22" stroke-linecap="round" fill="none"/>
+    <path d="M70 -284 Q86 -282 100 -292" stroke="${C.shirtS}" stroke-width="4" fill="none" opacity=".6"/>
     <g transform="translate(84 -372) rotate(-8)">
       <rect x="0" y="0" width="84" height="112" rx="11" fill="#1B2A4F"/>
       <path d="M0 14 V11 Q0 0 11 0 H16 V5 H5 V14 Z M84 14 V11 Q84 0 73 0 H68 V5 H79 V14 Z M0 98 V101 Q0 112 11 112 H16 V107 H5 V98 Z M84 98 V101 Q84 112 73 112 H68 V107 H79 V98 Z" fill="#FF7A00"/>

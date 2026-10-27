@@ -41,6 +41,7 @@ function scene(id) {
   c.id = 'sc-' + id;
   const sc = SCN[id];
   tl.set(c, { visibility: 'visible' }, sc.start + 0.35);
+  tl.fromTo(c, { scale: 1 }, { scale: 1.035, duration: sc.end - sc.start, ease: 'none', immediateRender: false }, sc.start);
   tl.set(c, { visibility: 'hidden' }, sc.end + 0.45);
   return c;
 }
@@ -220,3 +221,12 @@ function sceneTitle(c, t, num, tag, title) {
 
 // atenuar el mundo para gráficos a pantalla completa
 function dim(t, v = 1, d = 0.6) { tl.to('#dim', { opacity: v, duration: d, ease: 'power2.inOut' }, t); }
+
+// flotación sutil y continua de tarjetas, chips y documentos (propiedad CSS translate, independiente de GSAP)
+(() => {
+  let els = null;
+  tickers.push(t => {
+    if (!els) els = [...FX.querySelectorAll('.card,.chip,.doc,.pill,.verdict,.art')];
+    els.forEach((e, i) => { e.style.translate = `${Math.sin(t * 0.8 + i * 1.7) * 3}px ${Math.sin(t * 1.15 + i * 2.3) * 5}px`; });
+  });
+})();
