@@ -312,7 +312,7 @@ const WORLD = (() => {
     ${[2726, 2760].map(x => `<rect x="${x - 12}" y="${G - 280}" width="24" height="30" rx="4" fill="#2B3F6E"/><rect x="${x - 8}" y="${G - 296}" width="16" height="18" rx="3" fill="#FF7A00"/>`).join('')}`;
 
   // ---- inspector (operario detallado, ver operario.js) ----
-  m += `<g id="insp" transform="translate(1960 ${G})"><path id="beamP" d="M120 -300 L520 -460 L520 -190 Z" fill="url(#beam)" opacity="0"/><rect id="inspBox" x="${CHAR3D.BOX.x}" y="${CHAR3D.BOX.y}" width="${CHAR3D.BOX.w}" height="${CHAR3D.BOX.h}" fill="none"/></g>`;
+  m += `<g id="insp" transform="translate(1960 ${G})">${CARTOON.svg()}</g>`;
 
   m += `<g id="callouts"></g>`;
   main.innerHTML = m;
@@ -353,7 +353,7 @@ const WORLD = (() => {
   const nr = [main.querySelector('#needleR0'), main.querySelector('#needleR1')], flame = main.querySelector('#flame');
   const smoke = main.querySelector('#smoke'), led = main.querySelector('#vapLed');
   const beam = main.querySelector('#beamP');
-  CHAR3D.attach(host, main.querySelector('#inspBox'));
+  CARTOON.init(main.querySelector('#insp'));
   // capa superior (etiquetas) por encima del personaje 3D, con la misma cámara
   const top = document.createElementNS(SVGNS, 'svg');
   top.setAttribute('width', 1920); top.setAttribute('height', 1080); top.setAttribute('viewBox', '0 0 1920 1080');
@@ -383,7 +383,7 @@ const WORLD = (() => {
     beam.setAttribute('opacity', st.beam * (0.6 + Math.sin(t * 9) * 0.25));
     pers.forEach((p, i) => p.setAttribute('transform', `translate(${[3700, 3760, 4040, 4330][i] + Math.sin(t * 0.6 + i * 2) * 40} ${G + Math.abs(Math.sin(t * 3 + i)) * -4})`));
   }
-  tickers.push(t => { applyCam(t); ambient(t); CHAR3D.render(t, st); });
+  tickers.push(t => { applyCam(t); ambient(t); CARTOON.update(t, st); });
 
   return { svg, main, cam: camS, shot, cut, callout, st, el: id => main.querySelector('#' + id) };
 })();
