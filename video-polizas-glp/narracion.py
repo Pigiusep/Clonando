@@ -6,8 +6,9 @@ import sherpa_onnx as so
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 MODELS = os.environ.get('MODELS_DIR', os.path.join(HERE, 'models'))
-VOICE = os.environ.get('VOICE', 'vits-piper-es_MX-claude-high')
-SPEED = float(os.environ.get('SPEED', '1.04'))
+VOICE = os.environ.get('VOICE', 'kokoro-multi-lang-v1_0')
+SID = int(os.environ.get('SID', '29'))   # 29 = em_alex (voz 3 elegida)
+SPEED = float(os.environ.get('SPEED', '1.0'))
 SR_OUT = 48000
 
 # (escena, id, texto) — '¶' marca cambio de párrafo (pausa más larga)
@@ -77,6 +78,9 @@ GUION = [
 
 # Tiempo de cabecera de cada escena (título animado antes de la voz) y colas
 LEAD = {'intro': 5.0, 'e1': 0.6, 'outro': 5.0}
+# REGEN=e6d,e9g regenera esas frases; ALL=1 regenera todo (por defecto usa la caché audio/seg)
+REGEN = set(filter(None, os.environ.get('REGEN', '').split(',')))
+ALL = os.environ.get('ALL') == '1'
 SCENE_LEAD = 2.4      # título de escena
 SCENE_TAIL = 1.0
 PAUSE_SENT = 0.28
@@ -91,13 +95,19 @@ def para_tts(t):
     t = t.replace('U I T', 'UIT').replace('UIT', 'U.I.T.')
     t = t.replace('GLP', 'G.L.P.')
     t = t.replace('RUC', 'ruc').replace('SUNAT', 'Sunat').replace('TUPA', 'Tupa')
-    t = t.replace('y/o', 'y/o')
-    t = t.replace('estos 3', 'estos tres').replace('31 y 32', 'treinta y uno y treinta y dos')
+    t = t.replace('y/o', 'y, o').replace('Osinergmin', 'Osinergmín').replace('adendas', 'addendas')
+    t = t.replace('estos 3', 'estos tres').replace('31 y 32', 'treinta y uno, y treinta y dos')
     return t
 
 
 def tts_engine():
     d = os.path.join(MODELS, VOICE) + '/'
+    if 'kokoro' in VOICE:
+        return so.OfflineTts(so.OfflineTtsConfig(model=so.OfflineTtsModelConfig(
+            kokoro=so.OfflineTtsKokoroModelConfig(model=d + 'model.onnx', voices=d + 'voices.bin', tokens=d + 'tokens.txt',
+                                                  data_dir=d + 'espeak-ng-data', dict_dir=d + 'dict',
+                                                  lexicon=d + 'lexicon-us-en.txt', lang='es'),
+            num_threads=4)))
     onnx = glob.glob(d + '*.onnx')[0]
     cfg = so.OfflineTtsConfig(model=so.OfflineTtsModelConfig(
         vits=so.OfflineTtsVitsModelConfig(model=onnx, tokens=d + 'tokens.txt', data_dir=d + 'espeak-ng-data',
@@ -115,7 +125,7 @@ def trim(x, thr=0.006):
     idx = np.where(np.abs(x) > thr)[0]
     if len(idx) == 0:
         return x
-    a = max(0, idx[0] - int(0.02 * SR_OUT)); b = min(len(x), idx[-1] + int(0.06 * SR_OUT))
+    a = max(0, idx[0] - int(0.09 * SR_OUT)); b = min(len(x), idx[-1] + int(0.06 * SR_OUT))
     return x[a:b]
 
 
@@ -138,9 +148,16 @@ def main():
             continue
         if text.startswith('¶') and segs and segs[-1]['scene'] == scene:
             t += PAUSE_PAR - PAUSE_SENT
-        a = eng.generate(para_tts(text), sid=0, speed=SPEED)
-        x = trim(resample(np.array(a.samples, dtype=np.float32), a.sample_rate, SR_OUT))
+        cache = os.path.join(HERE, 'audio', 'seg', sid + '.wav')
+        if os.path.exists(cache) and sid not in REGEN and not ALL:
+            x, _ = sf.read(cache, dtype='float32')
+        else:
+            if sid in REGEN:
+                eng = tts_engine()   # motor nuevo: evita artefactos al inicio de algunas frases
+            a = eng.generate(para_tts(text), sid=SID if 'kokoro' in VOICE else 0, speed=SPEED)
+            x = trim(resample(np.array(a.samples, dtype=np.float32), a.sample_rate, SR_OUT))
         dur = len(x) / SR_OUT
+        sf.write(cache, x, SR_OUT)
         chunks.append((t, x))
         segs.append({'id': sid, 'scene': scene, 'start': round(t, 3), 'dur': round(dur, 3),
                      'text': text.replace('¶', '')})

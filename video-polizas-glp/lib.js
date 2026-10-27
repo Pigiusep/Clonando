@@ -106,30 +106,9 @@ function counter(el, t, from, to, d = 1.2, fmt = v => Math.round(v).toLocaleStri
 }
 
 // iconos SVG simples (trazos)
-const ICON = {
-  shield: '<path d="M32 6 L54 14 V30 C54 44 44 54 32 58 C20 54 10 44 10 30 V14 Z" fill="none" stroke="currentColor" stroke-width="5" stroke-linejoin="round"/><path d="M22 32 L29 39 L43 24" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>',
-  people: '<circle cx="22" cy="22" r="8" fill="currentColor"/><circle cx="44" cy="22" r="8" fill="currentColor"/><path d="M8 52 C8 38 36 38 36 52 Z M30 52 C30 38 58 38 58 52 Z" fill="currentColor"/>',
-  house: '<path d="M8 30 L32 10 L56 30 V56 H8 Z" fill="none" stroke="currentColor" stroke-width="5" stroke-linejoin="round"/><rect x="26" y="38" width="12" height="18" fill="currentColor"/>',
-  leaf: '<path d="M12 52 C12 24 30 10 54 10 C54 36 40 52 12 52 Z" fill="none" stroke="currentColor" stroke-width="5" stroke-linejoin="round"/><path d="M12 52 L38 26" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>',
-  factory: '<path d="M6 56 V28 L20 36 V28 L34 36 V28 L48 36 V10 H58 V56 Z" fill="none" stroke="currentColor" stroke-width="5" stroke-linejoin="round"/>',
-  doc: '<path d="M14 6 H40 L52 18 V58 H14 Z" fill="none" stroke="currentColor" stroke-width="5" stroke-linejoin="round"/><path d="M22 30 H44 M22 40 H44 M22 50 H36" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>',
-  search: '<circle cx="28" cy="28" r="16" fill="none" stroke="currentColor" stroke-width="6"/><path d="M40 40 L56 56" stroke="currentColor" stroke-width="7" stroke-linecap="round"/>',
-  alert: '<path d="M32 6 L60 56 H4 Z" fill="none" stroke="currentColor" stroke-width="5" stroke-linejoin="round"/><path d="M32 24 V40" stroke="currentColor" stroke-width="6" stroke-linecap="round"/><circle cx="32" cy="48" r="3.5" fill="currentColor"/>',
-  coin: '<ellipse cx="32" cy="18" rx="22" ry="9" fill="none" stroke="currentColor" stroke-width="5"/><path d="M10 18 V44 C10 49 20 53 32 53 C44 53 54 49 54 44 V18 M10 31 C10 36 20 40 32 40 C44 40 54 36 54 31" fill="none" stroke="currentColor" stroke-width="5"/>',
-  cal: '<rect x="8" y="12" width="48" height="44" rx="6" fill="none" stroke="currentColor" stroke-width="5"/><path d="M8 26 H56 M20 6 V16 M44 6 V16" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>',
-  pin: '<path d="M32 58 C32 58 12 38 12 24 C12 13 21 6 32 6 C43 6 52 13 52 24 C52 38 32 58 32 58 Z" fill="none" stroke="currentColor" stroke-width="5"/><circle cx="32" cy="24" r="7" fill="currentColor"/>',
-  folder: '<path d="M6 16 H26 L32 22 H58 V54 H6 Z" fill="none" stroke="currentColor" stroke-width="5" stroke-linejoin="round"/>',
-  check: '<path d="M14 34 L27 47 L52 18" fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>',
-  x: '<path d="M18 18 L46 46 M46 18 L18 46" stroke="currentColor" stroke-width="8" stroke-linecap="round"/>',
-  refresh: '<path d="M50 24 A20 20 0 1 0 52 38" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round"/><path d="M52 10 V26 H36" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>',
-  gear: '<circle cx="32" cy="32" r="10" fill="none" stroke="currentColor" stroke-width="5"/><path d="M32 6 V14 M32 50 V58 M6 32 H14 M50 32 H58 M13 13 L19 19 M45 45 L51 51 M13 51 L19 45 M45 19 L51 13" stroke="currentColor" stroke-width="6" stroke-linecap="round"/>',
-  truck: '<rect x="4" y="18" width="36" height="24" rx="10" fill="none" stroke="currentColor" stroke-width="5"/><path d="M40 26 H50 L58 34 V42 H40" fill="none" stroke="currentColor" stroke-width="5" stroke-linejoin="round"/><circle cx="16" cy="48" r="6" fill="currentColor"/><circle cx="48" cy="48" r="6" fill="currentColor"/>',
-  link: '<rect x="4" y="22" width="30" height="20" rx="10" fill="none" stroke="currentColor" stroke-width="6"/><rect x="30" y="22" width="30" height="20" rx="10" fill="none" stroke="currentColor" stroke-width="6"/>',
-  pump: '<rect x="12" y="8" width="26" height="48" rx="4" fill="none" stroke="currentColor" stroke-width="5"/><rect x="18" y="14" width="14" height="12" fill="currentColor"/><path d="M38 20 H46 L52 28 V46 C52 50 46 50 46 46 V36" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>',
-  list: '<path d="M24 16 H56 M24 32 H56 M24 48 H56" stroke="currentColor" stroke-width="6" stroke-linecap="round"/><circle cx="11" cy="16" r="4" fill="currentColor"/><circle cx="11" cy="32" r="4" fill="currentColor"/><circle cx="11" cy="48" r="4" fill="currentColor"/>',
-  bolt: '<path d="M36 4 L12 36 H30 L26 60 L52 26 H34 Z" fill="currentColor"/>',
-};
-const ic = (name, size = 40, color = 'currentColor') => `<svg viewBox="0 0 64 64" width="${size}" height="${size}" style="color:${color}">${ICON[name]}</svg>`;
+// íconos Lucide (generados en icons.js desde lucide-static)
+const ICMAP = { shield: 'shield-check', people: 'users', house: 'house', leaf: 'leaf', factory: 'factory', doc: 'file-text', search: 'scan-search', alert: 'triangle-alert', coin: 'coins', cal: 'calendar-days', pin: 'map-pin', folder: 'folder-open', check: 'check', x: 'x', refresh: 'refresh-cw', gear: 'cog', truck: 'truck', link: 'link', pump: 'fuel', list: 'list-checks', bolt: 'zap' };
+const ic = (name, size = 40, color = 'currentColor') => LUCIDE[ICMAP[name] || name].replace('<svg', `<svg width="${size}" height="${size}" style="color:${color}"`);
 
 function chip(parent, x, y, icon, text, cls = '') {
   return at(parent, x, y, `<span class="ic">${ic(icon, 38)}</span><span>${text}</span>`, 'chip ' + cls);
