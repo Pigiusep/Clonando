@@ -81,6 +81,7 @@ LEAD = {'intro': 5.0, 'e1': 0.6, 'outro': 5.0}
 # REGEN=e6d,e9g regenera esas frases; ALL=1 regenera todo (por defecto usa la caché audio/seg)
 REGEN = set(filter(None, os.environ.get('REGEN', '').split(',')))
 ALL = os.environ.get('ALL') == '1'
+EXT = os.environ.get('EXT', '')   # carpeta con <id>.wav externos (uno por frase)
 SCENE_LEAD = 2.4      # título de escena
 SCENE_TAIL = 1.0
 PAUSE_SENT = 0.28
@@ -149,7 +150,12 @@ def main():
         if text.startswith('¶') and segs and segs[-1]['scene'] == scene:
             t += PAUSE_PAR - PAUSE_SENT
         cache = os.path.join(HERE, 'audio', 'seg', sid + '.wav')
-        if os.path.exists(cache) and sid not in REGEN and not ALL:
+        ext = os.path.join(EXT, sid + '.wav') if EXT else ''
+        if ext and os.path.exists(ext):   # audio externo (p. ej., voz Lorenzo generada en otra PC)
+            xe, sre = sf.read(ext, dtype='float32')
+            if xe.ndim > 1: xe = xe.mean(axis=1)
+            x = trim(resample(xe, sre, SR_OUT))
+        elif os.path.exists(cache) and sid not in REGEN and not ALL:
             x, _ = sf.read(cache, dtype='float32')
         else:
             if sid in REGEN:
