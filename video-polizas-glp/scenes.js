@@ -10,7 +10,7 @@ const vid = (t, d = 0.6) => { tl.to('#world', { autoAlpha: 1, duration: d }, t);
 const gfx = (t, d = 0.6) => { tl.to('#world', { autoAlpha: 0, duration: d }, t); dim(t, 0, d); };
 const beam = (t, v) => tl.to(WORLD.st, { beam: v, duration: 0.5 }, t);
 function scrim(c, side, t, t2) {
-  const bgs = { left: 'linear-gradient(90deg,rgba(6,18,48,.92) 0%,rgba(6,18,48,.75) 40%,rgba(6,18,48,0) 70%)', right: 'linear-gradient(270deg,rgba(6,18,48,.92) 0%,rgba(6,18,48,.75) 40%,rgba(6,18,48,0) 70%)', top: 'linear-gradient(180deg,rgba(6,18,48,.9) 0%,rgba(6,18,48,.6) 30%,rgba(6,18,48,0) 55%)', bottom: 'linear-gradient(0deg,rgba(6,18,48,.9) 0%,rgba(6,18,48,.6) 30%,rgba(6,18,48,0) 55%)' };
+  const bgs = { left: 'linear-gradient(90deg,rgba(var(--scrim),.92) 0%,rgba(var(--scrim),.75) 40%,rgba(var(--scrim),0) 70%)', right: 'linear-gradient(270deg,rgba(var(--scrim),.92) 0%,rgba(var(--scrim),.75) 40%,rgba(var(--scrim),0) 70%)', top: 'linear-gradient(180deg,rgba(var(--scrim),.9) 0%,rgba(var(--scrim),.6) 30%,rgba(var(--scrim),0) 55%)', bottom: 'linear-gradient(0deg,rgba(var(--scrim),.9) 0%,rgba(var(--scrim),.6) 30%,rgba(var(--scrim),0) 55%)' };
   const d = at(c, 0, 0, '', '', { width: '1920px', height: '1080px', background: bgs[side] });
   c.insertBefore(d, c.firstChild);
   hide(d); tl.to(d, { autoAlpha: 1, duration: 0.5 }, t); tl.to(d, { autoAlpha: 0, duration: 0.5 }, t2);
@@ -40,7 +40,7 @@ tl.to('#prog i', { scaleX: 1, duration: TL.total, ease: 'none' }, 0);
   ktIn(k, 0.6, { st: 0.09 });
   const bar = at(c, 140, 760, '', '', { width: '620px', height: '12px', background: 'linear-gradient(90deg,var(--orange),var(--yellow))', transformOrigin: 'left' });
   gsap.set(bar, { scaleX: 0 }); tl.to(bar, { scaleX: 1, duration: 0.9, ease: 'expo.inOut' }, 1.4);
-  const sub = at(c, 140, 800, 'Aspectos clave para revisar la póliza y prevenir observaciones', '', { fontFamily: 'I', fontWeight: 600, fontSize: '34px', color: '#cfe0ff' });
+  const sub = at(c, 140, 800, 'Aspectos clave para revisar la póliza y prevenir observaciones', '', { fontFamily: 'I', fontWeight: 600, fontSize: '34px', color: 'var(--sub)' });
   slide(sub, 1.8, { y: 30 });
   flash(0.6, 0.25);
   ktOut(k, 5.0); out([pill, bar, sub], 5.0);
@@ -68,7 +68,7 @@ tl.to('#prog i', { scaleX: 1, duration: TL.total, ease: 'none' }, 0);
   slide(pol, W('e1a', 'póliza'), { y: -60 });
   const vig = at(c, 1560, 270, 'VIGENTE', 'pill', { background: 'var(--green)', color: '#fff' });
   pop(vig, W('e1a', 'documento vigente'));
-  const nob = at(c, 1250, 285, '¿Suficiente?', '', { fontFamily: 'M', fontWeight: 900, fontSize: '40px', color: 'var(--yellow)' });
+  const nob = at(c, 1250, 285, '¿Suficiente?', '', { fontFamily: 'M', fontWeight: 900, fontSize: '40px', color: 'var(--num)' });
   pop(nob, W('e1a', 'documento vigente', 0.6));
   out([pol, vig, nob], E('e1a') + 0.2);
 
@@ -94,16 +94,16 @@ tl.to('#prog i', { scaleX: 1, duration: TL.total, ease: 'none' }, 0);
   const items = [
     ['01', 'Aspectos principales', 'para revisar la póliza', 'principales aspectos', 'var(--cyan)'],
     ['02', 'Detectar inconsistencias', 'en el documento', 'inconsistencias', 'var(--orange)'],
-    ['03', 'Prevenir observaciones', 'Autorización y/o supervisión', 'observaciones', 'var(--yellow)'],
+    ['03', 'Prevenir observaciones', 'Autorización y/o supervisión', 'observaciones', 'var(--num)'],
   ];
   items.forEach(([n, a, b, w, col], i) => {
     const card = at(c, 140 + i * 560, 360, `<div style="font-family:M;font-weight:900;font-size:110px;color:${col};line-height:1">${n}</div>
       <div style="font-family:M;font-weight:800;font-size:40px;margin-top:16px;line-height:1.1">${a}</div>
-      <div style="font-size:28px;color:#b9c9ea;margin-top:12px">${b}</div>`, 'card', { width: '520px', height: '400px', padding: '40px', borderColor: col });
+      <div style="font-size:28px;color:var(--sub);margin-top:12px">${b}</div>`, 'card', { width: '520px', height: '400px', padding: '40px', borderColor: col });
     slide(card, W('e1c', w, -0.3), { y: 140, rot: 4 });
     tl.to(card, { y: -12, duration: 1.6, ease: 'sine.inOut', yoyo: true, repeat: 1 }, W('e1c', w, 0.6));
   });
-  const lupa = at(c, 1500, 120, ic('search', 120, 'var(--white)'), '');
+  const lupa = at(c, 1500, 120, ic('search', 120, 'var(--fg)'), '');
   pop(lupa, S('e1c') + 0.5);
   tl.to(lupa, { x: -1200, y: 600, duration: 4, ease: 'sine.inOut' }, W('e1c', 'detectar'));
   tl.to(lupa, { x: -200, y: 200, duration: 2.5, ease: 'sine.inOut' }, W('e1c', 'detectar', 4));
@@ -130,7 +130,7 @@ tl.to('#prog i', { scaleX: 1, duration: TL.total, ease: 'none' }, 0);
   const a31 = at(c, 160, 760, 'ART. 31', 'pill', { fontSize: '34px' });
   const a32 = at(c, 360, 760, 'ART. 32', 'pill', { fontSize: '34px', background: 'var(--cyan)' });
   pop(a31, W('e2a', '31')); pop(a32, W('e2a', '32', 0.3));
-  const mod = at(c, 560, 770, '+ modificatorias', '', { fontFamily: 'M', fontWeight: 800, fontSize: '30px', color: 'var(--yellow)' });
+  const mod = at(c, 560, 770, '+ modificatorias', '', { fontFamily: 'M', fontWeight: 800, fontSize: '30px', color: 'var(--num)' });
   slide(mod, W('e2a', 'modificatorias', -0.3), { x: -40 });
   tl.to(rg, { rotation: -2, y: 10, duration: 3, ease: 'sine.inOut', yoyo: true, repeat: 1 }, S('e2a') + 1);
   out([rg, a31, a32, mod], E('e2a') + 0.2, { x: -300 });
@@ -176,8 +176,8 @@ tl.to('#prog i', { scaleX: 1, duration: TL.total, ease: 'none' }, 0);
   tl.to('#world', { autoAlpha: 0.12, duration: 0.5 }, S('e2d') + 0.1);
   const k = kt(c, 0, 170, 'Responsabilidad *solidaria*', 92, { w: 1920, align: 'center' });
   ktIn(k, W('e2d', 'solidariamente', -0.5));
-  const bx1 = at(c, 300, 430, `${ic('truck', 90, 'var(--cyan)')}<div style="font-family:M;font-weight:900;font-size:44px;margin-top:10px">SOLGAS</div><div style="font-size:24px;color:#b9c9ea">quien abastece</div>`, 'card', { width: '440px', padding: '34px', textAlign: 'center' });
-  const bx2 = at(c, 1180, 430, `${ic('factory', 90, 'var(--orange)')}<div style="font-family:M;font-weight:900;font-size:44px;margin-top:10px">INSTALACIÓN</div><div style="font-size:24px;color:#b9c9ea">siniestrada sin póliza</div>`, 'card', { width: '440px', padding: '34px', textAlign: 'center' });
+  const bx1 = at(c, 300, 430, `${ic('truck', 90, 'var(--cyan)')}<div style="font-family:M;font-weight:900;font-size:44px;margin-top:10px">SOLGAS</div><div style="font-size:24px;color:var(--sub)">quien abastece</div>`, 'card', { width: '440px', padding: '34px', textAlign: 'center' });
+  const bx2 = at(c, 1180, 430, `${ic('factory', 90, 'var(--orange)')}<div style="font-family:M;font-weight:900;font-size:44px;margin-top:10px">INSTALACIÓN</div><div style="font-size:24px;color:var(--sub)">siniestrada sin póliza</div>`, 'card', { width: '440px', padding: '34px', textAlign: 'center' });
   slide(bx1, W('e2d', 'solidariamente', -0.3), { x: -300 });
   slide(bx2, W('e2d', 'solidariamente', -0.3), { x: 300 });
   const lk = at(c, 860, 520, ic('link', 200, 'var(--red)'), '');
@@ -208,8 +208,8 @@ tl.to('#prog i', { scaleX: 1, duration: TL.total, ease: 'none' }, 0);
     const x = 40 + i * 270, h = v * 1.6;
     const bar = at(ch, x, 640 - h, '', '', { width: '200px', height: h + 'px', background: col, borderRadius: '14px 14px 0 0', transformOrigin: 'bottom' });
     const num = at(ch, x, 640 - h - 92, `<span class="n">0</span><small style="font-size:30px"> UIT</small>`, 'M', { width: '200px', textAlign: 'center', fontWeight: 900, fontSize: '58px' });
-    const tk = at(ch, x + 100 - 60 * sz, 660, `<svg viewBox="0 0 120 50" width="${120 * sz}" height="${50 * sz}"><rect x="2" y="2" width="116" height="46" rx="23" fill="#fff"/><rect x="2" y="20" width="116" height="6" fill="#FF7A1A"/></svg>`, '');
-    const lb = at(ch, x - 20, 710, `${a}<br><b style="font-family:M;font-size:30px;color:#fff">${b}</b>`, '', { width: '240px', textAlign: 'center', fontSize: '24px', color: '#b9c9ea' });
+    const tk = at(ch, x + 100 - 60 * sz, 660, `<svg viewBox="0 0 120 50" width="${120 * sz}" height="${50 * sz}"><rect x="2" y="2" width="116" height="46" rx="23" fill="#fff" stroke="#93A6C9" stroke-width="3"/><rect x="2" y="20" width="116" height="6" fill="#FF7A1A"/></svg>`, '');
+    const lb = at(ch, x - 20, 710, `${a}<br><b style="font-family:M;font-size:30px;color:var(--fg)">${b}</b>`, '', { width: '240px', textAlign: 'center', fontSize: '24px', color: 'var(--sub)' });
     const t = W('e3a', 'capacidad', -0.6) + i * 0.45;
     gsap.set(bar, { scaleY: 0 });
     tl.to(bar, { scaleY: 1, duration: 0.9, ease: 'expo.out' }, t);
@@ -232,11 +232,11 @@ tl.to('#prog i', { scaleX: 1, duration: TL.total, ease: 'none' }, 0);
   const pump = at(au, 40, 40, `${ic('pump', 170, 'var(--orange)')}`, '');
   const ttl = at(au, 240, 60, 'Despacho para<br><span style="color:var(--orange)">uso automotor</span>', 'kt M', { fontSize: '56px', fontWeight: 900 });
   pop(pump, W('e3c', 'despacho', -0.3), { rot: -20 }); slide(ttl, W('e3c', 'despacho', -0.2), { x: 80 });
-  const big = at(au, 40, 300, '<span class="n">0</span> <span style="font-size:70px">UIT</span>', 'M', { fontWeight: 900, fontSize: '200px', color: 'var(--yellow)', lineHeight: 1 });
+  const big = at(au, 40, 300, '<span class="n">0</span> <span style="font-size:70px">UIT</span>', 'M', { fontWeight: 900, fontSize: '200px', color: 'var(--num)', lineHeight: 1 });
   pop(big, W('e3c', 'el monto', -0.2)); counter(big.querySelector('.n'), W('e3c', 'el monto', -0.2), 0, 300, 1.0);
   shake(W('e3c', 'el monto', 0.8), 8);
   [0.45, 0.7, 1].forEach((sz, i) => {
-    const tk = at(au, 40 + i * 260, 600, `<svg viewBox="0 0 120 50" width="${200 * sz}" height="${84 * sz}"><rect x="2" y="2" width="116" height="46" rx="23" fill="#fff"/><rect x="2" y="20" width="116" height="6" fill="#FF7A1A"/></svg><div style="font-family:M;font-weight:900;font-size:30px;color:var(--yellow);margin-top:8px">= 300 UIT</div>`, '');
+    const tk = at(au, 40 + i * 260, 600, `<svg viewBox="0 0 120 50" width="${200 * sz}" height="${84 * sz}"><rect x="2" y="2" width="116" height="46" rx="23" fill="#fff" stroke="#93A6C9" stroke-width="3"/><rect x="2" y="20" width="116" height="6" fill="#FF7A1A"/></svg><div style="font-family:M;font-weight:900;font-size:30px;color:var(--num);margin-top:8px">= 300 UIT</div>`, '');
     pop(tk, W('e3c', 'independientemente') + i * 0.25);
   });
   const ind = at(au, 40, 500, 'Independiente de la capacidad del tanque', 'pill', { background: 'var(--white)', fontSize: '24px' });
@@ -253,7 +253,7 @@ tl.to('#prog i', { scaleX: 1, duration: TL.total, ease: 'none' }, 0);
   beam(S('e4a'), 1); scrim(c, 'right', S('e4a') - 0.6, E('e4a'));
   const k = kt(c, 980, 300, 'Identificación del *asegurado* / y de la _actividad_', 78, { w: 880 });
   ktIn(k, S('e4a') + 0.1);
-  const ic1 = at(c, 980, 180, ic('search', 90, 'var(--yellow)'), ''); pop(ic1, S('e4a'));
+  const ic1 = at(c, 980, 180, ic('search', 90, 'var(--num)'), ''); pop(ic1, S('e4a'));
   ktOut(k, E('e4a')); out(ic1, E('e4a')); beam(E('e4a'), 0);
 
   // comparación de documentos (correcto)
@@ -326,8 +326,8 @@ tl.to('#prog i', { scaleX: 1, duration: TL.total, ease: 'none' }, 0);
   const cal = at(c, 110, 200, '', 'card', { width: '820px', height: '640px', padding: '36px' });
   cal.innerHTML = `<div style="display:flex;align-items:center;gap:18px">${ic('cal', 64, 'var(--cyan)')}<div class="M" style="font-weight:900;font-size:44px">Vigencia de la póliza</div></div>
     <div style="display:flex;gap:30px;margin-top:30px">
-      <div><div style="color:#b9c9ea;font-size:22px">DESDE</div><div class="M" style="font-weight:900;font-size:40px">15/03/2026</div></div>
-      <div><div style="color:#b9c9ea;font-size:22px">HASTA</div><div class="M" style="font-weight:900;font-size:40px">15/03/2027</div></div></div>
+      <div><div style="color:var(--sub);font-size:22px">DESDE</div><div class="M" style="font-weight:900;font-size:40px">15/03/2026</div></div>
+      <div><div style="color:var(--sub);font-size:22px">HASTA</div><div class="M" style="font-weight:900;font-size:40px">15/03/2027</div></div></div>
     <div class="grid" style="display:grid;grid-template-columns:repeat(12,1fr);gap:8px;margin-top:40px"></div>`;
   const grid = cal.querySelector('.grid');
   const meses = ['MAR', 'ABR', 'MAY', 'JUN', 'JUL', 'AGO', 'SET', 'OCT', 'NOV', 'DIC', 'ENE', 'FEB'];
@@ -336,7 +336,7 @@ tl.to('#prog i', { scaleX: 1, duration: TL.total, ease: 'none' }, 0);
   gsap.set(cells, { scaleY: 0, transformOrigin: 'bottom' });
   tl.to(cells, { scaleY: 1, stagger: 0.05, duration: 0.4, ease: 'back.out(2)' }, S('e5a') - 0.2);
   tl.to(cells, { backgroundColor: 'rgba(20,199,123,.75)', stagger: 0.05, duration: 0.2 }, S('e5a') + 0.6);
-  const hoy = at(cal, 36 + 7 * 61, 225, '<div style="width:6px;height:150px;background:var(--yellow);margin:auto"></div><div class="M" style="font-weight:900;color:var(--yellow);font-size:22px;text-align:center">HOY</div>', '', { width: '60px' });
+  const hoy = at(cal, 36 + 7 * 61, 225, '<div style="width:6px;height:150px;background:var(--yellow);margin:auto"></div><div class="M" style="font-weight:900;color:var(--num);font-size:22px;text-align:center">HOY</div>', '', { width: '60px' });
   pop(hoy, S('e5a') + 1.4);
   const vg = mark(cal, 680, 30, true, S('e5a') + 1.8, 90);
   const k = kt(c, 1010, 290, '_Ubicación_ del riesgo', 76, { w: 840 }); ktIn(k, W('e5a', 'ubicación'));
@@ -347,16 +347,17 @@ tl.to('#prog i', { scaleX: 1, duration: TL.total, ease: 'none' }, 0);
   const t1 = S('e5b');
   const plan = svgLayer(at(c, 0, 0, '', '', { width: '1920px', height: '1080px' }));
   const pg = svgEl(plan, 'g', { transform: 'translate(80 150)' });
-  pg.innerHTML = `<rect width="900" height="760" rx="20" fill="#0b2a6b" stroke="#19D3FF" stroke-opacity=".6" stroke-width="3"/>
+  const LT = THEME_NAME === 'claro';
+  pg.innerHTML = `<rect width="900" height="760" rx="20" fill="${LT ? '#EAF1FC' : '#0b2a6b'}" stroke="${LT ? '#93A6C9' : '#19D3FF'}" stroke-opacity=".6" stroke-width="3"/>
     ${Array.from({ length: 18 }, (_, i) => `<path d="M${i * 50} 0 V760" stroke="#19D3FF" stroke-opacity=".08"/>`).join('')}
     ${Array.from({ length: 16 }, (_, i) => `<path d="M0 ${i * 50} H900" stroke="#19D3FF" stroke-opacity=".08"/>`).join('')}
-    <path class="st" d="M0 230 H900 M0 560 H900 M300 0 V760 M640 0 V760" stroke="#5f8de0" stroke-width="34" fill="none"/>
-    <text x="20" y="215" font-family="M" font-weight="800" font-size="22" fill="#9cc1ff">AV. LOS INDUSTRIALES</text>
-    <g class="plt"><rect x="340" y="270" width="260" height="250" rx="8" fill="#13306E" stroke="#FFC93C" stroke-width="4" stroke-dasharray="14 8"/>
-    <rect x="370" y="300" width="160" height="60" rx="30" fill="#fff"/><rect x="370" y="327" width="160" height="6" fill="#FF7A1A"/>
+    <path class="st" d="M0 230 H900 M0 560 H900 M300 0 V760 M640 0 V760" stroke="${LT ? '#C3D3EC' : '#5f8de0'}" stroke-width="34" fill="none"/>
+    <text x="20" y="215" font-family="M" font-weight="800" font-size="22" fill="${LT ? '#0047BB' : '#9cc1ff'}">AV. LOS INDUSTRIALES</text>
+    <g class="plt"><rect x="340" y="270" width="260" height="250" rx="8" fill="${LT ? '#FFFFFF' : '#13306E'}" stroke="#FF7A00" stroke-width="4" stroke-dasharray="14 8"/>
+    <rect x="370" y="300" width="160" height="60" rx="30" fill="#fff" stroke="#93A6C9" stroke-width="3"/><rect x="370" y="327" width="160" height="6" fill="#FF7A1A"/>
     <rect x="550" y="300" width="30" height="80" fill="#9fb2d3"/><rect x="370" y="410" width="120" height="80" rx="10" fill="#4d7bd1"/>
     <path d="M530 330 H565 V340 M565 380 V450 H490" stroke="#19D3FF" stroke-width="6" fill="none"/>
-    <text x="470" y="505" font-family="M" font-weight="800" font-size="18" fill="#FFC93C" text-anchor="middle">INSTALACIÓN GLP</text></g>
+    <text x="470" y="505" font-family="M" font-weight="800" font-size="18" fill="#FF7A00" text-anchor="middle">INSTALACIÓN GLP</text></g>
     <g class="pinA" transform="translate(470 250)"><path d="M0 0 C0 0 -36 -40 -36 -66 C-36 -86 -20 -102 0 -102 C20 -102 36 -86 36 -66 C36 -40 0 0 0 0Z" fill="#14C77B"/><circle cy="-66" r="13" fill="#fff"/></g>
     <g class="pinB" transform="translate(800 690)"><path d="M0 0 C0 0 -36 -40 -36 -66 C-36 -86 -20 -102 0 -102 C20 -102 36 -86 36 -66 C36 -40 0 0 0 0Z" fill="#FF3D5A"/><circle cy="-66" r="13" fill="#fff"/></g>`;
   hide(pg, { scale: 0.7, transformOrigin: '530px 530px' });
@@ -411,7 +412,7 @@ tl.to('#prog i', { scaleX: 1, duration: TL.total, ease: 'none' }, 0);
   gfx(t4 - 0.3);
   tl.to(pc, { y: -40, scale: 0.85, duration: 0.5 }, t4 - 0.3);
   tl.to(sch, { autoAlpha: 0, duration: 0.3 }, t4 - 0.3);
-  const ex = at(c, 360, 340, `<div class="hd">${ic('alert', 40, 'var(--yellow)')}<div>Póliza · Exclusiones y limitaciones<small>Condiciones generales y particulares</small></div></div>
+  const ex = at(c, 360, 340, `<div class="hd">${ic('alert', 40, 'var(--num)')}<div>Póliza · Exclusiones y limitaciones<small>Condiciones generales y particulares</small></div></div>
     <div class="bd" style="font-size:24px;line-height:1.5">
       <div class="row"><div class="v"><span class="mk"></span>1. Daños causados intencionalmente por el asegurado.</div></div>
       <div class="row"><div class="v"><span class="mk"></span>2. Multas o sanciones administrativas.</div></div>
@@ -439,7 +440,7 @@ tl.to('#prog i', { scaleX: 1, duration: TL.total, ease: 'none' }, 0);
   const ne = at(c, 880, 470, '<svg width="160" height="140" viewBox="0 0 160 140"><path class="l1" d="M20 50 H140 M20 90 H140" stroke="#FFC93C" stroke-width="16" stroke-linecap="round"/><path class="l2" d="M110 10 L50 130" stroke="#FF3D5A" stroke-width="16" stroke-linecap="round"/></svg>', '');
   gsap.set(ne, { autoAlpha: 1 });
   draw(ne.querySelector('.l1'), W('e5f', 'no garantiza', -0.4), 0.5); draw(ne.querySelector('.l2'), W('e5f', 'no garantiza'), 0.35);
-  const sub = at(c, 0, 780, 'en los términos exigidos por la normativa', '', { width: '1920px', textAlign: 'center', fontSize: '38px', fontWeight: 600, color: '#b9c9ea' });
+  const sub = at(c, 0, 780, 'en los términos exigidos por la normativa', '', { width: '1920px', textAlign: 'center', fontSize: '38px', fontWeight: 600, color: 'var(--sub)' });
   slide(sub, W('e5f', 'términos exigidos', -0.4), { y: 40 });
 })();
 
@@ -451,7 +452,7 @@ tl.to('#prog i', { scaleX: 1, duration: TL.total, ease: 'none' }, 0);
   const k = kt(c, 0, 380, 'Monto _asegurado_', 130, { w: 1920, align: 'center' });
   ktIn(k, S('e6a') - 0.2);
   for (let i = 0; i < 6; i++) {
-    const cn = at(c, 300 + i * 240, 640, ic('coin', 90, i % 2 ? 'var(--yellow)' : 'var(--orange)'), '');
+    const cn = at(c, 300 + i * 240, 640, ic('coin', 90, i % 2 ? 'var(--num)' : 'var(--orange)'), '');
     pop(cn, S('e6a') + 0.2 + i * 0.08); out(cn, E('e6a') + 0.1, { y: 200 });
   }
   ktOut(k, E('e6a'));
@@ -471,13 +472,13 @@ tl.to('#prog i', { scaleX: 1, duration: TL.total, ease: 'none' }, 0);
   gsap.set(tab, { transformOrigin: 'left top' });
   tl.to(tab, { scale: 0.5, x: -150, y: -20, duration: 0.8, ease: 'expo.inOut' }, t2 - 0.3);
   tl.to(trs, { backgroundColor: '#ffffff', duration: 0.2 }, t2 - 0.3);
-  const tk = at(c, 110, 560, `<svg viewBox="0 0 240 110" width="380" height="174"><rect x="4" y="4" width="232" height="90" rx="45" fill="#fff"/><rect x="4" y="44" width="232" height="10" fill="#FF7A1A"/><text x="120" y="40" font-family="M" font-weight="900" font-size="26" fill="#0B1F4D" text-anchor="middle">GLP</text></svg>
-    <div class="M" style="font-weight:900;font-size:44px;margin-top:6px">5,000 galones</div><div style="font-size:24px;color:#b9c9ea">Capacidad de almacenamiento</div>`, '');
+  const tk = at(c, 110, 560, `<svg viewBox="0 0 240 110" width="380" height="174"><rect x="4" y="4" width="232" height="90" rx="45" fill="#fff" stroke="#93A6C9" stroke-width="4"/><rect x="4" y="44" width="232" height="10" fill="#FF7A1A"/><text x="120" y="40" font-family="M" font-weight="900" font-size="26" fill="#0B1F4D" text-anchor="middle">GLP</text></svg>
+    <div class="M" style="font-weight:900;font-size:44px;margin-top:6px">5,000 galones</div><div style="font-size:24px;color:var(--sub)">Capacidad de almacenamiento</div>`, '');
   slide(tk, S('e6c') - 0.1, { x: -200 });
   tl.to(trs[1], { backgroundColor: '#FFE9A8', duration: 0.3 }, W('e6c', 'monto requerido'));
-  const req = at(c, 560, 640, `<div style="font-size:26px;color:#b9c9ea">Requerido</div><div class="M" style="font-weight:900;font-size:76px;color:var(--yellow)">200 UIT</div>`, '');
+  const req = at(c, 560, 640, `<div style="font-size:26px;color:var(--sub)">Requerido</div><div class="M" style="font-weight:900;font-size:76px;color:var(--num)">200 UIT</div>`, '');
   pop(req, W('e6c', 'monto requerido', -0.2));
-  const arr = at(c, 960, 680, '<svg width="160" height="60"><path d="M0 30 H140 M115 8 L145 30 L115 52" stroke="#fff" stroke-width="8" fill="none" stroke-linecap="round"/></svg>', '');
+  const arr = at(c, 960, 680, '<svg width="160" height="60"><path d="M0 30 H140 M115 8 L145 30 L115 52" stroke="currentColor" stroke-width="8" fill="none" stroke-linecap="round"/></svg>', '');
   slide(arr, W('e6c', 'monto requerido', 0.4), { x: -60 });
   const pol = doc(c, 1170, 470, 640, 'Póliza RCE', 'Monto asegurado', [['Suma asegurada', '200 UIT', 'm']], { icon: 'shield', hd: '#C2410C' });
   pol.querySelector('.v').style.fontSize = '64px';
@@ -503,17 +504,17 @@ tl.to('#prog i', { scaleX: 1, duration: TL.total, ease: 'none' }, 0);
   slide(terc, t3 + 0.4, { x: 200 }); out(terc, t3 + 3.6);
   const inst = at(c, 0, 0, '', '', { width: '1920px', height: '1080px' });
   const ins = [0, 1, 2].map(i => {
-    const b = at(inst, 150 + i * 330, 160, `${ic('factory', 70, 'var(--cyan)')}<div class="M" style="font-weight:900;font-size:32px;margin-top:8px">Instalación ${i + 1}</div><div style="color:var(--yellow);font-family:M;font-weight:800;font-size:28px">200 UIT</div>`, 'card', { width: '290px', padding: '26px', textAlign: 'center' });
+    const b = at(inst, 150 + i * 330, 160, `${ic('factory', 70, 'var(--cyan)')}<div class="M" style="font-weight:900;font-size:32px;margin-top:8px">Instalación ${i + 1}</div><div style="color:var(--num);font-family:M;font-weight:800;font-size:28px">200 UIT</div>`, 'card', { width: '290px', padding: '26px', textAlign: 'center' });
     slide(b, W('e6d', 'múltiples', -0.2) + i * 0.2 + 3.2, { y: -120 });
     return b;
   });
   dim(W('e6d', 'múltiples', 3), 1);
-  const meter = at(inst, 150, 560, `<div style="font-size:26px;color:#b9c9ea;margin-bottom:12px">Límite asegurado de la póliza vs. lo que debe cubrir</div>
+  const meter = at(inst, 150, 560, `<div style="font-size:26px;color:var(--sub);margin-bottom:12px">Límite asegurado de la póliza vs. lo que debe cubrir</div>
     <div style="position:relative;width:1300px;height:90px;background:rgba(255,255,255,.12);border-radius:16px;overflow:hidden">
     <div class="fill" style="position:absolute;left:0;top:0;bottom:0;width:100%;background:var(--red);transform-origin:left;transform:scaleX(0)"></div>
     <div class="fill2" style="position:absolute;left:0;top:0;bottom:0;width:100%;background:var(--green);transform-origin:left;transform:scaleX(0)"></div>
     <div class="lbl M" style="position:absolute;left:30px;top:18px;font-weight:900;font-size:44px">200 UIT</div>
-    <div class="M" style="position:absolute;right:30px;top:18px;font-weight:900;font-size:44px;color:var(--yellow)">600 UIT</div></div>`, '');
+    <div class="M" style="position:absolute;right:30px;top:18px;font-weight:900;font-size:44px;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.35)">600 UIT</div></div>`, '');
   slide(meter, W('e6d', 'suficiente', -0.6), { x: -100 });
   tl.to(meter.querySelector('.fill'), { scaleX: 0.333, duration: 0.8, ease: 'expo.out' }, W('e6d', 'suficiente', -0.3));
   const q = at(inst, 1480, 570, '¿Suficiente?', 'M', { fontWeight: 900, fontSize: '50px', color: 'var(--red)' });
@@ -543,7 +544,7 @@ tl.to('#prog i', { scaleX: 1, duration: TL.total, ease: 'none' }, 0);
   const g1 = chip(c, 140, 520, 'check', 'Suficiencia del monto', 'g');
   const g2 = chip(c, 140, 660, 'check', 'Condiciones que regulan su disponibilidad', 'g');
   slide(g1, W('e6g', 'suficiencia', -0.3), { x: -200 }); slide(g2, W('e6g', 'condiciones', -0.3), { x: -200 });
-  const big = at(c, 1450, 480, ic('coin', 300, 'var(--yellow)'), ''); pop(big, W('e6g', 'cifra'), { rot: -40 });
+  const big = at(c, 1450, 480, ic('coin', 300, 'var(--num)'), ''); pop(big, W('e6g', 'cifra'), { rot: -40 });
   tl.to(big, { rotation: 10, y: -20, duration: 2, yoyo: true, repeat: 2, ease: 'sine.inOut' }, W('e6g', 'cifra', 0.6));
 })();
 
@@ -564,7 +565,7 @@ tl.to('#prog i', { scaleX: 1, duration: TL.total, ease: 'none' }, 0);
   tl.to(page, { autoAlpha: 1, y: 0, duration: 1.0, ease: 'expo.out' }, S('e7a') - 0.4);
   tl.to(page, { y: -220, rotationX: 10, duration: E('e7c') - S('e7a'), ease: 'sine.inOut' }, S('e7a'));
   const k = kt(c, 110, 300, 'Condiciones / *contractuales*', 92, { w: 700 }); ktIn(k, S('e7a'));
-  const sb = at(c, 110, 540, 'Etapa indispensable de la evaluación del seguro', '', { width: '680px', fontSize: '34px', fontWeight: 600, color: '#cfe0ff' });
+  const sb = at(c, 110, 540, 'Etapa indispensable de la evaluación del seguro', '', { width: '680px', fontSize: '34px', fontWeight: 600, color: 'var(--sub)' });
   slide(sb, W('e7a', 'indispensable', -0.3), { y: 30 });
   // Osinergmin: cláusulas especiales
   ktOut(k, S('e7b') - 0.2); out(sb, S('e7b') - 0.2);
@@ -575,7 +576,7 @@ tl.to('#prog i', { scaleX: 1, duration: TL.total, ease: 'none' }, 0);
   const r1 = chip(c, 110, 330, 'x', 'Restringen la cobertura', 'r');
   const r2 = chip(c, 110, 460, 'alert', 'Condicionan su efectividad', 'o');
   slide(r1, W('e7b', 'restringen', -0.2), { x: -200 }); slide(r2, W('e7b', 'condicionan', -0.2), { x: -200 });
-  const r3 = at(c, 110, 600, '…al cumplimiento de ciertas obligaciones', '', { fontSize: '30px', color: '#cfe0ff', fontWeight: 600, width: '700px' });
+  const r3 = at(c, 110, 600, '…al cumplimiento de ciertas obligaciones', '', { fontSize: '30px', color: 'var(--sub)', fontWeight: 600, width: '700px' });
   slide(r3, W('e7b', 'obligaciones', -0.6), { y: 30 });
   tl.to(page.querySelector('.cl-ob'), { backgroundColor: '#FFE9A8', duration: 0.4 }, W('e7b', 'obligaciones', -0.4));
   // operación: mundo
@@ -608,7 +609,7 @@ tl.to('#prog i', { scaleX: 1, duration: TL.total, ease: 'none' }, 0);
   const bA = at(c, 220, 330, `${ic('doc', 90, 'var(--orange)')}<div class="M" style="font-weight:900;font-size:40px;margin-top:12px">Condiciones<br>contractuales</div>`, 'card', { width: '520px', padding: '40px', textAlign: 'center' });
   const bB = at(c, 1180, 330, `${ic('shield', 90, 'var(--cyan)')}<div class="M" style="font-weight:900;font-size:40px;margin-top:12px">Exigencias<br>normativas</div>`, 'card', { width: '520px', padding: '40px', textAlign: 'center' });
   slide(bA, t4, { x: -300 }); slide(bB, W('e7e', 'exigencias', -0.5), { x: 300 });
-  const gr = at(c, 860, 400, ic('gear', 200, 'var(--yellow)'), '');
+  const gr = at(c, 860, 400, ic('gear', 200, 'var(--num)'), '');
   pop(gr, W('e7e', 'incompatibles', -0.4));
   tl.to(gr, { rotation: 360, duration: 3, ease: 'none' }, W('e7e', 'incompatibles', -0.4));
   const cmp = at(c, 0, 760, '<span class="verdict ok" style="position:relative;margin-right:40px">✓ COMPATIBLES</span><span class="verdict no" style="position:relative">✗ INCOMPATIBLES</span>', '', { width: '1920px', textAlign: 'center' });
@@ -665,11 +666,11 @@ tl.to('#prog i', { scaleX: 1, duration: TL.total, ease: 'none' }, 0);
   const t2 = S('e8c');
   tl.to([tupa, tp], { autoAlpha: 0, x: -500, duration: 0.45, ease: 'power3.in' }, t2 - 0.3);
   tl.set(c.querySelectorAll('.mark'), { autoAlpha: 0 }, t2 - 0.3);
-  const fo = at(c, 220, 240, `${ic('folder', 260, 'var(--yellow)')}<div class="M" style="font-weight:900;font-size:36px;text-align:center">Expediente anterior</div><div style="text-align:center;font-family:M;font-weight:800;font-size:30px;color:var(--cyan)">N.º 2025-XXXXXX</div>`, '', { width: '420px', textAlign: 'center' });
+  const fo = at(c, 220, 240, `${ic('folder', 260, 'var(--num)')}<div class="M" style="font-weight:900;font-size:36px;text-align:center">Expediente anterior</div><div style="text-align:center;font-family:M;font-weight:800;font-size:30px;color:var(--cyan)">N.º 2025-XXXXXX</div>`, '', { width: '420px', textAlign: 'center' });
   slide(fo, t2, { x: -200 });
   const po = at(c, 370, 280, ic('doc', 110, 'var(--orange)'), '');
   pop(po, W('e8c', 'póliza ya obra', -0.2)); tl.to(po, { y: 70, scale: 0.6, duration: 0.6, ease: 'power2.in' }, W('e8c', 'póliza ya obra', 0.6));
-  const ar = at(c, 720, 380, '<svg width="300" height="80"><path d="M0 40 H270 M240 12 L280 40 L240 68" stroke="#fff" stroke-width="10" fill="none" stroke-linecap="round"/></svg>', '');
+  const ar = at(c, 720, 380, '<svg width="300" height="80"><path d="M0 40 H270 M240 12 L280 40 L240 68" stroke="currentColor" stroke-width="10" fill="none" stroke-linecap="round"/></svg>', '');
   slide(ar, W('e8c', 'referencia', -0.3), { x: -100 });
   const nt = doc(c, 1100, 230, 700, 'Nuevo trámite', 'Registro de Hidrocarburos', [['Póliza de seguro', 'Ver expediente N.º 2025-XXXXXX', 'r']], { icon: 'doc', hd: '#1F6BFF' });
   slide(nt, W('e8c', 'referencia'), { x: 250 });
@@ -695,7 +696,7 @@ tl.to('#prog i', { scaleX: 1, duration: TL.total, ease: 'none' }, 0);
   // carpeta ordenada
   const t4 = S('e8e');
   tl.to([cc, pp, plus, ad], { autoAlpha: 0, scale: 0.7, duration: 0.4 }, t4 - 0.3);
-  const fd = at(c, 760, 380, ic('folder', 400, 'var(--yellow)'), '');
+  const fd = at(c, 760, 380, ic('folder', 400, 'var(--num)'), '');
   pop(fd, t4);
   [['Póliza', 'póliza'], ['Adendas', 'adendas'], ['Documentos complementarios', 'complementarios']].forEach(([l, w], i) => {
     const f = at(c, 200 + i * 520, 170, `${ic('doc', 50, 'var(--orange)')}<span style="margin-left:12px">${l}</span>`, 'chip');
@@ -708,7 +709,7 @@ tl.to('#prog i', { scaleX: 1, duration: TL.total, ease: 'none' }, 0);
   // contraste con el Registro de Hidrocarburos
   const t5 = S('e8f');
   tl.to([fd, ord], { autoAlpha: 0, duration: 0.4 }, t5 - 0.3);
-  const hA = at(c, 360, 160, `${ic('folder', 60, 'var(--yellow)')}<div class="M" style="font-weight:900;font-size:36px">Documentación</div>`, 'card', { width: '480px', padding: '24px', textAlign: 'center' });
+  const hA = at(c, 360, 160, `${ic('folder', 60, 'var(--num)')}<div class="M" style="font-weight:900;font-size:36px">Documentación</div>`, 'card', { width: '480px', padding: '24px', textAlign: 'center' });
   const hB = at(c, 1080, 160, `${ic('doc', 60, 'var(--cyan)')}<div class="M" style="font-weight:900;font-size:36px">Registro de Hidrocarburos</div>`, 'card', { width: '480px', padding: '24px', textAlign: 'center' });
   slide(hA, t5, { x: -300 }); slide(hB, W('e8f', 'Registro', -0.5), { x: 300 });
   const sw = at(c, 880, 200, '<div class="M" style="font-weight:900;font-size:90px;color:var(--orange)">⇄</div>', '', { width: '160px', textAlign: 'center' });
@@ -758,9 +759,9 @@ tl.to('#prog i', { scaleX: 1, duration: TL.total, ease: 'none' }, 0);
   tl.set(c.querySelectorAll('.mark'), { autoAlpha: 0 }, t2);
   const rp = kt(c, 0, 170, 'Revisión *preventiva*', 92, { w: 1920, align: 'center' }); ktIn(rp, t2);
   [['search', 'Identificar', 'inconsistencias', 'identificar', 'var(--cyan)'], ['refresh', 'Corregir', 'oportunamente', 'correcciones', 'var(--orange)'], ['shield', 'Cumplir', 'obligaciones aplicables', 'fortalecer', 'var(--green)']].forEach(([icn, a, b, w, col], i) => {
-    const s = at(c, 200 + i * 560, 400, `${ic(icn, 120, col)}<div class="M" style="font-weight:900;font-size:52px;margin-top:16px">${a}</div><div style="font-size:28px;color:#b9c9ea">${b}</div>`, 'card', { width: '440px', padding: '44px', textAlign: 'center', borderColor: col });
+    const s = at(c, 200 + i * 560, 400, `${ic(icn, 120, col)}<div class="M" style="font-weight:900;font-size:52px;margin-top:16px">${a}</div><div style="font-size:28px;color:var(--sub)">${b}</div>`, 'card', { width: '440px', padding: '44px', textAlign: 'center', borderColor: col });
     slide(s, W('e9e', w, -0.4), { y: 160, rot: 6 });
-    if (i < 2) { const a2 = at(c, 660 + i * 560, 540, '<svg width="80" height="60"><path d="M0 30 H60 M40 8 L66 30 L40 52" stroke="#fff" stroke-width="8" fill="none" stroke-linecap="round"/></svg>', ''); pop(a2, W('e9e', w, 0.4)); out(a2, E('e9e') + 0.1); }
+    if (i < 2) { const a2 = at(c, 660 + i * 560, 540, '<svg width="80" height="60"><path d="M0 30 H60 M40 8 L66 30 L40 52" stroke="currentColor" stroke-width="8" fill="none" stroke-linecap="round"/></svg>', ''); pop(a2, W('e9e', w, 0.4)); out(a2, E('e9e') + 0.1); }
     out(s, E('e9e') + 0.1, { y: -100 });
   });
   ktOut(rp, E('e9e'));
@@ -780,7 +781,7 @@ tl.to('#prog i', { scaleX: 1, duration: TL.total, ease: 'none' }, 0);
   tl.to([b1, b2, b3], { autoAlpha: 0, y: -80, duration: 0.4 }, t4 - 0.3);
   dim(t4 - 0.3, 1);
   const q = kt(c, 0, 300, 'La prevención comienza / con el *conocimiento*', 100, { w: 1920, align: 'center' }); ktIn(q, t4, { st: 0.08 });
-  const q2 = at(c, 0, 600, 'y se fortalece con una gestión rigurosa<br>de los riesgos y de las coberturas contratadas', '', { width: '1920px', textAlign: 'center', fontSize: '42px', fontWeight: 600, color: '#cfe0ff', lineHeight: 1.35 });
+  const q2 = at(c, 0, 600, 'y se fortalece con una gestión rigurosa<br>de los riesgos y de las coberturas contratadas', '', { width: '1920px', textAlign: 'center', fontSize: '42px', fontWeight: 600, color: 'var(--sub)', lineHeight: 1.35 });
   slide(q2, W('e9g', 'fortalece', -0.4), { y: 50 });
   const bar = at(c, 760, 820, '', '', { width: '400px', height: '10px', background: 'linear-gradient(90deg,var(--orange),var(--yellow))' });
   gsap.set(bar, { scaleX: 0 }); tl.to(bar, { scaleX: 1, duration: 1, ease: 'expo.inOut' }, W('e9g', 'fortalece'));

@@ -12,14 +12,20 @@
   --blue:#0047BB; --cyan:#00A9E0; --orange:#FF7A00; --yellow:#FFB81C;
   --green:#12B76A; --red:#E5484D; --white:#F5F7FB; --paper:#FFFFFF; --ink:#0B1530; --muted:#667085;
   --sun:linear-gradient(90deg,#FF7A00,#FFB81C);
+  --fg:#F5F7FB; --sub:#B9C9EA; --num:#FFB81C; --cardA:rgba(13,42,107,.96); --cardB:rgba(10,31,79,.96); --cardLine:rgba(255,255,255,.14);
+  --scrim:6,18,48; --wipe:#0A1F4F; --shadowTxt:0 2px 12px rgba(0,0,0,.6);
+}
+:root[data-theme="grafito"]{--fg:#F5F7FB;--sub:#A7B0C0;--cardA:rgba(30,41,57,.97);--cardB:rgba(22,30,43,.97);--cardLine:rgba(255,255,255,.12);--scrim:11,15,23;--wipe:#131A26}
+:root[data-theme="marca"]{--fg:#FFFFFF;--sub:#D6E6FF;--cardA:rgba(0,56,150,.95);--cardB:rgba(0,46,128,.95);--cardLine:rgba(255,255,255,.22);--scrim:0,52,140;--wipe:#0047BB}
+:root[data-theme="claro"]{--num:#E07800;--fg:#0B1530;--sub:#475467;--cardA:#FFFFFF;--cardB:#F7F9FD;--cardLine:#E4E7EC;--scrim:245,247,251;--wipe:#FFFFFF;--shadowTxt:none
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{width:1920px;height:1080px;overflow:hidden;background:var(--navy)}
-#stage{position:relative;width:1920px;height:1080px;overflow:hidden;font-family:I,sans-serif;color:var(--white)}
+#stage{position:relative;width:1920px;height:1080px;overflow:hidden;font-family:I,sans-serif;color:var(--fg)}
 #bg,#world,#dim,#fx,#hud,#wipe,#flash{position:absolute;inset:0}
 #world{overflow:hidden}
 #world svg{position:absolute;left:0;top:0}
-#dim{background:radial-gradient(ellipse at center,rgba(6,18,48,.55),rgba(6,18,48,.92));opacity:0}
+#dim{background:radial-gradient(ellipse at center,rgba(var(--scrim),.6),rgba(var(--scrim),.94));opacity:0}
 #flash{background:#fff;opacity:0;pointer-events:none}
 .sc{position:absolute;inset:0;visibility:hidden}
 .abs{position:absolute}
@@ -29,7 +35,7 @@ html,body{width:1920px;height:1080px;overflow:hidden;background:var(--navy)}
 #hud{pointer-events:none}
 #chap{position:absolute;left:56px;top:44px;display:flex;align-items:center;gap:16px;font-family:M;font-weight:800;font-size:22px;letter-spacing:.12em;text-transform:uppercase;opacity:0}
 #chapNum{background:var(--orange);color:var(--navy);padding:6px 12px;border-radius:6px}
-#chapTxt{color:var(--white);text-shadow:0 2px 12px rgba(0,0,0,.6)}
+#chapTxt{color:var(--fg);text-shadow:var(--shadowTxt)}
 #prog{position:absolute;left:0;right:0;bottom:0;height:6px;background:rgba(255,255,255,.08)}
 #prog i{display:block;height:100%;width:100%;transform-origin:left;transform:scaleX(0);background:var(--sun)}
 
@@ -39,7 +45,7 @@ html,body{width:1920px;height:1080px;overflow:hidden;background:var(--navy)}
 #wipe b:nth-child(1){background:var(--sun)}
 #wipe b:nth-child(2){background:#fff}
 #wipe b:nth-child(3){background:var(--blue)}
-#wipe b:nth-child(4){background:var(--navy2);width:2600px}
+#wipe b:nth-child(4){background:var(--wipe);width:2600px}
 
 /* tipografía cinética */
 .kt{font-family:M;font-weight:900;line-height:1.02;letter-spacing:-.01em}
@@ -57,7 +63,7 @@ html,body{width:1920px;height:1080px;overflow:hidden;background:var(--navy)}
 .stitle .bar{position:absolute;left:336px;top:330px;height:10px;width:520px;background:linear-gradient(90deg,var(--orange),var(--yellow));transform-origin:left}
 
 /* tarjetas y chips */
-.card{position:absolute;background:linear-gradient(160deg,rgba(13,42,107,.96),rgba(10,31,79,.96));border:1.5px solid rgba(255,255,255,.14);border-radius:16px;box-shadow:0 30px 80px rgba(0,0,0,.45)}
+.card{position:absolute;background:linear-gradient(160deg,var(--cardA),var(--cardB));border:1.5px solid var(--cardLine);border-radius:16px;box-shadow:0 30px 80px rgba(0,0,0,.45)}
 .chip{position:absolute;display:flex;align-items:center;gap:18px;padding:18px 30px 18px 18px;border-radius:999px;background:var(--white);color:var(--ink);font-family:M;font-weight:800;font-size:34px;box-shadow:0 18px 40px rgba(0,0,0,.35);white-space:nowrap}
 .chip .ic{width:64px;height:64px;border-radius:50%;display:grid;place-items:center;background:var(--blue);color:#fff}
 .chip .ic svg{width:34px;height:34px}
@@ -95,3 +101,6 @@ html,body{width:1920px;height:1080px;overflow:hidden;background:var(--navy)}
 .mark{position:absolute;width:92px;height:92px}
 .verdict{position:absolute;font-family:M;font-weight:900;font-size:40px;letter-spacing:.12em;padding:12px 34px;border-radius:10px;color:#fff}
 .verdict.ok{background:var(--green)} .verdict.no{background:var(--red)}
+
+:root[data-theme="claro"] .card{box-shadow:0 24px 60px rgba(11,21,48,.12)}
+:root[data-theme="claro"] .chip{box-shadow:0 14px 34px rgba(11,21,48,.14);border:1px solid #E4E7EC}

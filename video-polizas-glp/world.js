@@ -11,10 +11,10 @@ const WORLD = (() => {
   const lg = (id, stops, x2 = 0, y2 = 1) => `<linearGradient id="${id}" x1="0" y1="0" x2="${x2}" y2="${y2}">${stops.map(([o, c, a]) => `<stop offset="${o}" stop-color="${c}"${a !== undefined ? ` stop-opacity="${a}"` : ''}/>`).join('')}</linearGradient>`;
   svg.innerHTML = `
   <defs>
-    ${lg('sky', [[0, '#040C22'], [.35, '#0A1F4F'], [.62, '#0047BB'], [.84, '#3D7BE0'], [.95, '#FFB27A'], [1, '#FF8A1C']])}
+    ${lg('sky', THEME.sky)}
     ${lg('sunG', [[0, '#FFD36B'], [.6, '#FFB81C'], [1, '#FF7A00']])}
-    ${lg('mt1', [[0, '#173A86'], [1, '#0B2460']])}
-    ${lg('mt2', [[0, '#0E2C6E'], [1, '#081A47']])}
+    ${lg('mt1', [[0, THEME.mt[0]], [1, THEME.mt[1]]])}
+    ${lg('mt2', [[0, THEME.mt[2]], [1, THEME.mt[3]]])}
     ${lg('tankB', [[0, '#C9D6EC'], [.12, '#FFFFFF'], [.38, '#F3F7FD'], [.72, '#C2D0E8'], [.9, '#8EA3C9'], [1, '#A9BADB']])}
     ${lg('capL', [[0, '#8EA3C9'], [.55, '#E9F0FB'], [1, '#FFFFFF']], 1, 0)}
     ${lg('capR', [[0, '#FFFFFF'], [.45, '#D5E0F2'], [1, '#7F95BF']], 1, 0)}
@@ -28,8 +28,8 @@ const WORLD = (() => {
     ${lg('stack', [[0, '#3B4E78'], [.45, '#A8B7D6'], [1, '#2D3D63']], 1, 0)}
     ${lg('conc', [[0, '#A6B3CC'], [1, '#7A89A8']])}
     ${lg('concTop', [[0, '#C9D3E6'], [1, '#AEBBD4']])}
-    ${lg('ground', [[0, '#14295C'], [.25, '#0C1E49'], [1, '#050F2A']])}
-    ${lg('lampCone', [[0, '#FFE6A3', .32], [1, '#FFE6A3', 0]])}
+    ${lg('ground', [[0, THEME.ground[0]], [.25, THEME.ground[1]], [1, THEME.ground[2]]])}
+    ${lg('lampCone', [[0, '#FFE6A3', .32 * THEME.lamp], [1, '#FFE6A3', 0]])}
     ${lg('beam', [[0, '#00A9E0', .5], [1, '#00A9E0', 0]], 1, 0)}
     ${lg('glass', [[0, '#9FE3FF'], [1, '#2B8FD6']])}
     ${lg('fire', [[0, '#FFF1B8'], [.4, '#FFB81C'], [1, '#FF5A00']])}
@@ -41,7 +41,7 @@ const WORLD = (() => {
     <pattern id="hazard" width="28" height="28" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="14" height="28" fill="#FFB81C"/><rect x="14" width="14" height="28" fill="#0B1530"/></pattern>
     <pattern id="louver" width="10" height="16" patternUnits="userSpaceOnUse"><rect width="10" height="9" fill="#8EA3C9"/><rect y="9" width="10" height="3" fill="#5D739E"/><rect y="12" width="10" height="4" fill="#D5E0F2"/></pattern>
   </defs>
-  <rect width="1920" height="1080" fill="#040C22"/>
+  <rect width="1920" height="1080" fill="${THEME.skyTop}"/>
   <g id="skyG"><rect x="0" y="-40" width="1920" height="920" fill="url(#sky)"/></g>
   <g id="stars"></g>
   <g id="far"></g>
@@ -49,7 +49,7 @@ const WORLD = (() => {
   <g id="cam"><g id="main"></g></g>`;
   const skyG = svg.querySelector('#skyG'), far = svg.querySelector('#far'), mid = svg.querySelector('#mid'), main = svg.querySelector('#main'), cam = svg.querySelector('#cam');
   let s = '';
-  for (let i = 0; i < 90; i++) { const x = (i * 397) % 1920, y = (i * 211) % 470; s += `<circle cx="${x}" cy="${y}" r="${0.8 + (i % 3) * 0.6}" fill="#DCE8FF" opacity="${0.18 + (i % 5) * 0.1}"/>`; }
+  for (let i = 0; i < 90; i++) { const x = (i * 397) % 1920, y = (i * 211) % 470; s += `<circle cx="${x}" cy="${y}" r="${0.8 + (i % 3) * 0.6}" fill="#DCE8FF" opacity="${(0.18 + (i % 5) * 0.1) * THEME.stars}"/>`; }
   svg.querySelector('#stars').innerHTML = s;
 
   // ---- fondo lejano: sol poniente + cerros (parallax lento) ----
@@ -63,12 +63,12 @@ const WORLD = (() => {
   for (let i = 0; i < 30; i++) {
     if (i % 5 === 2 || i % 5 === 3) continue;   // huecos para ver cerros y sol
     const x = i * 230 - 700, h = 80 + ((i * 73) % 130), w = 150 + ((i * 41) % 90);
-    m2 += `<rect x="${x}" y="${880 - h}" width="${w}" height="${h}" fill="#0B2257"/>`;
-    m2 += `<rect x="${x}" y="${880 - h}" width="${w}" height="6" fill="#1B3F8C"/>`;
-    if (i % 3 === 0) m2 += `<rect x="${x + 24}" y="${880 - h - 130}" width="22" height="130" fill="#0B2257"/><rect x="${x + 22}" y="${880 - h - 136}" width="26" height="8" fill="#FF7A00" opacity=".8"/>`;
-    if (i % 4 === 1) m2 += `<path d="M${x} ${880 - h} l${w / 2} -46 l${w / 2} 46z" fill="#0B2257"/>`;
+    m2 += `<rect x="${x}" y="${880 - h}" width="${w}" height="${h}" fill="${THEME.city}"/>`;
+    m2 += `<rect x="${x}" y="${880 - h}" width="${w}" height="6" fill="${THEME.cityTop}"/>`;
+    if (i % 3 === 0) m2 += `<rect x="${x + 24}" y="${880 - h - 130}" width="22" height="130" fill="${THEME.city}"/><rect x="${x + 22}" y="${880 - h - 136}" width="26" height="8" fill="#FF7A00" opacity=".8"/>`;
+    if (i % 4 === 1) m2 += `<path d="M${x} ${880 - h} l${w / 2} -46 l${w / 2} 46z" fill="${THEME.city}"/>`;
     for (let r = 0; r < Math.floor(h / 40); r++) for (let c = 0; c < Math.floor(w / 34); c++)
-      if ((i * 7 + r * 3 + c * 5) % 4 === 0) m2 += `<rect x="${x + 12 + c * 34}" y="${880 - h + 22 + r * 40}" width="16" height="10" fill="#FFB81C" opacity="${0.35 + ((r + c) % 3) * 0.15}"/>`;
+      if ((i * 7 + r * 3 + c * 5) % 4 === 0) m2 += `<rect x="${x + 12 + c * 34}" y="${880 - h + 22 + r * 40}" width="16" height="10" fill="#FFB81C" opacity="${THEME.win ? THEME.win + ((r + c) % 3) * 0.15 : 0}"/>`;
   }
   mid.innerHTML = m2;
 
@@ -121,14 +121,14 @@ const WORLD = (() => {
   // ---------- escena principal ----------
   let m = '';
   // suelo: asfalto + losa de concreto con canto
-  m += `<rect x="-2600" y="${G}" width="9800" height="2600" fill="#050F2A"/><rect x="-2600" y="${G}" width="9800" height="600" fill="url(#ground)"/>`;
+  m += `<rect x="-2600" y="${G}" width="9800" height="2600" fill="${THEME.ground[2]}"/><rect x="-2600" y="${G}" width="9800" height="600" fill="url(#ground)"/>`;
   m += `<rect x="-2600" y="${G}" width="9800" height="3" fill="#3D7BE0" opacity=".55"/>`;
   m += `<rect x="300" y="${G}" width="3150" height="34" fill="url(#concTop)"/><rect x="300" y="${G + 34}" width="3150" height="16" fill="#6F7F9F"/>`;
   m += `<rect x="300" y="${G}" width="3150" height="34" fill="url(#tiles)"/>`;
   m += `<rect x="300" y="${G + 12}" width="3150" height="5" fill="#FFB81C" opacity=".85"/>`;
   for (let x = -2400; x < 7000; x += 260) m += `<rect x="${x}" y="${G + 120}" width="130" height="10" fill="#C9D3E6" opacity=".25"/>`;
-  m += `<rect x="-2600" y="${G + 230}" width="9800" height="14" fill="#C9D3E6" opacity=".55"/><rect x="-2600" y="${G + 244}" width="9800" height="60" fill="#5E6F92" opacity=".55"/><rect x="-2600" y="${G + 304}" width="9800" height="400" fill="#0B3B3A"/>`;
-  for (let x = -2400; x < 7000; x += 180) m += `<ellipse cx="${x}" cy="${G + 312}" rx="${70 + (x % 50)}" ry="34" fill="#0F5B4F"/><ellipse cx="${x + 60}" cy="${G + 306}" rx="50" ry="26" fill="#12695B"/>`;
+  m += `<rect x="-2600" y="${G + 230}" width="9800" height="14" fill="#C9D3E6" opacity=".55"/><rect x="-2600" y="${G + 244}" width="9800" height="60" fill="#5E6F92" opacity=".55"/><rect x="-2600" y="${G + 304}" width="9800" height="400" fill="${THEME.grass[0]}"/>`;
+  for (let x = -2400; x < 7000; x += 180) m += `<ellipse cx="${x}" cy="${G + 312}" rx="${70 + (x % 50)}" ry="34" fill="${THEME.grass[1]}"/><ellipse cx="${x + 60}" cy="${G + 306}" rx="50" ry="26" fill="${THEME.grass[2]}"/>`;
 
   // postes de luz y árboles de fondo
   [120, 1500, 2600, 3420].forEach(x => m += lamp(x, 420));
@@ -282,35 +282,37 @@ const WORLD = (() => {
   });
   m += `</g>`;
 
-  // ---- inspector (profesional con EPP y tablet) ----
-  m += `<g id="insp" transform="translate(1960 ${G})">
-    <ellipse cx="0" cy="4" rx="78" ry="12" fill="#000" opacity=".35"/>
-    <path id="beamP" d="M110 -270 L470 -400 L470 -150 Z" fill="url(#beam)" opacity="0"/>
-    <path d="M-34 -160 L-30 -14 H-4 L-2 -160 Z" fill="#16264D"/><path d="M4 -160 L6 -14 H32 L34 -160 Z" fill="#16264D"/>
-    <rect x="-34" y="-90" width="30" height="7" fill="#FFB81C" opacity=".85"/><rect x="4" y="-90" width="30" height="7" fill="#FFB81C" opacity=".85"/>
-    <path d="M-44 -16 H-2 V2 H-50 Q-50 -12 -44 -16 Z" fill="#2B1D14"/><path d="M2 -16 H44 Q50 -12 50 2 H2 Z" fill="#2B1D14"/>
-    <g id="torso">
-      <rect x="-50" y="-320" width="100" height="172" rx="28" fill="#0047BB"/>
-      <path d="M-50 -292 Q-50 -320 -24 -320 H-10 L-6 -150 H-50 Z M50 -292 Q50 -320 24 -320 H10 L6 -150 H50 Z" fill="url(#vest)"/>
-      <rect x="-50" y="-238" width="44" height="11" fill="#E8F2FF"/><rect x="6" y="-238" width="44" height="11" fill="#E8F2FF"/>
-      <rect x="-50" y="-200" width="44" height="11" fill="#E8F2FF"/><rect x="6" y="-200" width="44" height="11" fill="#E8F2FF"/>
-      <rect x="-36" y="-300" width="20" height="14" rx="3" fill="#0B1530"/><rect x="-52" y="-160" width="104" height="14" rx="4" fill="#0B1530"/><rect x="-8" y="-160" width="16" height="14" rx="3" fill="#C7D3EA"/>
-      <path d="M-12 -320 L0 -300 L12 -320" stroke="#E8B48A" stroke-width="10" fill="none"/>
-      <g id="arm"><path d="M40 -308 Q76 -286 92 -246" stroke="#0047BB" stroke-width="26" stroke-linecap="round" fill="none"/>
-        <circle cx="96" cy="-240" r="13" fill="#FFB81C"/>
-        <g transform="translate(86 -300) rotate(-10)"><rect x="0" y="0" width="74" height="104" rx="10" fill="#0B1530"/><rect id="tabScr" x="7" y="8" width="60" height="86" rx="5" fill="#00A9E0"/>
-          <rect x="13" y="16" width="48" height="10" rx="3" fill="#06132F" opacity=".7"/><path d="M14 40 l6 6 l10 -12 M14 58 l6 6 l10 -12" stroke="#fff" stroke-width="3.5" fill="none" stroke-linecap="round"/>
-          <rect x="34" y="40" width="26" height="6" rx="3" fill="#fff" opacity=".8"/><rect x="34" y="58" width="22" height="6" rx="3" fill="#fff" opacity=".8"/><rect x="14" y="76" width="44" height="8" rx="4" fill="#FFB81C"/></g></g>
-      <path d="M-42 -306 Q-66 -270 -60 -188" stroke="#0047BB" stroke-width="26" stroke-linecap="round" fill="none"/><circle cx="-60" cy="-182" r="13" fill="#FFB81C"/></g>
-    <g id="head"><rect x="-12" y="-336" width="24" height="20" fill="#D9A07A"/>
-      <ellipse cx="0" cy="-366" rx="36" ry="40" fill="#E8B48A"/><ellipse cx="-34" cy="-362" rx="7" ry="11" fill="#D9A07A"/>
-      <path d="M6 -344 q10 6 20 -2" stroke="#9C5A3C" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M-36 -380 Q-30 -404 -6 -404" stroke="#3A2618" stroke-width="10" fill="none" stroke-linecap="round"/>
-      <circle cx="14" cy="-372" r="4" fill="#0B1530"/><path d="M2 -386 h20" stroke="#3A2618" stroke-width="4" stroke-linecap="round"/>
-      <path d="M30 -366 q8 8 0 14" stroke="#C98C66" stroke-width="4" fill="none"/>
-      <rect x="-2" y="-384" width="38" height="16" rx="6" fill="#00A9E0" opacity=".55" stroke="#0B1530" stroke-width="2"/>
-      <path d="M-46 -384 Q-46 -436 0 -440 Q46 -436 46 -384 Z" fill="url(#helmet)"/><rect x="-56" y="-390" width="112" height="12" rx="6" fill="#D99A00"/>
-      <rect x="-6" y="-438" width="12" height="50" rx="5" fill="#FFE07A" opacity=".8"/><path d="M-30 -420 Q-20 -432 -4 -434" stroke="#fff" stroke-width="5" fill="none" opacity=".5"/></g>
+  // ---- detalles explicativos ----
+  const tag = (x, y, txt, w, col = '#0047BB') => `<g transform="translate(${x} ${y})"><rect x="${-w / 2}" y="-15" width="${w}" height="30" rx="6" fill="${col}"/><text y="7" font-family="M" font-weight="800" font-size="16" fill="#fff" text-anchor="middle" letter-spacing=".5">${txt}</text></g>`;
+  m += tag(1490, G - 205, 'GLP LÍQUIDO ›', 150, '#0047BB');
+  m += tag(2010, G - 285, 'GLP VAPOR ›', 136, '#00A9E0');
+  m += tag(2490, G - 300, 'BAJA PRESIÓN ›', 156, '#12B76A');
+  // tanque: escalera, baranda superior, placa, nivel y drenaje
+  m += `<g>${[0, 1].map(k => `<rect x="${396 + k * 40}" y="${TY - 70}" width="6" height="${G - TY + 70}" fill="url(#steel)"/>`).join('')}
+    ${[...Array(12)].map((_, k) => `<rect x="396" y="${TY - 50 + k * 30}" width="46" height="5" fill="#7F95BF"/>`).join('')}
+    <path d="M700 ${TY - 2} V${TY - 64} H1120 V${TY - 2} M700 ${TY - 34} H1120" stroke="#FFB81C" stroke-width="6" fill="none"/>
+    ${[780, 860, 960, 1040].map(x => `<rect x="${x - 3}" y="${TY - 64}" width="6" height="62" fill="#FFB81C"/>`).join('')}
+    <rect x="${TX1 + 64}" y="${TY + 186}" width="150" height="40" rx="4" fill="#0B1530"/>
+    <text x="${TX1 + 139}" y="${TY + 203}" font-family="M" font-weight="800" font-size="12" fill="#fff" text-anchor="middle">TANQUE ESTACIONARIO</text>
+    <text x="${TX1 + 139}" y="${TY + 219}" font-family="M" font-weight="700" font-size="12" fill="#FFB81C" text-anchor="middle">CAP. 5,000 GAL</text>
+    <g transform="translate(${TX2 + 30} ${TC - 10})"><circle r="24" fill="#2B3F6E"/><circle r="19" fill="#fff"/><path d="M-14 6 A16 16 0 1 1 14 6" stroke="#12B76A" stroke-width="5" fill="none"/><line x1="0" y1="0" x2="10" y2="-10" stroke="#0B1530" stroke-width="3"/><text y="14" font-family="M" font-weight="800" font-size="8" fill="#0B1530" text-anchor="middle">80%</text></g>
+    <rect x="904" y="${TY + TH}" width="12" height="28" fill="url(#steel)"/>${valve(910, TY + TH + 34, '#E5484D').replace('translate(910', 'translate(910').replace('<g transform', '<g opacity=".95" transform')}
   </g>`;
+  // vaporizador: válvula de alivio y placa
+  m += `<rect x="1736" y="${G - 540}" width="12" height="40" fill="url(#steel)"/><rect x="1730" y="${G - 552}" width="24" height="14" rx="5" fill="#E5484D"/>
+    <rect x="1640" y="${G - 200}" width="120" height="30" rx="4" fill="#fff" stroke="#7F95BF"/><text x="1700" y="${G - 180}" font-family="M" font-weight="800" font-size="11" fill="#0B1530" text-anchor="middle">LÍQUIDO → VAPOR</text>`;
+  // caldero: baranda superior, válvula de seguridad, placa y tren de gas
+  m += `<path d="M2860 ${BY - 6} V${BY - 50} H3240 V${BY - 6} M2860 ${BY - 28} H3240" stroke="#FFB81C" stroke-width="5" fill="none"/>
+    ${[2940, 3020, 3100, 3180].map(x => `<rect x="${x - 2}" y="${BY - 50}" width="5" height="46" fill="#FFB81C"/>`).join('')}
+    <rect x="2900" y="${BY - 26}" width="14" height="26" fill="url(#steel)"/><rect x="2894" y="${BY - 36}" width="26" height="12" rx="5" fill="#E5484D"/>
+    ${gauge(3000, BY - 30, 18, null, 26).replace('class="ndl"', 'class="ndl2"')}
+    <rect x="3110" y="${BY + 150}" width="120" height="44" rx="5" fill="#fff" stroke="#7F95BF"/>
+    <text x="3170" y="${BY + 168}" font-family="M" font-weight="800" font-size="12" fill="#0B1530" text-anchor="middle">CALDERO</text>
+    <text x="3170" y="${BY + 185}" font-family="M" font-weight="700" font-size="12" fill="#0047BB" text-anchor="middle">100 BHP · GLP</text>
+    ${[2726, 2760].map(x => `<rect x="${x - 12}" y="${G - 280}" width="24" height="30" rx="4" fill="#2B3F6E"/><rect x="${x - 8}" y="${G - 296}" width="16" height="18" rx="3" fill="#FF7A00"/>`).join('')}`;
+
+  // ---- inspector (operario detallado, ver operario.js) ----
+  m += `<g id="insp" transform="translate(1960 ${G})">${OPERARIO()}</g>`;
 
   m += `<g id="callouts"></g>`;
   main.innerHTML = m;
@@ -347,7 +349,7 @@ const WORLD = (() => {
   const flow = main.querySelector('#flow'), n1 = main.querySelector('#needle1');
   const nr = [main.querySelector('#needleR0'), main.querySelector('#needleR1')], flame = main.querySelector('#flame');
   const smoke = main.querySelector('#smoke'), led = main.querySelector('#vapLed');
-  const head = main.querySelector('#head'), arm = main.querySelector('#arm'), torso = main.querySelector('#torso');
+  const head = main.querySelector('#head'), arm = main.querySelector('#arm'), arm2 = main.querySelector('#arm2'), torso = main.querySelector('#torso'), lids = main.querySelector('#lids');
   const tab = main.querySelector('#tabScr'), beam = main.querySelector('#beamP');
   const pers = [...main.querySelectorAll('.pers')];
   const FX = 2785, FY = BY + 117;
@@ -370,9 +372,13 @@ const WORLD = (() => {
       p.setAttribute('opacity', (0.45 * (1 - k)).toFixed(3));
     });
     led.setAttribute('opacity', (Math.sin(t * 6) > 0 ? 1 : 0.35));
-    head.setAttribute('transform', `rotate(${Math.sin(t * 0.9) * 3} 0 -330)`);
-    torso.setAttribute('transform', `translate(0 ${Math.sin(t * 1.8) * 2})`);
-    arm.setAttribute('transform', `rotate(${Math.sin(t * 1.2) * 2} 40 -308)`);
+    const br = Math.sin(t * 1.8) * 1.6;   // respiración
+    head.setAttribute('transform', `translate(0 ${br}) rotate(${Math.sin(t * 0.9) * 3 + Math.sin(t * 0.37) * 2} 0 -380)`);
+    torso.setAttribute('transform', `translate(0 ${br})`);
+    arm.setAttribute('transform', `translate(0 ${br}) rotate(${Math.sin(t * 1.2) * 2} 44 -352)`);
+    const tap = Math.max(0, Math.sin(t * 5.5)) * (Math.sin(t * 0.7) > 0 ? 1 : 0);   // toca la tablet con el lápiz
+    arm2.setAttribute('transform', `translate(0 ${br}) rotate(${Math.sin(t * 1.1) * 2.5 + tap * 1.5} -40 -356)`);
+    lids.setAttribute('opacity', (t % 3.7) < 0.13 || (t % 11.3) < 0.1 ? 1 : 0);   // parpadeo
     tab.setAttribute('opacity', 0.8 + Math.sin(t * 4) * 0.2);
     beam.setAttribute('opacity', st.beam * (0.6 + Math.sin(t * 9) * 0.25));
     pers.forEach((p, i) => p.setAttribute('transform', `translate(${[3700, 3760, 4040, 4330][i] + Math.sin(t * 0.6 + i * 2) * 40} ${G + Math.abs(Math.sin(t * 3 + i)) * -4})`));
@@ -402,13 +408,13 @@ function showCallout(id, x, y, label, t, dur, dir = 1, color) {
   const P = Array.from({ length: 46 }, (_, i) => ({ x: (i * 733) % 1920, y: (i * 389) % 1080, s: 1 + (i % 3), v: 8 + (i % 7) * 4 }));
   tickers.push(t => {
     const gr = g.createLinearGradient(0, 0, 1920, 1080);
-    gr.addColorStop(0, '#06132F'); gr.addColorStop(0.55, '#0A1F4F'); gr.addColorStop(1, '#0047BB');
+    gr.addColorStop(0, THEME.bg[0]); gr.addColorStop(0.55, THEME.bg[1]); gr.addColorStop(1, THEME.bg[2]);
     g.fillStyle = gr; g.fillRect(0, 0, 1920, 1080);
     // arcos concéntricos del "sol" en la esquina inferior derecha
     g.lineWidth = 1.5;
     for (let k = 0; k < 9; k++) {
       const r = 260 + k * 120 + ((t * 18) % 120);
-      g.strokeStyle = `rgba(255,184,28,${Math.max(0, 0.13 - k * 0.013)})`;
+      g.strokeStyle = THEME.arcs.replace('A', Math.max(0, 0.13 - k * 0.013) * (THEME_NAME === 'claro' ? 1.6 : 1));
       g.beginPath(); g.arc(1920, 1080, r, Math.PI, 1.5 * Math.PI); g.stroke();
     }
     // línea de horizonte naranja
@@ -417,7 +423,7 @@ function showCallout(id, x, y, label, t, dur, dir = 1, color) {
     g.fillStyle = lgx; g.fillRect(0, 1072, 1920, 2);
     P.forEach(p => {
       const y = (p.y - t * p.v) % 1080, yy = y < 0 ? y + 1080 : y;
-      g.fillStyle = `rgba(220,232,255,${0.12 + p.s * 0.06})`;
+      g.fillStyle = THEME.dots.replace('A', (0.12 + p.s * 0.06) * (THEME_NAME === 'claro' ? .6 : 1));
       g.beginPath(); g.arc(p.x + Math.sin(t * .5 + p.y) * 14, yy, p.s, 0, 6.283); g.fill();
     });
   });
