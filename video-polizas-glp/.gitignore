@@ -1,0 +1,7 @@
+node_modules/
+out/
+out_old/
+audio/
+stills/
+models/
+*.log

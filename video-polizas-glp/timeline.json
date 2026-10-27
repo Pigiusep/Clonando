@@ -1,0 +1,419 @@
+{
+ "total": 560.297,
+ "scenes": [
+  {
+   "id": "intro",
+   "start": 0.0,
+   "end": 6.0
+  },
+  {
+   "id": "e1",
+   "start": 6.0,
+   "end": 45.61027083333333
+  },
+  {
+   "id": "e2",
+   "start": 45.61027083333333,
+   "end": 95.084375
+  },
+  {
+   "id": "e3",
+   "start": 95.084375,
+   "end": 124.86243749999998
+  },
+  {
+   "id": "e4",
+   "start": 124.86243749999998,
+   "end": 194.11727083333332
+  },
+  {
+   "id": "e5",
+   "start": 194.11727083333332,
+   "end": 254.1970416666667
+  },
+  {
+   "id": "e6",
+   "start": 254.1970416666667,
+   "end": 329.8524583333333
+  },
+  {
+   "id": "e7",
+   "start": 329.8524583333333,
+   "end": 402.3181874999998
+  },
+  {
+   "id": "e8",
+   "start": 402.3181874999998,
+   "end": 474.41083333333296
+  },
+  {
+   "id": "e9",
+   "start": 474.41083333333296,
+   "end": 555.2972708333328
+  },
+  {
+   "id": "outro",
+   "start": 555.2972708333328,
+   "end": 560.2972708333328
+  }
+ ],
+ "segs": [
+  {
+   "id": "e1a",
+   "scene": "e1",
+   "start": 6.6,
+   "dur": 10.477,
+   "text": "Para la autorización y operación de un consumidor directo de GLP, la gestión de la póliza de responsabilidad civil extracontractual no debe limitarse a disponer de un documento vigente,"
+  },
+  {
+   "id": "e1b",
+   "scene": "e1",
+   "start": 17.357,
+   "dur": 12.871,
+   "text": "sino comprender que dicha póliza representa un elemento importante para la protección de Solgas frente a las consecuencias económicas de determinados accidentes que puedan afectar a las instalaciones, terceros y al medio ambiente."
+  },
+  {
+   "id": "e1c",
+   "scene": "e1",
+   "start": 30.778,
+   "dur": 13.552,
+   "text": "En esta ocasión, revisaremos los principales aspectos que deben tenerse en cuenta para revisar la póliza y detectar posibles inconsistencias que puedan generar observaciones durante el trámite de autorización y/o supervisión."
+  },
+  {
+   "id": "e2a",
+   "scene": "e2",
+   "start": 48.01,
+   "dur": 16.601,
+   "text": "Las pólizas de responsabilidad civil extracontractual son exigidas en virtud de los artículos 31 y 32 del Reglamento para la comercialización de GLP, aprobado mediante Decreto Supremo Nº 01-94-EM, y sus modificatorias."
+  },
+  {
+   "id": "e2b",
+   "scene": "e2",
+   "start": 65.161,
+   "dur": 13.333,
+   "text": "Este artículo contempla la obligación de los operadores de instalaciones de GLP de contar con una póliza de seguros de responsabilidad civil extracontractual, que dé cobertura a los daños a terceros, a sus bienes y al medio ambiente."
+  },
+  {
+   "id": "e2c",
+   "scene": "e2",
+   "start": 79.044,
+   "dur": 5.352,
+   "text": "Como Solgas, estamos prohibidos de abastecer a una instalación que no cuente con póliza vigente,"
+  },
+  {
+   "id": "e2d",
+   "scene": "e2",
+   "start": 84.675,
+   "dur": 9.129,
+   "text": "y en caso de hacerlo, nos exponemos a ser solidariamente responsables por daños a terceros debido a siniestros que puedan ocasionarse en dicha instalación."
+  },
+  {
+   "id": "e3a",
+   "scene": "e3",
+   "start": 97.484,
+   "dur": 10.111,
+   "text": "El monto mínimo asegurado de las pólizas de responsabilidad civil extracontractual para un consumidor directo de GLP depende de la capacidad de almacenamiento del tanque,"
+  },
+  {
+   "id": "e3b",
+   "scene": "e3",
+   "start": 107.875,
+   "dur": 3.984,
+   "text": "siendo desde 100 UIT como mínimo hasta 300 UIT como máximo."
+  },
+  {
+   "id": "e3c",
+   "scene": "e3",
+   "start": 112.409,
+   "dur": 11.173,
+   "text": "Para el caso de Consumidores Directos de GLP con sistemas de despacho para uso automotor, el monto es de 300 UIT, independientemente de la capacidad de almacenamiento del tanque."
+  },
+  {
+   "id": "e4a",
+   "scene": "e4",
+   "start": 127.262,
+   "dur": 6.555,
+   "text": "Uno de los primeros aspectos que debe verificarse es la identificación del asegurado y de la actividad a desarrollar."
+  },
+  {
+   "id": "e4b",
+   "scene": "e4",
+   "start": 134.368,
+   "dur": 12.001,
+   "text": "La póliza debe consignar la Razón Social y el RUC, descritos tal cual se muestran en su consulta RUC SUNAT, y ser similar a los datos registrados como titular en la solicitud del Registro de Hidrocarburos,"
+  },
+  {
+   "id": "e4c",
+   "scene": "e4",
+   "start": 146.649,
+   "dur": 5.626,
+   "text": "de manera que exista correspondencia entre la información del seguro y la información registral."
+  },
+  {
+   "id": "e4d",
+   "scene": "e4",
+   "start": 152.555,
+   "dur": 10.631,
+   "text": "En consecuencia, el responsable de la revisión debe comprobar que la razón social y los datos de identificación de la empresa coincidan con los consignados en los documentos correspondientes."
+  },
+  {
+   "id": "e4e",
+   "scene": "e4",
+   "start": 163.736,
+   "dur": 6.542,
+   "text": "También debe verificar que el riesgo asegurado corresponda a la actividad de hidrocarburos que desarrolla la empresa."
+  },
+  {
+   "id": "e4f",
+   "scene": "e4",
+   "start": 170.557,
+   "dur": 9.641,
+   "text": "Para nuestro caso la actividad se denomina “Consumidor directo de GLP”. La actividad asegurada debe ser la misma del formulario de solicitud de registro de hidrocarburos."
+  },
+  {
+   "id": "e4g",
+   "scene": "e4",
+   "start": 180.748,
+   "dur": 12.089,
+   "text": "Una póliza con datos de Razón Social, RUC y/o actividad escritos de forma inexacta puede generar observaciones para la autorización, y/o limitaciones en su activación ante una emergencia."
+  },
+  {
+   "id": "e5a",
+   "scene": "e5",
+   "start": 196.517,
+   "dur": 5.927,
+   "text": "Además, resulta sustancial verificar la ubicación del riesgo y el alcance de la cobertura."
+  },
+  {
+   "id": "e5b",
+   "scene": "e5",
+   "start": 202.994,
+   "dur": 10.218,
+   "text": "En primer lugar, la ubicación de riesgo consignada en la póliza debe coincidir con la dirección de la instalación de GLP descrita en la solicitud de registro de hidrocarburos."
+  },
+  {
+   "id": "e5c",
+   "scene": "e5",
+   "start": 213.492,
+   "dur": 7.415,
+   "text": "Este aspecto es mucho más relevante, cuando la póliza asegura más de una instalación y/o actividad operativa."
+  },
+  {
+   "id": "e5d",
+   "scene": "e5",
+   "start": 221.457,
+   "dur": 10.963,
+   "text": "En segundo lugar, debe verificarse que la cobertura comprenda los riesgos exigidos por la normativa aplicable. Esto es, la cobertura a daños a terceros, a sus bienes y al medio ambiente."
+  },
+  {
+   "id": "e5e",
+   "scene": "e5",
+   "start": 232.971,
+   "dur": 9.007,
+   "text": "Es importante aquí verificar que estos 3 aspectos no se encuentren restringidos en la sección de exclusiones y/o limitaciones de la póliza."
+  },
+  {
+   "id": "e5f",
+   "scene": "e5",
+   "start": 242.528,
+   "dur": 10.389,
+   "text": "Así pues, debemos comprender que la existencia de la póliza no garantiza, por sí sola, que todos los riesgos asociados a la instalación estén cubiertos en los términos exigidos."
+  },
+  {
+   "id": "e6a",
+   "scene": "e6",
+   "start": 256.597,
+   "dur": 3.018,
+   "text": "Otro aspecto fundamental es el monto asegurado."
+  },
+  {
+   "id": "e6b",
+   "scene": "e6",
+   "start": 260.165,
+   "dur": 9.761,
+   "text": "Para los consumidores directos de GLP, los montos mínimos de la póliza van desde los 100 UIT hasta los 300 UIT, dependiendo de la capacidad de almacenamiento del tanque."
+  },
+  {
+   "id": "e6c",
+   "scene": "e6",
+   "start": 270.206,
+   "dur": 9.366,
+   "text": "En ese sentido, lo primero que debemos verificar es que el monto asegurado corresponda al monto requerido según la capacidad de almacenamiento del tanque de GLP."
+  },
+  {
+   "id": "e6d",
+   "scene": "e6",
+   "start": 280.122,
+   "dur": 11.113,
+   "text": "Cuando una póliza comprende múltiples instalaciones, debe evaluarse si el límite asegurado resulta suficiente conforme a las exigencias aplicables y a las condiciones contractuales."
+  },
+  {
+   "id": "e6e",
+   "scene": "e6",
+   "start": 291.515,
+   "dur": 14.053,
+   "text": "En este caso, la póliza debe contemplar un monto asegurado que cubra todas las instalaciones y/o actividades aseguradas, o también debe incorporar una cláusula de restitución automática de la suma asegurada, cuando corresponda."
+  },
+  {
+   "id": "e6f",
+   "scene": "e6",
+   "start": 306.118,
+   "dur": 11.744,
+   "text": "La presentación describe casos en los que una cobertura correspondiente al mínimo requerido para una instalación resulta observada cuando la póliza comprende múltiples instalaciones y/o actividades."
+  },
+  {
+   "id": "e6g",
+   "scene": "e6",
+   "start": 318.412,
+   "dur": 10.16,
+   "text": "En consecuencia, la revisión no debe limitarse a identificar una cifra en el documento, sino que debe comprobar su suficiencia y las condiciones que regulan su disponibilidad."
+  },
+  {
+   "id": "e7a",
+   "scene": "e7",
+   "start": 332.252,
+   "dur": 5.976,
+   "text": "La lectura de las condiciones contractuales constituye una etapa indispensable de la evaluación del seguro."
+  },
+  {
+   "id": "e7b",
+   "scene": "e7",
+   "start": 338.779,
+   "dur": 10.509,
+   "text": "La presentación de Osinergmin identifica casos en los que determinadas cláusulas especiales restringen la cobertura o condicionan su efectividad al cumplimiento de ciertas obligaciones."
+  },
+  {
+   "id": "e7c",
+   "scene": "e7",
+   "start": 349.838,
+   "dur": 10.151,
+   "text": "En una instalación consumidora directa de GLP, corresponde revisar cuidadosamente las condiciones que puedan afectar la cobertura durante el desarrollo de las operaciones."
+  },
+  {
+   "id": "e7d",
+   "scene": "e7",
+   "start": 360.539,
+   "dur": 13.392,
+   "text": "La evaluación debe prestar atención a las exclusiones, las condiciones de mantenimiento de la cobertura, los límites por evento y agregado, así como los mecanismos de restitución de la suma asegurada, cuando se encuentren contemplados."
+  },
+  {
+   "id": "e7e",
+   "scene": "e7",
+   "start": 374.48,
+   "dur": 8.087,
+   "text": "También debe verificarse que las condiciones contractuales no resulten incompatibles con las exigencias normativas aplicables a la actividad."
+  },
+  {
+   "id": "e7f",
+   "scene": "e7",
+   "start": 383.117,
+   "dur": 9.753,
+   "text": "El objetivo consiste en determinar si la protección contratada satisface los requisitos correspondientes y si existen restricciones que puedan comprometer su efectividad."
+  },
+  {
+   "id": "e7g",
+   "scene": "e7",
+   "start": 393.42,
+   "dur": 7.618,
+   "text": "Esta revisión debe efectuarse sobre el texto contractual completo y no únicamente sobre el certificado o la carátula de la póliza."
+  },
+  {
+   "id": "e8a",
+   "scene": "e8",
+   "start": 404.718,
+   "dur": 8.661,
+   "text": "La correcta gestión documental permite reducir inconsistencias y facilitar la evaluación de la póliza durante los trámites y las actividades de supervisión."
+  },
+  {
+   "id": "e8b",
+   "scene": "e8",
+   "start": 413.929,
+   "dur": 10.54,
+   "text": "La presentación señala que la copia de la póliza de seguro forma parte de los requisitos documentales contemplados en el TUPA para los trámites de Registro de Hidrocarburos correspondientes."
+  },
+  {
+   "id": "e8c",
+   "scene": "e8",
+   "start": 425.019,
+   "dur": 9.436,
+   "text": "También indica que, cuando la póliza ya obra en un expediente anterior, puede hacerse referencia al número de dicho expediente conforme al criterio descrito en el material."
+  },
+  {
+   "id": "e8d",
+   "scene": "e8",
+   "start": 435.005,
+   "dur": 11.948,
+   "text": "Los certificados o constancias de seguro no sustituyen automáticamente la póliza como requisito documental. Sin embargo, pueden presentarse de manera adicional en las condiciones descritas por la presentación."
+  },
+  {
+   "id": "e8e",
+   "scene": "e8",
+   "start": 447.503,
+   "dur": 9.25,
+   "text": "Para una gestión ordenada, el consumidor directo debe mantener identificados la póliza, sus adendas y los documentos complementarios que sustentan la cobertura."
+  },
+  {
+   "id": "e8f",
+   "scene": "e8",
+   "start": 457.303,
+   "dur": 8.618,
+   "text": "Antes de presentar un expediente o atender una supervisión, resulta conveniente contrastar la documentación con la información del Registro de Hidrocarburos"
+  },
+  {
+   "id": "e8g",
+   "scene": "e8",
+   "start": 466.201,
+   "dur": 6.93,
+   "text": "y verificar que no existan diferencias en la identidad del titular, la actividad, la ubicación o el monto asegurado."
+  },
+  {
+   "id": "e9a",
+   "scene": "e9",
+   "start": 476.811,
+   "dur": 10.317,
+   "text": "La gestión de la póliza de Responsabilidad Civil Extracontractual constituye un aspecto relevante del cumplimiento normativo para los agentes que desarrollan actividades de hidrocarburos."
+  },
+  {
+   "id": "e9b",
+   "scene": "e9",
+   "start": 487.677,
+   "dur": 15.966,
+   "text": "En el caso del consumidor directo de GLP, la revisión debe centrarse en la correcta identificación del titular asegurado, la vigencia de la póliza, la correspondencia de la actividad y la ubicación del riesgo, el alcance de las coberturas y la suficiencia del monto asegurado."
+  },
+  {
+   "id": "e9c",
+   "scene": "e9",
+   "start": 504.194,
+   "dur": 8.927,
+   "text": "Asimismo, deben examinarse las condiciones especiales, las exclusiones y las cláusulas que puedan limitar o condicionar la efectividad del seguro."
+  },
+  {
+   "id": "e9d",
+   "scene": "e9",
+   "start": 513.671,
+   "dur": 6.729,
+   "text": "La documentación debe mantenerse ordenada y ser coherente con la información consignada en el Registro de Hidrocarburos."
+  },
+  {
+   "id": "e9e",
+   "scene": "e9",
+   "start": 520.95,
+   "dur": 10.182,
+   "text": "Una revisión preventiva permite identificar inconsistencias, gestionar oportunamente las correcciones necesarias y fortalecer el cumplimiento de las obligaciones aplicables."
+  },
+  {
+   "id": "e9f",
+   "scene": "e9",
+   "start": 531.683,
+   "dur": 12.48,
+   "text": "En definitiva, una adecuada gestión del seguro contribuye a una operación responsable, a la protección de terceros y a una mejor administración de los riesgos asociados al uso industrial o productivo del GLP."
+  },
+  {
+   "id": "e9g",
+   "scene": "e9",
+   "start": 544.712,
+   "dur": 9.305,
+   "text": "La prevención comienza con el conocimiento de las obligaciones y se fortalece mediante una gestión rigurosa de los riesgos y de las coberturas contratadas."
+  }
+ ]
+}
