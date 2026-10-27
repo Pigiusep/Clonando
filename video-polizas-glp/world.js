@@ -353,7 +353,9 @@ const WORLD = (() => {
   const nr = [main.querySelector('#needleR0'), main.querySelector('#needleR1')], flame = main.querySelector('#flame');
   const smoke = main.querySelector('#smoke'), led = main.querySelector('#vapLed');
   const beam = main.querySelector('#beamP');
-  CARTOON.init(main.querySelector('#insp'));
+  // personaje desactivado por ahora (CON_PERSONAJE = true para mostrarlo)
+  const CON_PERSONAJE = false;
+  if (CON_PERSONAJE) CARTOON.init(main.querySelector('#insp')); else main.querySelector('#insp').style.display = 'none';
   // capa superior (etiquetas) por encima del personaje 3D, con la misma cámara
   const top = document.createElementNS(SVGNS, 'svg');
   top.setAttribute('width', 1920); top.setAttribute('height', 1080); top.setAttribute('viewBox', '0 0 1920 1080');
@@ -383,7 +385,7 @@ const WORLD = (() => {
     beam.setAttribute('opacity', st.beam * (0.6 + Math.sin(t * 9) * 0.25));
     pers.forEach((p, i) => p.setAttribute('transform', `translate(${[3700, 3760, 4040, 4330][i] + Math.sin(t * 0.6 + i * 2) * 40} ${G + Math.abs(Math.sin(t * 3 + i)) * -4})`));
   }
-  tickers.push(t => { applyCam(t); ambient(t); CARTOON.update(t, st); });
+  tickers.push(t => { applyCam(t); ambient(t); if (CON_PERSONAJE) CARTOON.update(t, st); });
 
   return { svg, main, cam: camS, shot, cut, callout, st, el: id => main.querySelector('#' + id) };
 })();
