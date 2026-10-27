@@ -285,7 +285,7 @@ const WORLD = (() => {
   // ---- detalles explicativos ----
   const tag = (x, y, txt, w, col = '#0047BB') => `<g transform="translate(${x} ${y})"><rect x="${-w / 2}" y="-15" width="${w}" height="30" rx="6" fill="${col}"/><text y="7" font-family="M" font-weight="800" font-size="16" fill="#fff" text-anchor="middle" letter-spacing=".5">${txt}</text></g>`;
   m += tag(1490, G - 205, 'GLP LÍQUIDO ›', 150, '#0047BB');
-  m += tag(2010, G - 285, 'GLP VAPOR ›', 136, '#00A9E0');
+  m += tag(1830, G - 350, 'GLP VAPOR ›', 136, '#00A9E0');
   m += tag(2490, G - 300, 'BAJA PRESIÓN ›', 156, '#12B76A');
   // tanque: escalera, baranda superior, placa, nivel y drenaje
   m += `<g>${[0, 1].map(k => `<rect x="${396 + k * 40}" y="${TY - 70}" width="6" height="${G - TY + 70}" fill="url(#steel)"/>`).join('')}
@@ -312,7 +312,7 @@ const WORLD = (() => {
     ${[2726, 2760].map(x => `<rect x="${x - 12}" y="${G - 280}" width="24" height="30" rx="4" fill="#2B3F6E"/><rect x="${x - 8}" y="${G - 296}" width="16" height="18" rx="3" fill="#FF7A00"/>`).join('')}`;
 
   // ---- inspector (operario detallado, ver operario.js) ----
-  m += `<g id="insp" transform="translate(1960 ${G})">${OPERARIO()}</g>`;
+  m += `<g id="insp" transform="translate(1960 ${G})"><path id="beamP" d="M120 -300 L520 -460 L520 -190 Z" fill="url(#beam)" opacity="0"/><rect id="inspBox" x="${CHAR3D.BOX.x}" y="${CHAR3D.BOX.y}" width="${CHAR3D.BOX.w}" height="${CHAR3D.BOX.h}" fill="none"/></g>`;
 
   m += `<g id="callouts"></g>`;
   main.innerHTML = m;
@@ -340,6 +340,7 @@ const WORLD = (() => {
     const hx = (Math.sin(t * 0.37) * 7 + Math.sin(t * 0.91) * 3) / camS.z, hy = (Math.sin(t * 0.53) * 5 + Math.sin(t * 1.3) * 2) / camS.z;
     const hr = Math.sin(t * 0.29) * 0.35, hz = 1 + Math.sin(t * 0.21) * 0.012;
     cam.setAttribute('transform', `translate(960 540) scale(${camS.z * hz}) rotate(${camS.rot + hr}) translate(${-camS.x - hx} ${-camS.y - hy})`);
+    if (typeof camTop !== 'undefined') camTop.setAttribute('transform', cam.getAttribute('transform'));
     const gy = 540 + (G - camS.y) * camS.z;           // línea de suelo en pantalla
     const k = 0.5 + camS.z * 0.35, k2 = 0.6 + camS.z * 0.4;
     skyG.setAttribute('transform', `translate(0 ${gy - 880})`);
@@ -351,8 +352,13 @@ const WORLD = (() => {
   const flow = main.querySelector('#flow'), n1 = main.querySelector('#needle1');
   const nr = [main.querySelector('#needleR0'), main.querySelector('#needleR1')], flame = main.querySelector('#flame');
   const smoke = main.querySelector('#smoke'), led = main.querySelector('#vapLed');
-  const head = main.querySelector('#head'), arm = main.querySelector('#arm'), arm2 = main.querySelector('#arm2'), torso = main.querySelector('#torso'), lids = main.querySelector('#lids'), finger = main.querySelector('#finger');
-  const tab = main.querySelector('#tabScr'), beam = main.querySelector('#beamP');
+  const beam = main.querySelector('#beamP');
+  CHAR3D.attach(host, main.querySelector('#inspBox'));
+  // capa superior (etiquetas) por encima del personaje 3D, con la misma cámara
+  const top = document.createElementNS(SVGNS, 'svg');
+  top.setAttribute('width', 1920); top.setAttribute('height', 1080); top.setAttribute('viewBox', '0 0 1920 1080');
+  top.style.position = 'absolute'; top.style.left = 0; top.style.top = 0; top.style.pointerEvents = 'none';
+  const camTop = document.createElementNS(SVGNS, 'g'); top.appendChild(camTop); camTop.appendChild(callouts); host.appendChild(top);
   const pers = [...main.querySelectorAll('.pers')];
   const FX = 2785, FY = BY + 117;
   let sm = '';
@@ -374,22 +380,10 @@ const WORLD = (() => {
       p.setAttribute('opacity', (0.45 * (1 - k)).toFixed(3));
     });
     led.setAttribute('opacity', (Math.sin(t * 6) > 0 ? 1 : 0.35));
-    const br = Math.sin(t * 1.8) * 1.6;   // respiración
-    head.setAttribute('transform', `translate(0 ${br}) rotate(${Math.sin(t * 0.9) * 3 + Math.sin(t * 0.37) * 2} 0 -380)`);
-    torso.setAttribute('transform', `translate(0 ${br})`);
-    arm.setAttribute('transform', `translate(0 ${br}) rotate(${Math.sin(t * 1.2) * 2} 44 -352)`);
-    const tap = Math.max(0, Math.sin(t * 5.5)) * (Math.sin(t * 0.7) > 0 ? 1 : 0);   // toca la tablet con el lápiz
-    // gestos: señalar (brazo trasero se eleva hacia los equipos), asentir y mirar
-    const pt = st.point;
-    arm2.setAttribute('transform', `translate(0 ${br}) rotate(${Math.sin(t * 1.1) * 2.5 * (1 - pt) + pt * (112 + Math.sin(t * 3) * 4)} -40 -356)`);
-    finger.setAttribute('opacity', pt > 0.6 ? 1 : 0);
-    head.setAttribute('transform', `translate(0 ${br}) rotate(${Math.sin(t * 0.9) * 3 + Math.sin(t * 0.37) * 2 + st.nod * Math.sin(t * 7) * 5 - st.look * 9 - pt * 6} 0 -380)`);
-    lids.setAttribute('opacity', (t % 3.7) < 0.13 || (t % 11.3) < 0.1 ? 1 : 0);   // parpadeo
-    tab.setAttribute('opacity', 0.8 + Math.sin(t * 4) * 0.2);
     beam.setAttribute('opacity', st.beam * (0.6 + Math.sin(t * 9) * 0.25));
     pers.forEach((p, i) => p.setAttribute('transform', `translate(${[3700, 3760, 4040, 4330][i] + Math.sin(t * 0.6 + i * 2) * 40} ${G + Math.abs(Math.sin(t * 3 + i)) * -4})`));
   }
-  tickers.push(t => { applyCam(t); ambient(t); });
+  tickers.push(t => { applyCam(t); ambient(t); CHAR3D.render(t, st); });
 
   return { svg, main, cam: camS, shot, cut, callout, st, el: id => main.querySelector('#' + id) };
 })();

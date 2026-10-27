@@ -11,7 +11,6 @@ const { chromium } = require('playwright');
     document.querySelectorAll('#callouts g').forEach(g => g.style.display = 'none');
     if (window.POSE) Object.assign(WORLD.st, POSE); Object.assign(WORLD.cam, { x: 1960 + 10, y: 880 + y, z }); for (const f of tickers) f(t);
     WORLD.cam.x = 1960 + 10; WORLD.cam.y = 880 + y; WORLD.cam.z = z;
-    document.querySelector('#cam').setAttribute('transform', `translate(960 540) scale(${z}) translate(${-(1970)} ${-(880 + y)})`);
   }, [+z, +y, +t]);
   await p.screenshot({ path: `${__dirname}/stills/${name}.jpg`, type: 'jpeg', quality: 88 });
   await b.close();

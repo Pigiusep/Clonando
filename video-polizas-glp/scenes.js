@@ -61,7 +61,7 @@ tl.to('#prog i', { scaleX: 1, duration: TL.total, ease: 'none' }, 0);
   showCallout('tk', 910, 520, 'Tanque estacionario de GLP', S('e1a') + 0.3, 3.4, 1);
   gesture(S('e1a') + 0.6, 'point', 3.2); gesture(S('e1a') + dt * 0.62, 'look', 2.4);
   showCallout('tb', 1560, 640, 'Tuberías', S('e1a') + dt * 0.3, 3.0, -1, '#19D3FF');
-  showCallout('vp', 1780, 520, 'Vaporizador', S('e1a') + dt * 0.42, 3.0, 1);
+  showCallout('vp', 1640, 520, 'Vaporizador', S('e1a') + dt * 0.42, 3.0, -1);
   showCallout('rg', 2250, 560, 'Sistema de regulación', S('e1a') + dt * 0.6, 3.0, 1, '#19D3FF');
   showCallout('eq', 3000, 470, 'Equipos de consumo', S('e1a') + dt * 0.8, 3.0, -1);
   // póliza: no sólo un documento vigente
