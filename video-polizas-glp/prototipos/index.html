@@ -1,0 +1,306 @@
+<title>Prototipos visuales RCE</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,400..900&family=Unbounded:wght@500..800&family=Lexend:wght@400..800&family=Sora:wght@400..800&family=IBM+Plex+Mono:wght@500;600&family=Inter:wght@400..700&display=swap">
+<style>
+/* Página de selección: lista vertical de 5 prototipos; cada uno es un lienzo 16:9 animado + ficha de estilo. */
+:root{
+  --bg:#F3F5F9; --card:#FFFFFF; --ink:#0E1A33; --muted:#566079; --line:#DCE2EC; --accent:#E8600A;
+  --f-head:'Archivo',system-ui,sans-serif; --f-body:'Inter',system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#0D1220;--card:#151C2E;--ink:#EEF2F9;--muted:#9AA6BF;--line:#26304A;--accent:#FF8A3D;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0D1220;--card:#151C2E;--ink:#EEF2F9;--muted:#9AA6BF;--line:#26304A;--accent:#FF8A3D;color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.55}
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 64px;display:grid;gap:36px}
+header h1{font-family:var(--f-head);font-variation-settings:"wdth" 118;font-weight:850;font-size:clamp(1.7rem,1.2rem + 2.4vw,2.8rem);line-height:1.05;margin:4px 0 10px;text-wrap:balance;letter-spacing:-.01em}
+header p{color:var(--muted);max-width:66ch;margin:0}
+.eyebrow{font-weight:700;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent)}
+.proto{display:grid;gap:14px}
+.meta{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 14px}
+.meta h2{font-family:var(--f-head);font-variation-settings:"wdth" 112;font-weight:800;font-size:22px;margin:0}
+.meta .n{font-family:var(--f-head);font-weight:800;color:var(--accent);font-variant-numeric:tabular-nums}
+.meta p{flex-basis:100%;margin:0;color:var(--muted);max-width:80ch}
+.specs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+@media (max-width:720px){.specs{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.spec{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;min-width:0}
+.spec b{display:block;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.spec span{font-size:14px}
+.frame{position:relative;aspect-ratio:16/9;max-width:100%;border-radius:12px;overflow:hidden;box-shadow:0 18px 50px rgba(10,20,40,.18);background:#000}
+.stage{position:absolute;left:0;top:0;width:1920px;height:1080px;transform-origin:0 0;overflow:hidden}
+.replay{justify-self:start;font:600 14px var(--f-body);color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:999px;padding:8px 16px;cursor:pointer}
+.replay:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.foot{color:var(--muted);border-top:1px solid var(--line);padding-top:16px}
+
+/* ===== estructura común del lienzo ===== */
+.sc{position:absolute;inset:0}
+.ttl{position:absolute;left:150px;top:330px;width:1500px}
+.ttl .eb{font-size:30px;font-weight:700;letter-spacing:.24em;text-transform:uppercase}
+.ttl h3{margin:18px 0 0;font-size:118px;line-height:.98;font-weight:800}
+.ttl .sub{margin-top:30px;font-size:38px;font-weight:500;max-width:1100px}
+.docs{position:absolute;left:150px;right:150px;top:250px;display:grid;grid-template-columns:1fr 1fr;gap:90px}
+.doc{position:relative;padding:0;overflow:hidden}
+.doc .dh{display:flex;align-items:center;gap:18px;padding:26px 34px}
+.doc .dh svg{width:46px;height:46px;flex:none}
+.doc .dh b{display:block;font-size:30px}
+.doc .dh small{display:block;font-size:20px;opacity:.75}
+.doc .rows{padding:12px 34px 30px}
+.row{position:relative;padding:16px 0}
+.row .l{font-size:18px;font-weight:700;letter-spacing:.12em;text-transform:uppercase}
+.row .v{position:relative;display:inline-block;font-size:34px;font-weight:700;margin-top:6px;z-index:1}
+.row .mk{position:absolute;left:-8px;right:-8px;top:8px;bottom:0;z-index:-1;transform:scaleX(0);transform-origin:left;border-radius:4px}
+.mark{position:absolute;right:26px;width:70px;height:70px;border-radius:50%;display:grid;place-items:center;transform:scale(0)}
+.mark svg{width:42px;height:42px}
+.verdict{position:absolute;left:50%;top:860px;transform:translateX(-50%) scale(0);font-size:40px;font-weight:800;letter-spacing:.12em;padding:16px 44px;border-radius:12px;white-space:nowrap}
+.ico{position:absolute;left:150px;right:150px;top:170px}
+.ico h4{margin:0 0 70px;font-size:76px;font-weight:800;line-height:1}
+.ico .items{display:grid;grid-template-columns:repeat(3,1fr);gap:60px}
+.it{display:grid;gap:26px;justify-items:start}
+.it .badge{width:170px;height:170px;display:grid;place-items:center}
+.it .badge svg{width:84px;height:84px}
+.it b{font-size:42px;font-weight:800;line-height:1.1}
+.it span{font-size:26px}
+.nums{position:absolute;left:150px;right:150px;top:150px}
+.nums h4{margin:0 0 50px;font-size:76px;font-weight:800;line-height:1}
+.bars{display:grid;grid-template-columns:repeat(3,1fr);gap:70px;align-items:end;height:560px}
+.bar{display:grid;gap:18px;align-content:end}
+.bar .val{font-size:84px;font-weight:800;line-height:1;font-variant-numeric:tabular-nums}
+.bar .val small{font-size:36px;margin-left:8px}
+.bar .col{height:var(--h);transform:scaleY(0);transform-origin:bottom}
+.bar .cap{font-size:28px}
+.bar .cap b{display:block;font-size:36px}
+
+/* ===== P1 · Editorial corporativo ===== */
+.p1 .stage{background:#F7F9FC;color:#0B1B3F;font-family:'Inter',sans-serif}
+.p1 .ttl h3,.p1 h4,.p1 .bar .val,.p1 .verdict,.p1 .it b{font-family:'Archivo',sans-serif;font-variation-settings:"wdth" 125}
+.p1 .ttl .eb{color:#5A6782}.p1 .ttl h3 em{font-style:normal;color:#0B1B3F;box-shadow:inset 0 -18px 0 #FFC59E}
+.p1 .rule{position:absolute;left:150px;top:300px;width:180px;height:10px;background:#E8600A;transform:scaleX(0);transform-origin:left}
+.p1 .doc{background:#fff;border-radius:4px;box-shadow:0 2px 0 #E3E8F1,0 30px 70px rgba(11,27,63,.14)}
+.p1 .doc::after{content:"";position:absolute;right:0;top:0;width:60px;height:60px;background:linear-gradient(225deg,#F7F9FC 50%,#DDE3EE 50%)}
+.p1 .doc .dh{border-bottom:2px solid #0B1B3F;color:#0B1B3F}.p1 .doc .dh svg{color:#0B1B3F}
+.p1 .doc .seal{position:absolute;right:90px;top:16px;width:80px;height:80px;font-size:12px!important;border:3px solid #C9D2E3;border-radius:50%;display:grid;place-items:center;font:700 16px 'IBM Plex Mono',monospace;color:#AEB9CE;letter-spacing:.1em}
+.p1 .row{border-bottom:1px solid #E6EBF3}.p1 .row .l{color:#5A6782}.p1 .row .mk{background:#FFE1C9}
+.p1 .mark.ok{background:#0F8A55;color:#fff}.p1 .mark.no{background:#C62B3B;color:#fff}
+.p1 .verdict{background:#0B1B3F;color:#fff}
+.p1 .it .badge{border:3px solid #0B1B3F;border-radius:50%;color:#0B1B3F}.p1 .it span{color:#5A6782}
+.p1 .bar .col{background:#0B1B3F}.p1 .bar:last-child .col{background:#E8600A}.p1 .bar .cap{color:#5A6782}.p1 .bar .cap b{color:#0B1B3F}
+
+/* ===== P2 · Cinético bold ===== */
+.p2 .stage{background:#0A1F4F;color:#fff;font-family:'Inter',sans-serif}
+.p2 .ttl h3,.p2 h4,.p2 .bar .val,.p2 .verdict,.p2 .it b,.p2 .ttl .eb{font-family:'Unbounded',sans-serif}
+.p2 .ttl h3{font-size:110px}.p2 .ttl .eb{color:#FFB27A;letter-spacing:.14em}
+.p2 .hl{background:#FF7A00;color:#0A1F4F;padding:0 18px;display:inline-block}
+.p2 .doc{background:#fff;color:#0A1F4F;border-radius:22px;box-shadow:0 40px 90px rgba(0,0,0,.45)}
+.p2 .doc .dh{background:#FF7A00;color:#0A1F4F}.p2 .doc:last-child .dh{background:#FFFFFF;color:#0A1F4F;border-bottom:4px solid #0A1F4F}
+.p2 .row .l{color:#3B4A6E}.p2 .row .mk{background:#FFE08A}
+.p2 .mark.ok{background:#12B76A;color:#fff}.p2 .mark.no{background:#FF3B4E;color:#fff}
+.p2 .verdict{background:#FF7A00;color:#0A1F4F}
+.p2 .it .badge{background:#FF7A00;border-radius:36px;color:#0A1F4F}.p2 .it span{color:#C9D6F5}
+.p2 .bar .col{background:#FFFFFF}.p2 .bar:last-child .col{background:#FF7A00}.p2 .bar .cap{color:#C9D6F5}.p2 .bar .cap b{color:#fff}
+
+/* ===== P3 · Profundidad 3D suave ===== */
+.p3 .stage{background:radial-gradient(1200px 700px at 70% 30%,#FFFFFF,#E7EEF8);color:#13234A;font-family:'Inter',sans-serif;perspective:2200px}
+.p3 .ttl h3,.p3 h4,.p3 .bar .val,.p3 .verdict,.p3 .it b{font-family:'Lexend',sans-serif;letter-spacing:-.01em}
+.p3 .ttl .eb{color:#0047BB}
+.p3 .docs{transform-style:preserve-3d}
+.p3 .doc{background:#fff;border-radius:18px;transform:rotateY(-14deg) rotateX(6deg);box-shadow:-30px 40px 80px rgba(19,35,74,.18),0 0 0 1px #E2E8F2}
+.p3 .doc:last-child{transform:rotateY(14deg) rotateX(6deg)}
+.p3 .doc .dh{color:#13234A}.p3 .doc .dh svg{color:#0047BB}
+.p3 .doc .stack{position:absolute;inset:14px -14px -14px 14px;background:#F1F4FA;border-radius:18px;z-index:-1}
+.p3 .row .l{color:#6A7591}.p3 .row .mk{background:#D7E6FF}
+.p3 .mark.ok{background:#12B76A;color:#fff;box-shadow:0 14px 30px rgba(18,183,106,.35)}.p3 .mark.no{background:#E5484D;color:#fff;box-shadow:0 14px 30px rgba(229,72,77,.35)}
+.p3 .verdict{background:#13234A;color:#fff;box-shadow:0 20px 40px rgba(19,35,74,.3)}
+.p3 .it .badge{background:linear-gradient(145deg,#FFFFFF,#DDE7F6);border-radius:40px;color:#0047BB;box-shadow:20px 26px 50px rgba(19,35,74,.18),-10px -10px 30px #fff}
+.p3 .it span{color:#6A7591}
+.p3 .bar .col{background:linear-gradient(180deg,#3D7BE0,#0047BB);border-radius:20px 20px 6px 6px;box-shadow:0 30px 50px rgba(0,71,187,.25)}.p3 .bar:last-child .col{background:linear-gradient(180deg,#FF9A4D,#E8600A)}
+.p3 .bar .cap{color:#6A7591}.p3 .bar .cap b{color:#13234A}
+
+/* ===== P4 · Blueprint técnico ===== */
+.p4 .stage{background:#0A3A8C;color:#fff;font-family:'IBM Plex Mono',monospace;
+  background-image:linear-gradient(rgba(255,255,255,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.07) 1px,transparent 1px);background-size:60px 60px}
+.p4 .ttl h3,.p4 h4,.p4 .bar .val,.p4 .verdict,.p4 .it b,.p4 .doc .dh b,.p4 .row .v{font-family:'Archivo',sans-serif;font-variation-settings:"wdth" 115}
+.p4 .ttl .eb{color:#8FE3FF}
+.p4 .doc{border:3px solid #fff;background:rgba(255,255,255,.04);clip-path:inset(0 100% 0 0)}
+.p4 .doc .dh{border-bottom:3px dashed rgba(255,255,255,.6)}.p4 .doc .dh svg{color:#8FE3FF}
+.p4 .row{border-bottom:1px dashed rgba(255,255,255,.35)}.p4 .row .l{color:#8FE3FF}.p4 .row .mk{background:rgba(255,184,28,.35)}
+.p4 .mark.ok{border:4px solid #4BE39B;color:#4BE39B}.p4 .mark.no{border:4px solid #FF6B76;color:#FF6B76}
+.p4 .verdict{border:3px solid #fff;color:#fff}
+.p4 .it .badge{border:3px solid #fff;color:#fff}.p4 .it span{color:#BFD9FF}
+.p4 .bar .col{background:transparent;border:3px solid #fff;background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.25) 0 6px,transparent 6px 14px)}
+.p4 .bar:last-child .col{border-color:#FFB81C;background-image:repeating-linear-gradient(45deg,rgba(255,184,28,.45) 0 6px,transparent 6px 14px)}
+.p4 .bar .cap{color:#BFD9FF}
+.p4 .scan{position:absolute;left:0;right:0;height:3px;background:#8FE3FF;box-shadow:0 0 0 1px rgba(143,227,255,.3);top:0;opacity:0}
+
+/* ===== P5 · Tarjetas ilustradas ===== */
+.p5 .stage{background:#FFFFFF;color:#1A1F36;font-family:'Inter',sans-serif}
+.p5 .blob{position:absolute;border-radius:50%}
+.p5 .ttl h3,.p5 h4,.p5 .bar .val,.p5 .verdict,.p5 .it b,.p5 .doc .dh b{font-family:'Sora',sans-serif;letter-spacing:-.02em}
+.p5 .ttl .eb{color:#0047BB}
+.p5 .doc{background:#fff;border-radius:34px;border:3px solid #1A1F36;box-shadow:10px 12px 0 #1A1F36}
+.p5 .doc .dh{background:#FFE7D4}.p5 .doc:last-child .dh{background:#DCE8FF}.p5 .doc .dh svg{color:#1A1F36}
+.p5 .row .l{color:#5B6180}.p5 .row .mk{background:#FFF0A8}
+.p5 .mark.ok{background:#12B76A;color:#fff;border:3px solid #1A1F36}.p5 .mark.no{background:#FF5A5F;color:#fff;border:3px solid #1A1F36}
+.p5 .verdict{background:#12B76A;color:#fff;border:3px solid #1A1F36;box-shadow:6px 6px 0 #1A1F36}
+.p5 .it .badge{border-radius:50%;border:3px solid #1A1F36;color:#1A1F36;box-shadow:8px 8px 0 #1A1F36}
+.p5 .it:nth-child(1) .badge{background:#FFD3B0}.p5 .it:nth-child(2) .badge{background:#C8DBFF}.p5 .it:nth-child(3) .badge{background:#BFF0D6}
+.p5 .it span{color:#5B6180}
+.p5 .bar .col{border:3px solid #1A1F36;border-radius:26px 26px 0 0;background:#C8DBFF}.p5 .bar:nth-child(2) .col{background:#8FB4FF}.p5 .bar:last-child .col{background:#FF9A4D}
+.p5 .bar .cap{color:#5B6180}.p5 .bar .cap b{color:#1A1F36}
+@media (prefers-reduced-motion: reduce){.frame{animation:none}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Video Pólizas RCE · Solgas</div>
+    <h1>Elige el estilo de animación</h1>
+    <p>Los cinco prototipos muestran la misma secuencia del video: título de capítulo, comparativo de documentos, íconos de cobertura y montos mínimos. Ninguno usa la planta industrial. Puedes elegir uno completo o combinar partes, por ejemplo la tipografía de uno con los documentos de otro.</p>
+  </header>
+  <div id="list"></div>
+  <p class="foot">Datos de ejemplo: la razón social y el RUC son ficticios. La versión final usa la misma paleta Solgas en tonos con alto contraste entre texto y fondo.</p>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script>
+const IC = {
+  doc:'<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/>',
+  shield:'<path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/>',
+  search:'<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>',
+  users:'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+  house:'<path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
+  leaf:'<path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/>',
+  check:'<path d="M20 6 9 17l-5-5"/>', x:'<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
+};
+const svg = (n, sw = 2) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round">${IC[n]}</svg>`;
+
+const PROTOS = [
+  { id:'p1', name:'Editorial corporativo', desc:'Sobrio y premium. Fondo claro, texto azul marino y un solo acento naranja. Los documentos parecen hojas reales con membrete, esquina doblada y sello.',
+    specs:['Archivo Expanded, ancha y firme','Blanco, azul marino; naranja solo en el acento','Revelados suaves con máscara y subrayado que se dibuja','Íconos de línea dentro de círculos'] },
+  { id:'p2', name:'Cinético bold', desc:'El más llamativo. Fondo azul profundo, tipografía grande y palabras clave en bloque naranja con texto oscuro para máximo contraste. Movimiento rápido con rebote.',
+    specs:['Unbounded, extra ancha','Azul profundo, blanco y naranja en bloques','Entradas rápidas, rebote y escalas marcadas','Íconos sólidos en bloques de color'] },
+  { id:'p3', name:'Profundidad 3D suave', desc:'Moderno y limpio. Documentos inclinados en perspectiva con sombras de profundidad, íconos en relieve y barras con volumen.',
+    specs:['Lexend, ancha y redondeada','Blanco azulado con azul Solgas y naranja','Giros en perspectiva y flotación','Íconos en relieve, estilo neumórfico'] },
+  { id:'p4', name:'Blueprint técnico', desc:'Técnico y normativo. Plano azul con cuadrícula, documentos que se dibujan línea por línea, datos que se escriben y un escáner que recorre la hoja.',
+    specs:['Archivo semiexpandida + Plex Mono','Azul plano, blanco y cian; ámbar para alertas','Trazos que se dibujan, escritura y escaneo','Íconos de línea blanca'] },
+  { id:'p5', name:'Tarjetas ilustradas', desc:'Cercano y didáctico. Tarjetas con contorno grueso y sombra sólida, colores pastel por tema e íconos grandes con rebote elástico.',
+    specs:['Sora, ancha y amigable','Blanco con pastel por tema y contorno oscuro','Rebote elástico y pequeños balanceos','Íconos grandes en círculos de color'] },
+];
+
+function stageHTML(p) {
+  const kw = p.id === 'p2' ? '<span class="hl">asegurado</span>' : p.id === 'p1' ? '<em>asegurado</em>' : 'asegurado';
+  const docRows = (rs, ruc, act) => `
+    <div class="row"><div class="l">Razón social</div><div class="v"><span class="mk"></span>${rs}</div></div>
+    <div class="row"><div class="l">RUC</div><div class="v"><span class="mk"></span>${ruc}</div></div>
+    <div class="row"><div class="l">Actividad</div><div class="v"><span class="mk"></span>${act}</div></div>`;
+  const extras = p.id === 'p1' ? '<div class="seal">SELLO</div>' : p.id === 'p3' ? '<div class="stack"></div>' : '';
+  const blobs = p.id === 'p5' ? `<div class="blob" style="left:-120px;top:-140px;width:520px;height:520px;background:#FFF1E6"></div><div class="blob" style="right:-160px;bottom:-200px;width:700px;height:700px;background:#EAF1FF"></div>` : '';
+  return `${blobs}${p.id === 'p4' ? '<div class="scan"></div>' : ''}
+  <div class="sc s-title">${p.id === 'p1' ? '<div class="rule"></div>' : ''}
+    <div class="ttl"><div class="eb">Capítulo 04</div><h3>Identificación del ${kw}</h3><div class="sub">La razón social, el RUC y la actividad deben coincidir en todos los documentos.</div></div></div>
+  <div class="sc s-docs">
+    <div class="docs">
+      <div class="doc">${extras}<div class="dh">${svg('search')}<div><b>Consulta RUC</b><small>SUNAT</small></div></div>
+        <div class="rows">${docRows('INDUSTRIAS ANDINAS S.A.C.', '20601234567', 'Consumidor directo de GLP')}</div></div>
+      <div class="doc">${extras}<div class="dh">${svg('shield')}<div><b>Póliza de seguro</b><small>Responsabilidad Civil Extracontractual</small></div></div>
+        <div class="rows">${docRows('INDUSTRIAS ANDINAS S.A.C.', '20601234576', 'Consumidor directo de GLP')}</div>
+        <div class="mark ok" style="top:178px">${svg('check', 3)}</div><div class="mark no" style="top:296px">${svg('x', 3)}</div><div class="mark ok" style="top:414px">${svg('check', 3)}</div></div>
+    </div>
+    <div class="verdict">EL RUC NO COINCIDE</div></div>
+  <div class="sc s-icons"><div class="ico"><h4>La póliza debe cubrir</h4><div class="items">
+    <div class="it"><div class="badge">${svg('users', 1.8)}</div><b>Daños a terceros</b><span>Personas afectadas por un siniestro</span></div>
+    <div class="it"><div class="badge">${svg('house', 1.8)}</div><b>Sus bienes</b><span>Propiedades de terceros</span></div>
+    <div class="it"><div class="badge">${svg('leaf', 1.8)}</div><b>Medio ambiente</b><span>Daños ambientales del siniestro</span></div></div></div></div>
+  <div class="sc s-nums"><div class="nums"><h4>Montos mínimos</h4><div class="bars">
+    <div class="bar" style="--h:150px"><div class="val"><span data-to="100">0</span><small>UIT</small></div><div class="col"></div><div class="cap">Hasta<b>1,000 gal</b></div></div>
+    <div class="bar" style="--h:270px"><div class="val"><span data-to="200">0</span><small>UIT</small></div><div class="col"></div><div class="cap">Hasta<b>10,000 gal</b></div></div>
+    <div class="bar" style="--h:390px"><div class="val"><span data-to="300">0</span><small>UIT</small></div><div class="col"></div><div class="cap">Mayor a<b>10,000 gal</b></div></div></div></div></div>`;
+}
+
+// movimiento propio de cada prototipo
+const MOTION = {
+  p1: { ease:'power3.out', d:0.9, from:{ y:40, autoAlpha:0 }, pop:'power2.out', st:0.12 },
+  p2: { ease:'back.out(2.2)', d:0.55, from:{ scale:0.6, autoAlpha:0 }, pop:'back.out(3)', st:0.06 },
+  p3: { ease:'expo.out', d:1.1, from:{ rotationY:-40, z:-300, autoAlpha:0 }, pop:'back.out(1.6)', st:0.14 },
+  p4: { ease:'power2.inOut', d:1.0, from:{ autoAlpha:0 }, pop:'power2.out', st:0.1 },
+  p5: { ease:'elastic.out(1,0.55)', d:1.1, from:{ y:120, rotation:-6, autoAlpha:0 }, pop:'elastic.out(1,0.45)', st:0.1 },
+};
+
+function build(p, stage) {
+  const m = MOTION[p.id], q = s => stage.querySelectorAll(s), q1 = s => stage.querySelector(s);
+  const tl = gsap.timeline({ repeat: -1, repeatDelay: 0.6 });
+  gsap.set(q('.sc'), { autoAlpha: 0 });
+  // 1. título
+  tl.set(q1('.s-title'), { autoAlpha: 1 }, 0);
+  if (p.id === 'p2') {
+    tl.from(q('.s-title .eb, .s-title h3, .s-title .sub'), { x: -300, autoAlpha: 0, duration: m.d, ease: 'expo.out', stagger: 0.1 }, 0.1);
+    tl.from(q('.s-title .hl'), { scaleX: 0, transformOrigin: 'left', duration: 0.5, ease: 'power4.out' }, 0.5);
+  } else if (p.id === 'p4') {
+    tl.from(q('.s-title .eb, .s-title h3, .s-title .sub'), { clipPath: 'inset(0 100% 0 0)', duration: 0.9, ease: 'power2.inOut', stagger: 0.25 }, 0.1);
+  } else {
+    tl.from(q('.s-title .eb, .s-title h3, .s-title .sub'), Object.assign({ duration: m.d, ease: m.ease, stagger: m.st * 2 }, m.from), 0.1);
+  }
+  if (p.id === 'p1') tl.to(q1('.rule'), { scaleX: 1, duration: 0.8, ease: 'expo.inOut' }, 0.5);
+  tl.to(q1('.s-title'), { autoAlpha: 0, y: -40, duration: 0.4, ease: 'power2.in' }, 2.6);
+  // 2. documentos
+  const T2 = 3.0;
+  tl.set(q1('.s-docs'), { autoAlpha: 1 }, T2);
+  if (p.id === 'p4') {
+    tl.to(q('.doc'), { clipPath: 'inset(0 0% 0 0)', duration: 1.1, ease: 'power2.inOut', stagger: 0.3 }, T2);
+    tl.fromTo(q1('.scan'), { top: 230, autoAlpha: 1 }, { top: 760, duration: 1.4, ease: 'none', immediateRender: false }, T2 + 1.4);
+    tl.to(q1('.scan'), { autoAlpha: 0, duration: 0.2 }, T2 + 2.8);
+  } else {
+    tl.from(q('.doc'), Object.assign({ duration: m.d, ease: m.ease, stagger: 0.2 }, m.from), T2);
+  }
+  tl.to(q('.doc:last-child .row:nth-child(2) .mk, .doc:first-child .row:nth-child(2) .mk'), { scaleX: 1, duration: 0.5, ease: 'power2.inOut' }, T2 + 1.5);
+  tl.to(q('.doc .row:nth-child(1) .mk, .doc .row:nth-child(3) .mk'), { scaleX: 1, duration: 0.5, ease: 'power2.inOut', stagger: 0.05 }, T2 + 1.2);
+  tl.to(q('.mark'), { scale: 1, duration: 0.45, ease: m.pop, stagger: 0.25 }, T2 + 2.0);
+  tl.to(q1('.verdict'), { scale: 1, duration: 0.5, ease: m.pop }, T2 + 2.9);
+  if (p.id === 'p2') tl.to(q1('.stage') || stage, { keyframes: [{ x: 10 }, { x: -8 }, { x: 0 }], duration: 0.25 }, T2 + 3.0);
+  tl.to(q1('.s-docs'), { autoAlpha: 0, duration: 0.4 }, T2 + 4.4);
+  // 3. íconos
+  const T3 = T2 + 4.9;
+  tl.set(q1('.s-icons'), { autoAlpha: 1 }, T3);
+  tl.from(q1('.s-icons h4'), Object.assign({ duration: m.d, ease: m.ease }, p.id === 'p4' ? { clipPath: 'inset(0 100% 0 0)' } : m.from), T3);
+  tl.from(q('.it .badge'), { scale: 0, rotation: p.id === 'p5' ? -25 : 0, duration: 0.7, ease: m.pop, stagger: 0.25 }, T3 + 0.4);
+  tl.from(q('.it b, .it span'), { y: 30, autoAlpha: 0, duration: 0.5, ease: 'power2.out', stagger: 0.08 }, T3 + 0.7);
+  if (p.id === 'p5') tl.to(q('.it .badge'), { rotation: 6, duration: 0.35, yoyo: true, repeat: 3, ease: 'sine.inOut', stagger: 0.15 }, T3 + 1.8);
+  if (p.id === 'p3') tl.to(q('.it .badge'), { y: -16, duration: 0.8, yoyo: true, repeat: 1, ease: 'sine.inOut', stagger: 0.15 }, T3 + 1.6);
+  tl.to(q1('.s-icons'), { autoAlpha: 0, duration: 0.4 }, T3 + 3.4);
+  // 4. montos
+  const T4 = T3 + 3.9;
+  tl.set(q1('.s-nums'), { autoAlpha: 1 }, T4);
+  tl.from(q1('.s-nums h4'), Object.assign({ duration: m.d, ease: m.ease }, p.id === 'p4' ? { clipPath: 'inset(0 100% 0 0)' } : m.from), T4);
+  q('.bar').forEach((b, i) => {
+    const t = T4 + 0.4 + i * 0.3, el = b.querySelector('[data-to]');
+    tl.to(b.querySelector('.col'), { scaleY: 1, duration: 0.8, ease: p.id === 'p5' ? 'elastic.out(1,0.5)' : 'expo.out' }, t);
+    tl.fromTo(el, { innerText: 0 }, { innerText: +el.dataset.to, snap: { innerText: 1 }, duration: 0.9, ease: 'power2.out', immediateRender: false }, t);
+    tl.from(b.querySelector('.cap'), { autoAlpha: 0, y: 20, duration: 0.4 }, t + 0.2);
+  });
+  tl.to(q1('.s-nums'), { autoAlpha: 0, duration: 0.4 }, T4 + 3.6);
+  return tl;
+}
+
+const list = document.getElementById('list');
+list.style.display = 'grid'; list.style.gap = '44px';
+const tls = [];
+PROTOS.forEach((p, i) => {
+  const sec = document.createElement('section');
+  sec.className = 'proto ' + p.id;
+  sec.innerHTML = `<div class="meta"><span class="n">Opción ${i + 1}</span><h2>${p.name}</h2><p>${p.desc}</p></div>
+    <div class="frame"><div class="stage">${stageHTML(p)}</div></div>
+    <div class="specs">${['Tipografía', 'Colores', 'Animación', 'Íconos'].map((k, j) => `<div class="spec"><b>${k}</b><span>${p.specs[j]}</span></div>`).join('')}</div>
+    <button class="replay" id="replay-${p.id}" type="button">Repetir animación</button>`;
+  list.appendChild(sec);
+});
+function fit() { document.querySelectorAll('.frame').forEach(f => { f.querySelector('.stage').style.transform = `scale(${f.clientWidth / 1920})`; }); }
+window.addEventListener('resize', fit); fit();
+const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+document.fonts.ready.then(() => {
+  PROTOS.forEach(p => {
+    const stage = document.querySelector('.' + p.id + ' .stage');
+    if (!window.gsap) { stage.querySelectorAll('.sc').forEach((s, k) => s.style.visibility = k === 1 ? 'visible' : 'hidden'); return; }
+    const tl = build(p, stage); tls.push(tl);
+    if (reduce) { tl.pause(7.2); }
+    document.getElementById('replay-' + p.id).addEventListener('click', () => { tl.restart(); if (reduce) tl.pause(7.2); });
+  });
+});
+</script>
