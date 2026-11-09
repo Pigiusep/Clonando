@@ -1,0 +1,273 @@
+<title>Ruta del trámite</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400..900&display=swap">
+<style>
+/* Página de revisión: un lienzo 16:9 grande con la animación de la ruta y un selector de fondo debajo. */
+:root{
+  --bg:#F3F5F9; --card:#FFFFFF; --ink:#0A1F4F; --muted:#4A5878; --line:#DCE2EC; --accent:#E8600A; --sel:#0047BB;
+  --f:'Epilogue',system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#0D1220;--card:#151C2E;--ink:#EEF2F9;--muted:#9AA6BF;--line:#26304A;--accent:#FF8A3D;--sel:#7FA8F0;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0D1220;--card:#151C2E;--ink:#EEF2F9;--muted:#9AA6BF;--line:#26304A;--accent:#FF8A3D;--sel:#7FA8F0;color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font-family:var(--f);font-size:15px;line-height:1.55}
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 64px;display:grid;gap:22px}
+h1{font-weight:900;font-size:clamp(1.7rem,1.2rem + 2.4vw,2.8rem);line-height:1.04;margin:4px 0 8px;letter-spacing:-.03em;text-wrap:balance}
+.intro{color:var(--muted);max-width:70ch;margin:0}
+.eyebrow{font-weight:800;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent)}
+.frame{position:relative;aspect-ratio:16/9;max-width:100%;border-radius:12px;overflow:hidden;box-shadow:0 18px 50px rgba(10,20,40,.16);background:#fff}
+.stage{position:absolute;left:0;top:0;width:1920px;height:1080px;transform-origin:0 0;overflow:hidden}
+.controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.controls .lab{font-weight:800;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-right:4px}
+.opt{font:700 14px var(--f);color:var(--ink);background:var(--card);border:2px solid var(--line);border-radius:999px;padding:8px 16px;cursor:pointer}
+.opt[aria-pressed="true"]{border-color:var(--sel);color:var(--sel)}
+.opt:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.notes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+@media (max-width:760px){.notes{grid-template-columns:1fr}}
+.note{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px;min-width:0}
+.note b{display:block;font-weight:800;margin-bottom:2px}
+.note span{color:var(--muted);font-size:14px}
+
+/* ===== lienzo: tarjetas ilustradas, paleta Solgas suave, Epilogue ===== */
+.stage{--nv:#0A1F4F;--bl:#0047BB;--blT:#D6E3F8;--bl2:#8FB0EA;--cyT:#D3F0FA;--orT:#FFE2C7;--yeT:#FFEDB8;--or:#FF7A00;--ok:#12B76A;
+  background:#F7FAFE;color:var(--nv);font-family:'Epilogue',sans-serif}
+.bg,.world{position:absolute;left:0;top:0;transform-origin:0 0}
+.world{width:3300px;height:1080px}
+.bg{width:3300px;height:1080px}
+.bgset{position:absolute;inset:0;opacity:0;transition:none}
+.bgset.on{opacity:1}
+.k{position:absolute;background:#fff;border:5px solid var(--nv);border-radius:30px;box-shadow:12px 14px 0 var(--nv)}
+.hud{position:absolute;left:0;right:0;top:44px;display:flex;justify-content:center}
+.steps{position:relative;display:flex;gap:120px;padding:18px 44px;background:#fff;border:4px solid var(--nv);border-radius:999px;box-shadow:8px 8px 0 var(--nv)}
+.steps .trk{position:absolute;left:70px;right:70px;top:50%;height:8px;margin-top:-4px;background:#E4E9F2;border-radius:4px}
+.steps .trk i{position:absolute;left:0;top:0;bottom:0;width:100%;background:var(--or);border-radius:4px;transform-origin:left;transform:scaleX(0)}
+.st{position:relative;display:flex;align-items:center;gap:12px;font-weight:800;font-size:22px;white-space:nowrap}
+.st .d{width:40px;height:40px;border-radius:50%;border:4px solid var(--nv);background:#fff;display:grid;place-items:center;font-weight:900;font-size:18px}
+.chip{position:absolute;left:60px;top:150px;font-weight:900;font-size:30px;padding:12px 28px;border:4px solid var(--nv);border-radius:999px;background:var(--yeT);box-shadow:6px 6px 0 var(--nv)}
+.ms{position:absolute;width:230px;height:230px}
+.ms .ill{position:absolute;inset:0}
+.ms .ring{position:absolute;inset:-20px;border-radius:50%;border:6px solid var(--or);opacity:0}
+.ms .okb{position:absolute;right:-10px;top:-10px;width:78px;height:78px;border-radius:50%;background:var(--ok);border:5px solid var(--nv);box-shadow:5px 5px 0 var(--nv);display:grid;place-items:center;transform:scale(0)}
+.ms .okb svg{width:44px;height:44px}
+.ms .name{position:absolute;left:50%;transform:translateX(-50%);white-space:nowrap;font-weight:900;font-size:34px;letter-spacing:-.02em;background:#fff;border:4px solid var(--nv);border-radius:16px;padding:8px 18px;box-shadow:6px 6px 0 var(--nv)}
+.det{width:560px;padding:30px 34px 26px}
+.det h5{margin:0 0 16px;font-size:40px;font-weight:900;letter-spacing:-.02em;line-height:1.05}
+.det .eb{font-weight:800;font-size:20px;letter-spacing:.16em;text-transform:uppercase;color:var(--bl);margin-bottom:8px}
+.det li{list-style:none;display:flex;gap:14px;align-items:flex-start;font-size:27px;font-weight:600;line-height:1.25;margin:12px 0}
+.det li i{flex:none;width:34px;height:34px;border-radius:9px;border:4px solid var(--nv);background:var(--yeT);display:grid;place-items:center;margin-top:-2px}
+.det li i svg{width:22px;height:22px;color:var(--nv)}
+.det ul{margin:0;padding:0}
+.banner{position:absolute;left:50%;bottom:70px;transform:translateX(-50%);font-weight:900;font-size:44px;letter-spacing:-.02em;padding:18px 44px;border:5px solid var(--nv);border-radius:24px;background:var(--or);color:var(--nv);box-shadow:10px 10px 0 var(--nv);white-space:nowrap}
+.marker{position:absolute;width:118px;height:118px;margin:-59px 0 0 -59px}
+</style>
+
+<div class="wrap">
+  <div>
+    <div class="eyebrow">Concepto elegido · Ruta del trámite</div>
+    <h1>La póliza a lo largo del trámite</h1>
+    <p class="intro">La cámara sigue a la póliza por cada hito del trámite. En cada parada se abre una tarjeta con lo que se revisa, el camino se pinta de naranja y la barra superior marca el avance. Prueba los tres fondos con los botones de abajo.</p>
+  </div>
+  <div class="frame"><div class="stage" id="stage"></div></div>
+  <div class="controls" role="group" aria-label="Fondo">
+    <span class="lab">Fondo</span>
+    <button class="opt" type="button" id="bg-mapa" aria-pressed="true">Mapa urbano</button>
+    <button class="opt" type="button" id="bg-ciudad" aria-pressed="false">Skyline de ciudad</button>
+    <button class="opt" type="button" id="bg-docs" aria-pressed="false">Textura documental</button>
+    <button class="opt" type="button" id="replay">Repetir animación</button>
+  </div>
+  <div class="notes">
+    <div class="note"><b>Mapa urbano</b><span>Manzanas, calles y parques en tonos Solgas muy suaves. La ruta se lee como un recorrido real por la ciudad.</span></div>
+    <div class="note"><b>Skyline de ciudad</b><span>Edificios en dos capas con profundidad, que se mueven a distinta velocidad al desplazarse la cámara.</span></div>
+    <div class="note"><b>Textura documental</b><span>Patrón tenue de hojas, sellos y checks. Refuerza el tema de documentación sin distraer.</span></div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script>
+const NV = '#0A1F4F', BL = '#0047BB', BLT = '#D6E3F8', BL2 = '#8FB0EA', CYT = '#D3F0FA', ORT = '#FFE2C7', YET = '#FFEDB8', OR = '#FF7A00', OK = '#12B76A';
+const ln = (d, w = 6, c = NV) => `<path d="${d}" fill="none" stroke="${c}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round"/>`;
+const sh = (d, fill, w = 6) => `<path d="${d}" fill="${fill}" stroke="${NV}" stroke-width="${w}" stroke-linejoin="round"/>`;
+const check = '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>';
+const tick = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>';
+
+// ---------- íconos ilustrados (230×230) ----------
+const ILL = {
+  solicitud: `<svg viewBox="0 0 230 230" class="ill"><circle cx="115" cy="115" r="108" fill="${BLT}" stroke="${NV}" stroke-width="6"/>
+    ${sh('M62 48 H150 L170 68 V186 H62 Z', '#fff')}${sh('M150 48 V68 H170', '#E9EEF7')}
+    <rect x="62" y="48" width="88" height="22" fill="${BL}" stroke="${NV}" stroke-width="6"/>
+    ${[90, 116, 142].map((y, i) => `<rect x="80" y="${y}" width="16" height="16" rx="4" fill="${i < 2 ? OK : '#fff'}" stroke="${NV}" stroke-width="4"/>${ln(`M106 ${y + 8} H${150 - i * 10}`, 6, BL2)}`).join('')}
+    <g transform="rotate(35 160 150)">${sh('M150 110 h20 v70 l-10 16 l-10 -16 Z', OR, 5)}<rect x="150" y="110" width="20" height="12" fill="${YET}" stroke="${NV}" stroke-width="5"/></g></svg>`,
+  poliza: `<svg viewBox="0 0 230 230" class="ill"><circle cx="115" cy="115" r="108" fill="${ORT}" stroke="${NV}" stroke-width="6"/>
+    ${sh('M58 44 H148 L168 64 V190 H58 Z', '#fff')}${sh('M148 44 V64 H168', '#E9EEF7')}
+    ${ln('M76 76 H130', 7, NV)}${ln('M76 98 H148', 5, BL2)}${ln('M76 116 H140', 5, BL2)}${ln('M76 134 H120', 5, BL2)}
+    ${sh('M134 120 C150 126 162 126 174 120 V146 C174 166 160 176 154 180 C148 176 134 166 134 146 Z', BL, 5)}
+    ${ln('M144 148 l8 8 l14 -16', 6, '#fff')}
+    ${sh('M84 160 l10 34 l10 -10 l10 10 l10 -34 Z', OR, 5)}<circle cx="104" cy="158" r="20" fill="${YET}" stroke="${NV}" stroke-width="5"/></svg>`,
+  autorizacion: `<svg viewBox="0 0 230 230" class="ill"><circle cx="115" cy="115" r="108" fill="${CYT}" stroke="${NV}" stroke-width="6"/>
+    ${sh('M50 70 H140 L158 88 V196 H50 Z', '#fff')}${ln('M66 100 H126', 6, BL2)}${ln('M66 118 H138', 6, BL2)}${ln('M66 136 H112', 6, BL2)}
+    <circle cx="108" cy="166" r="24" fill="none" stroke="${OK}" stroke-width="6"/>${ln('M97 166 l7 7 l13 -14', 6, OK)}
+    <g class="sello">${sh('M150 30 h36 v40 h-36 Z', BL, 5)}${sh('M138 70 h60 a8 8 0 0 1 8 8 v12 h-76 v-12 a8 8 0 0 1 8 -8 Z', OR, 5)}${sh('M128 90 h80 v12 h-80 Z', NV, 3)}</g></svg>`,
+  supervision: `<svg viewBox="0 0 230 230" class="ill"><circle cx="115" cy="115" r="108" fill="${YET}" stroke="${NV}" stroke-width="6"/>
+    ${sh('M52 52 H142 V190 H52 Z', '#fff')}<rect x="76" y="40" width="42" height="22" rx="6" fill="${BL}" stroke="${NV}" stroke-width="5"/>
+    ${[84, 112, 140].map(y => `<rect x="66" y="${y}" width="14" height="14" rx="4" fill="${OK}" stroke="${NV}" stroke-width="4"/>${ln(`M90 ${y + 7} H128`, 6, BL2)}`).join('')}
+    <circle cx="150" cy="130" r="36" fill="${CYT}" fill-opacity=".7" stroke="${NV}" stroke-width="8"/>${ln('M176 156 L204 184', 14, NV)}${ln('M138 118 a14 14 0 0 1 14 -8', 5, '#fff')}</svg>`,
+};
+const markerSVG = `<svg viewBox="0 0 118 118" style="width:100%;height:100%"><circle cx="59" cy="59" r="54" fill="${OR}" stroke="${NV}" stroke-width="6"/>${sh('M38 30 H72 L84 42 V88 H38 Z', '#fff', 5)}${ln('M48 52 H74', 5, BL2)}${ln('M48 64 H70', 5, BL2)}${ln('M48 76 H64', 5, BL2)}</svg>`;
+
+// ---------- fondos ----------
+function bgMapa() {
+  let s = `<rect width="3300" height="1080" fill="#EEF4FC"/>`;
+  for (let i = 0; i < 18; i++) for (let j = 0; j < 6; j++) {
+    const x = i * 190 + (j % 2) * 40 - 60, y = j * 190 - 40, w = 150 - (i * 7 + j * 13) % 40, h = 150 - (i * 11 + j * 5) % 50, park = (i * 3 + j * 7) % 11 === 0;
+    s += `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="18" fill="${park ? '#D3F0FA' : '#DCE6F6'}"/>`;
+    if (park) s += `<circle cx="${x + w / 2}" cy="${y + h / 2}" r="22" fill="#B8E3F2"/>`;
+    else if ((i + j) % 3 === 0) s += `<rect x="${x + 22}" y="${y + 22}" width="${w - 44}" height="${h - 44}" rx="10" fill="#E6EDF9"/>`;
+  }
+  s += `<path d="M0 560 H3300 M980 0 V1080 M2160 0 V1080" stroke="#fff" stroke-width="44"/><path d="M0 560 H3300" stroke="#E4EAF4" stroke-width="4" stroke-dasharray="30 30"/>`;
+  return s;
+}
+function bgCiudad() {
+  let s = `<defs><linearGradient id="cielo" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E7EFFB"/><stop offset=".75" stop-color="#F7FAFE"/></linearGradient></defs><rect width="3300" height="1080" fill="url(#cielo)"/>
+    <circle cx="2500" cy="300" r="150" fill="#FFE2C7"/><circle cx="2500" cy="300" r="105" fill="#FFD3A8"/>`;
+  [[300, 180, 1], [1400, 120, .8], [2900, 200, 1.1]].forEach(([x, y, k]) => s += `<g transform="translate(${x} ${y}) scale(${k})" fill="#fff"><ellipse cx="0" cy="0" rx="120" ry="40"/><ellipse cx="70" cy="-26" rx="70" ry="44"/><ellipse cx="-60" cy="-14" rx="60" ry="34"/></g>`);
+  const city = (cls, base, col, wins, seed) => { let o = `<g class="${cls}">`; for (let i = 0; i < 30; i++) { const w = 90 + (i * seed) % 80, h = 160 + (i * seed * 7) % 300, x = i * 120 - 40;
+      o += `<rect x="${x}" y="${base - h}" width="${w}" height="${h}" rx="6" fill="${col}"/>`;
+      if (wins) for (let r = 0; r < Math.floor(h / 46); r++) o += `<rect x="${x + 16}" y="${base - h + 24 + r * 46}" width="${w - 32}" height="12" rx="3" fill="#fff" opacity=".55"/>`; }
+    return o + '</g>'; };
+  s += city('far', 900, '#DCE6F6', false, 7) + city('near', 980, '#C7D7F1', true, 13);
+  s += `<rect y="980" width="3300" height="100" fill="#DCE6F6"/>`;
+  return s;
+}
+function bgDocs() {
+  let s = `<rect width="3300" height="1080" fill="#F7FAFE"/><circle cx="400" cy="160" r="360" fill="#FFF1E3"/><circle cx="2900" cy="980" r="460" fill="#EAF1FB"/>`;
+  for (let i = 0; i < 26; i++) for (let j = 0; j < 7; j++) {
+    const x = i * 132 + (j % 2) * 66, y = j * 160 + 20, k = (i * 5 + j * 3) % 4, r = ((i + j) % 2 ? -8 : 8);
+    s += `<g transform="translate(${x} ${y}) rotate(${r})" opacity=".14" fill="none" stroke="${NV}" stroke-width="4" stroke-linecap="round">`;
+    if (k === 0) s += `<path d="M0 0 H44 L58 14 V76 H0 Z"/><path d="M12 30 H46 M12 44 H40 M12 58 H30"/>`;
+    else if (k === 1) s += `<circle cx="30" cy="38" r="26"/><path d="M18 38 l8 8 l16 -16"/>`;
+    else if (k === 2) s += `<path d="M10 20 h40 v34 h-40 Z M2 54 h56 v10 h-56 Z"/>`;
+    else s += `<path d="M30 4 L56 14 V36 C56 54 42 64 30 70 C18 64 4 54 4 36 V14 Z"/>`;
+    s += `</g>`;
+  }
+  return s;
+}
+
+// ---------- escena ----------
+const M = [
+  { x: 430, y: 720, ill: 'solicitud', name: 'Solicitud', eb: 'Registro de Hidrocarburos', h: 'Solicitud de registro', items: ['Formulario del Registro de Hidrocarburos', 'Datos del titular y de la actividad'], card: [600, 800], cam: [800, 820] },
+  { x: 1240, y: 420, ill: 'poliza', name: 'Póliza', eb: 'Seguro RCE', h: 'Póliza vigente y correcta', items: ['Razón social y RUC iguales a SUNAT', 'Monto según la capacidad del tanque'], card: [1420, 90], cam: [1620, 340] },
+  { x: 2050, y: 740, ill: 'autorizacion', name: 'Autorización', eb: 'Osinergmin', h: 'Autorización', items: ['Evaluación del expediente', 'Sin observaciones a la póliza'], card: [2210, 810], cam: [2420, 830] },
+  { x: 2860, y: 430, ill: 'supervision', name: 'Supervisión', eb: 'Durante la operación', h: 'Supervisión', items: ['Póliza y adendas al día', 'Documentos coherentes con el registro'], card: [2040, 70], cam: [2520, 330] },
+];
+const SEG = [
+  'M430 720 C760 720 860 420 1240 420',
+  'M1240 420 C1620 420 1660 740 2050 740',
+  'M2050 740 C2440 740 2460 430 2860 430',
+];
+const stage = document.getElementById('stage');
+stage.innerHTML = `
+  <div class="bg" id="bg">
+    <svg class="bgset on" id="set-mapa" viewBox="0 0 3300 1080" width="3300" height="1080">${bgMapa()}</svg>
+    <svg class="bgset" id="set-ciudad" viewBox="0 0 3300 1080" width="3300" height="1080">${bgCiudad()}</svg>
+    <svg class="bgset" id="set-docs" viewBox="0 0 3300 1080" width="3300" height="1080">${bgDocs()}</svg>
+  </div>
+  <div class="world" id="world">
+    <svg viewBox="0 0 3300 1080" width="3300" height="1080" style="position:absolute;left:0;top:0" fill="none">
+      ${SEG.map(d => `<path d="${d}" stroke="${NV}" stroke-width="34" stroke-linecap="round"/><path d="${d}" stroke="#fff" stroke-width="20" stroke-linecap="round"/><path d="${d}" stroke="#E4E9F2" stroke-width="5" stroke-dasharray="16 22" stroke-linecap="round"/>`).join('')}
+      ${SEG.map((d, i) => `<path class="fill" id="fill${i}" d="${d}" stroke="${OR}" stroke-width="20" stroke-linecap="round"/>`).join('')}
+    </svg>
+    ${M.map((m, i) => `<div class="ms" id="ms${i}" style="left:${m.x - 115}px;top:${m.y - 115}px"><div class="ring"></div>${ILL[m.ill]}<div class="okb">${check}</div>
+      <div class="name" style="top:${m.y > 600 ? 250 : -84}px">${m.name}</div></div>`).join('')}
+    ${M.map((m, i) => `<div class="k det" id="det${i}" style="left:${m.card[0]}px;top:${m.card[1]}px"><div class="eb">${m.eb}</div><h5>${m.h}</h5><ul>${m.items.map(t => `<li><i>${tick}</i><span>${t}</span></li>`).join('')}</ul></div>`).join('')}
+    <div class="marker" id="marker">${markerSVG}</div>
+  </div>
+  <div class="hud"><div class="steps"><div class="trk"><i id="trk"></i></div>${M.map((m, i) => `<div class="st"><span class="d" id="d${i}">${i + 1}</span>${m.name}</div>`).join('')}</div></div>
+  <div class="chip" id="chip">Ruta del trámite</div>
+  <div class="banner" id="banner">Póliza vigente en todo el trámite</div>`;
+
+const world = document.getElementById('world'), bg = document.getElementById('bg'), marker = document.getElementById('marker');
+const cam = { x: 1650, y: 560, s: 0.56 };
+function applyCam() {
+  const tx = 960 - cam.x * cam.s, ty = 540 - cam.y * cam.s;
+  world.style.transform = `translate(${tx}px,${ty}px) scale(${cam.s})`;
+  const p = document.getElementById('set-ciudad').classList.contains('on') ? 0.55 : 0.85;   // paralaje del fondo
+  const bs = 0.7 + cam.s * 0.3;
+  bg.style.transform = `translate(${960 - cam.x * bs * p - (1 - p) * 1650 * bs}px,${540 - cam.y * bs}px) scale(${bs})`;
+  document.querySelectorAll('#set-ciudad .far').forEach(g => g.setAttribute('transform', `translate(${(cam.x - 1650) * 0.18} 0)`));
+}
+const segs = SEG.map((_, i) => document.getElementById('fill' + i));
+const L = segs.map(p => p.getTotalLength());
+const prog = [{ v: 0 }, { v: 0 }, { v: 0 }];
+function applyRoute() {
+  segs.forEach((p, i) => { p.style.strokeDasharray = `${L[i]} ${L[i]}`; p.style.strokeDashoffset = L[i] * (1 - prog[i].v); });
+  let i = prog.findIndex(o => o.v < 1); if (i < 0) i = 2;
+  const pt = segs[i].getPointAtLength(L[i] * prog[i].v);
+  marker.style.left = pt.x + 'px'; marker.style.top = pt.y + 'px';
+}
+
+function build() {
+  const tl = gsap.timeline({ repeat: -1, repeatDelay: 1, onUpdate() { applyCam(); applyRoute(); },
+    onRepeat() { prog.forEach(o => o.v = 0); } });
+  const ms = i => document.getElementById('ms' + i), det = i => document.getElementById('det' + i);
+  tl.set(cam, { x: 1650, y: 560, s: 0.56 }, 0);
+  prog.forEach(o => tl.set(o, { v: 0 }, 0));
+  tl.set('#trk', { scaleX: 0 }, 0);
+  tl.set('.det', { autoAlpha: 0, scale: 0.6, y: 40 }, 0);
+  tl.set('.okb', { scale: 0 }, 0);
+  tl.set('.st .d', { backgroundColor: '#fff', color: NV }, 0);
+  tl.set('#banner', { autoAlpha: 0, y: 60 }, 0);
+  tl.set('#marker', { scale: 0 }, 0);
+  // panorama: hitos que aparecen
+  tl.fromTo('#chip', { autoAlpha: 0, x: -80 }, { autoAlpha: 1, x: 0, duration: 0.6, ease: 'back.out(2)' }, 0.1);
+  tl.fromTo('.ms', { scale: 0, rotation: -12 }, { scale: 1, rotation: 0, duration: 0.8, ease: 'elastic.out(1,0.55)', stagger: 0.22 }, 0.2);
+  tl.fromTo('.hud', { y: -140 }, { y: 0, duration: 0.7, ease: 'back.out(1.6)' }, 0.5);
+  // recorrido
+  let t = 1.9;
+  const visit = (i, t0) => {
+    tl.to(cam, { x: M[i].cam[0], y: M[i].cam[1], s: 1, duration: 1.3, ease: 'power3.inOut' }, t0);
+    tl.to('#marker', { scale: 0, duration: 0.3, ease: 'back.in(2)' }, t0 + 0.95);
+    tl.fromTo(ms(i).querySelector('.ring'), { scale: 0.8, opacity: 1 }, { scale: 1.5, opacity: 0, duration: 1, ease: 'power2.out', immediateRender: false }, t0 + 1.1);
+    tl.to(ms(i), { scale: 1.12, duration: 0.3, yoyo: true, repeat: 1, ease: 'sine.inOut' }, t0 + 1.1);
+    tl.to(det(i), { autoAlpha: 1, scale: 1, y: 0, duration: 0.7, ease: 'back.out(1.8)' }, t0 + 1.2);
+    tl.from(det(i).querySelectorAll('li'), { x: 60, autoAlpha: 0, duration: 0.45, stagger: 0.18, ease: 'back.out(2)' }, t0 + 1.5);
+    tl.to(ms(i).querySelector('.okb'), { scale: 1, duration: 0.45, ease: 'back.out(3)' }, t0 + 2.2);
+    tl.to('#d' + i, { backgroundColor: OK, color: '#fff', duration: 0.2 }, t0 + 2.2);
+    tl.to('#trk', { scaleX: i / 3, duration: 0.5, ease: 'power2.out' }, t0 + 2.2);
+  };
+  tl.to('#marker', { scale: 1, duration: 0.5, ease: 'back.out(3)' }, t);
+  visit(0, t);
+  for (let i = 0; i < 3; i++) {
+    const t0 = t + 3.2 + i * 3.6;
+    tl.to(det(i), { autoAlpha: 0.0, scale: 0.85, duration: 0.4 }, t0 - 0.3);
+    tl.to('#marker', { scale: 1, duration: 0.35, ease: 'back.out(3)' }, t0 - 0.2);
+    tl.to(prog[i], { v: 1, duration: 1.5, ease: 'power1.inOut' }, t0);
+    tl.to(cam, { x: (M[i].x + M[i + 1].x) / 2, y: 560, s: 0.8, duration: 0.8, ease: 'power2.inOut' }, t0);
+    visit(i + 1, t0 + 0.4);
+  }
+  const tEnd = t + 3.2 + 3 * 3.6 + 0.6;
+  tl.to(det(3), { autoAlpha: 0, duration: 0.4 }, tEnd);
+  tl.to(cam, { x: 1650, y: 560, s: 0.56, duration: 1.4, ease: 'power3.inOut' }, tEnd);
+  tl.to('.ms', { y: -16, duration: 0.35, yoyo: true, repeat: 1, ease: 'sine.inOut', stagger: 0.12 }, tEnd + 1.2);
+  tl.to('#banner', { autoAlpha: 1, y: 0, duration: 0.7, ease: 'back.out(2)' }, tEnd + 1.3);
+  tl.to({}, { duration: 2.2 }, tEnd + 2);
+  return tl;
+}
+
+function fit() { const f = stage.parentElement; stage.style.transform = `scale(${f.clientWidth / 1920})`; }
+window.addEventListener('resize', fit); fit();
+let tl;
+const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+document.fonts.ready.then(() => {
+  if (!window.gsap) { applyCam(); return; }
+  tl = build();
+  if (reduce) tl.pause(tl.duration() - 1.5);
+});
+['mapa', 'ciudad', 'docs'].forEach(k => document.getElementById('bg-' + k).addEventListener('click', () => {
+  document.querySelectorAll('.bgset').forEach(s => s.classList.toggle('on', s.id === 'set-' + k));
+  document.querySelectorAll('.controls .opt[id^="bg-"]').forEach(b => b.setAttribute('aria-pressed', b.id === 'bg-' + k ? 'true' : 'false'));
+  applyCam();
+}));
+document.getElementById('replay').addEventListener('click', () => { if (tl) tl.restart(); });
+applyCam(); applyRoute();
+</script>
