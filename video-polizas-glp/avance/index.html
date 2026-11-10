@@ -15,7 +15,7 @@ html,body{width:1920px;height:1080px;overflow:hidden;background:#fff}
 .t{font-weight:900;letter-spacing:-.03em;line-height:1}
 .pill{position:absolute;font-weight:900;font-size:30px;padding:12px 28px;border:4px solid var(--nv);border-radius:999px;box-shadow:6px 6px 0 var(--nv);white-space:nowrap}
 .badge{position:absolute;border-radius:50%;border:5px solid var(--nv);box-shadow:9px 9px 0 var(--nv);display:grid;place-items:center}
-.badge svg{width:56%;height:56%}
+.badge svg{width:62%;height:62%}
 .cap{position:absolute;font-weight:900;font-size:34px;text-align:center;white-space:nowrap}
 .w{display:inline-block;overflow:hidden;vertical-align:top;padding-bottom:.08em}
 .w>span{display:inline-block}
@@ -26,7 +26,7 @@ html,body{width:1920px;height:1080px;overflow:hidden;background:#fff}
 .row .mk{position:absolute;left:-8px;right:-8px;top:6px;bottom:-2px;background:var(--yeT);z-index:-1;transform:scaleX(0);transform-origin:left;border-radius:6px}
 .row .mk.r{background:#FFD3D5}
 .dh{display:flex;align-items:center;gap:16px;padding:22px 30px;border-bottom:5px solid var(--nv);border-radius:25px 25px 0 0}
-.dh svg{width:44px;height:44px;flex:none}
+.dh svg{width:52px;height:52px;flex:none}
 .dh b{display:block;font-size:28px;font-weight:900}
 .dh small{display:block;font-size:18px;font-weight:600;color:var(--mut)}
 .rows{padding:8px 30px 22px}
@@ -103,6 +103,31 @@ const IC = {
   list: '<path d="M13 5h8"/><path d="M13 12h8"/><path d="M13 19h8"/><path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/>',
 };
 const ic = (n, c = 'currentColor', sw = 2.2) => `<svg viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round">${IC[n]}</svg>`;
+
+// ---------- iconos estilo 9 · línea con acento (azul noche + un detalle naranja) ----------
+const P9 = (role, d) => ({ role, tag: 'path', d });
+const DOC9 = [P9('b', 'M12 6 H38 L48 16 V56 H12 Z'), P9('d', 'M38 6 V16 H48'), P9('d', 'M19 22 H34'), P9('d', 'M19 30 H40'), P9('d', 'M19 38 H28')];
+const ICON9 = {
+  poliza: [...DOC9, P9('a', 'M42 34 L54 39 V46 C54 52 49 56 42 59 C35 56 30 52 30 46 V39 Z'), P9('d', 'M37 46 L41 50 L47 43')],
+  solicitud: [...DOC9, P9('a', 'M34 54 L36 46 L52 30 L58 36 L42 52 Z'), P9('d', 'M48 34 L54 40')],
+  autorizacion: [...DOC9, { role: 'a', tag: 'circle', cx: 44, cy: 46, r: 12 }, P9('d', 'M38 46 L42 50 L50 42')],
+  ruc: [P9('b', 'M5 14 H59 V50 H5 Z'), P9('a', 'M5 14 H59 V23 H5 Z'), { role: 'd', tag: 'circle', cx: 19, cy: 33, r: 5 }, P9('d', 'M11 45 C11 39 27 39 27 45'), { role: 't', x: 44, y: 35, s: 10, txt: 'RUC' }, P9('d', 'M34 42 H54')],
+  registro: [P9('b', 'M14 6 H50 V58 H18 A5 5 0 0 1 13 53 V11 A5 5 0 0 1 14 6 Z'), P9('d', 'M13 50 A5 5 0 0 1 18 46 H50'), P9('d', 'M21 6 V46'), P9('a', 'M36 14 C36 14 28 23 28 28 A8 8 0 0 0 44 28 C44 23 36 14 36 14 Z')],
+  supervision: [P9('b', 'M8 10 H40 V56 H8 Z'), P9('a', 'M17 5 H31 V13 H17 Z'), P9('d', 'M14 24 L17 27 L22 21'), P9('d', 'M26 24 H34'), P9('d', 'M14 37 L17 40 L22 34'), P9('d', 'M26 37 H32'), P9('l', 'M50 50 L58 58'), { role: 'a', tag: 'circle', cx: 44, cy: 44, r: 10 }, { role: 'd', tag: 'circle', cx: 44, cy: 44, r: 4.5 }],
+  terceros: [{ role: 'b', tag: 'circle', cx: 44, cy: 20, r: 7 }, P9('b', 'M30 54 C30 38 58 38 58 54 Z'), { role: 'a', tag: 'circle', cx: 22, cy: 22, r: 8 }, P9('a', 'M5 56 C5 38 39 38 39 56 Z')],
+  ambiente: [P9('a', 'M12 52 C8 26 28 10 56 8 C56 36 40 56 12 52 Z'), P9('d', 'M12 52 C24 40 34 30 46 18'), P9('d', 'M27 37 H38'), P9('d', 'M34 30 V20'), P9('l', 'M6 58 C10 55 14 54 18 54')],
+  instalaciones: [P9('l', 'M2 56 H62'), P9('a', 'M48 56 V12 H56 V56'), P9('b', 'M6 56 V30 L19 22 V30 L32 22 V30 L45 22 V56 Z'), P9('d', 'M13 44 H19'), P9('d', 'M25 44 H31'), P9('d', 'M37 44 H40')],
+  automotor: [P9('l', 'M5 56 H41'), P9('b', 'M10 8 H36 V56 H10 Z'), P9('a', 'M16 14 H30 V27 H16 Z'), P9('d', 'M16 38 H30'), P9('l', 'M36 22 H41 A4 4 0 0 1 45 26 V44 A3.5 3.5 0 0 0 52 44 V21 L46 15')],
+};
+function ic9(name) {
+  const N = '#0A1F4F', A = '#FF7A00', AF = '#FFE2C7', sw = 3, base = 'stroke-linecap="round" stroke-linejoin="round"';
+  const body = ICON9[name].map(e => {
+    if (e.role === 't') return `<text x="${e.x}" y="${e.y}" font-family="Epilogue" font-weight="900" font-size="${e.s}" text-anchor="middle" fill="${N}">${e.txt}</text>`;
+    const st = e.role === 'a' ? `fill="${AF}" stroke="${A}"` : `fill="none" stroke="${N}"`;
+    return e.tag === 'circle' ? `<circle cx="${e.cx}" cy="${e.cy}" r="${e.r}" ${st} stroke-width="${sw}" ${base}/>` : `<path d="${e.d}" ${st} stroke-width="${sw}" ${base}/>`;
+  }).join('');
+  return `<svg viewBox="-4 -4 72 72">${body}</svg>`;
+}
 function mark(p, x, y, ok, t) { SFX.push({ t: t + 0.1, k: ok ? 'ok' : 'no' }); const m = el(p, ic(ok ? 'check' : 'x', '#fff', 3.4), `left:${x}px;top:${y}px;background:${ok ? 'var(--ok)' : 'var(--no)'}`, 'mark'); pop(m, t, { s: 0, r: -90, e: 'back.out(3)', d: 0.5 }); return m; }
 function scene(id) { const c = el(FX, '', '', 'sc'); tl.set(c, { visibility: 'visible' }, SC[id][0]); tl.set(c, { visibility: 'hidden' }, SC[id][1]); return c; }
 // fondo fotográfico con velo y zoom lento
@@ -172,7 +197,7 @@ const card = (p, x, y, w, h, inner, css = '') => el(p, inner, `left:${x}px;top:$
   out([pill, t1, sub], 4.4);
   hud(5.0, '01', 'Introducción');
   // e1a: la póliza no es solo un documento vigente
-  const doc = card(c, 1180, 210, 560, 640, `<div class="dh" style="background:var(--blT)">${ic('shield', '#0A1F4F')}<div><b>Póliza RCE</b><small>Responsabilidad Civil Extracontractual</small></div></div>
+  const doc = card(c, 1180, 210, 560, 640, `<div class="dh" style="background:var(--blT)">${ic9('poliza')}<div><b>Póliza RCE</b><small>Responsabilidad Civil Extracontractual</small></div></div>
     <div class="rows">${['Asegurado', 'Vigencia', 'Coberturas', 'Monto asegurado'].map(l => `<div class="row"><div class="l">${l}</div><div style="height:14px;width:${240 + l.length * 8}px;background:#E4E9F2;border-radius:7px;margin-top:10px"></div></div>`).join('')}</div>`);
   rise(doc, W('e1a', 'póliza', -0.4), { x: 300, y: 0, r: 8 });
   const k1 = words(c, 150, 330, 'La póliza es / más que un / *documento vigente*', 86, { w: 980 }); wordsIn(k1, S('e1a') + 0.3);
@@ -183,8 +208,8 @@ const card = (p, x, y, w, h, inner, css = '') => el(p, inner, `left:${x}px;top:$
   const k2 = words(c, 150, 190, 'Protección / para *Solgas*', 86, { w: 1000 }); wordsIn(k2, S('e1b') + 0.1);
   const k3 = el(c, 'frente a las consecuencias económicas de accidentes que afecten a:', 'left:154px;top:400px;width:900px;font-size:34px;font-weight:700;color:var(--mut);line-height:1.3');
   rise(k3, W('e1b', 'consecuencias', -0.4), { y: 40 });
-  [['factory', 'Instalaciones', 'var(--cyT)', 'instalaciones'], ['users', 'Terceros', 'var(--orT)', 'terceros'], ['leaf', 'Medio ambiente', 'var(--yeT)', 'medio ambiente']].forEach(([n, l, bg, w], i) => {
-    const b = el(c, ic(n, '#0A1F4F', 1.9), `left:${170 + i * 330}px;top:540px;width:210px;height:210px;background:${bg}`, 'badge');
+  [['instalaciones', 'Instalaciones', '#fff', 'instalaciones'], ['terceros', 'Terceros', '#fff', 'terceros'], ['ambiente', 'Medio ambiente', '#fff', 'medio ambiente']].forEach(([n, l, bg, w], i) => {
+    const b = el(c, ic9(n), `left:${170 + i * 330}px;top:540px;width:210px;height:210px;background:${bg}`, 'badge');
     const cp = el(c, l, `left:${120 + i * 330}px;top:785px;width:310px`, 'cap');
     pop(b, W('e1b', w, -0.3)); rise(cp, W('e1b', w, -0.1), { y: 30 });
   });
@@ -217,7 +242,7 @@ const card = (p, x, y, w, h, inner, css = '') => el(p, inner, `left:${x}px;top:$
   out([k, ch, mn, mx, law], S('e3c') - 0.4);
   // e3c: uso automotor
   const k2 = words(c, 150, 200, 'Despacho para / *uso automotor*', 86, { w: 1000 }); wordsIn(k2, S('e3c') + 0.1);
-  const pump = el(c, ic('fuel', '#0A1F4F', 1.8), 'left:150px;top:470px;width:230px;height:230px;background:var(--orT)', 'badge');
+  const pump = el(c, ic9('automotor'), 'left:150px;top:470px;width:230px;height:230px;background:#fff', 'badge');
   pop(pump, W('e3c', 'despacho', -0.2));
   const big = card(c, 440, 440, 620, 300, `<div style="position:absolute;left:44px;top:34px;font-size:26px;font-weight:800;color:var(--mut)">Monto mínimo</div><div class="t" style="position:absolute;left:40px;top:96px;font-size:150px"><span class="n">0</span><span style="font-size:60px"> UIT</span></div>`, 'background:var(--yeT)');
   rise(big, W('e3c', 'el monto', -0.4), { x: 200, y: 0 });
@@ -235,12 +260,12 @@ const card = (p, x, y, w, h, inner, css = '') => el(p, inner, `left:${x}px;top:$
   chapter(c, SC.C[0] + 0.3, '04', 'Identificación del *asegurado*', 'Razón social, RUC y actividad deben coincidir');
   hud(SC.C[0] + 2.4, '04', 'Identificación del asegurado');
   const RS = 'INDUSTRIAS ANDINAS S.A.C.', RUC = '20601234567', ACT = 'Consumidor directo de GLP';
-  const docCard = (x, title, sub, icn, bg, vals) => card(c, x, 250, 520, 470, `<div class="dh" style="background:${bg}">${ic(icn, '#0A1F4F')}<div><b>${title}</b><small>${sub}</small></div></div>
+  const docCard = (x, title, sub, icn, bg, vals) => card(c, x, 250, 520, 470, `<div class="dh" style="background:${bg}">${ic9(icn)}<div><b>${title}</b><small>${sub}</small></div></div>
     <div class="rows">${[['Razón social', vals[0]], ['RUC', vals[1]], ['Actividad', vals[2]]].map(([l, v], i) => `<div class="row" data-i="${i}"><div class="l">${l}</div><div class="v"><span class="mk"></span><span class="tx">${v}</span></div></div>`).join('')}</div>`);
-  const dS = docCard(130, 'Consulta RUC', 'SUNAT', 'search', 'var(--cyT)', [RS, RUC, 'ACTIVO']);
+  const dS = docCard(130, 'Consulta RUC', 'SUNAT', 'ruc', 'var(--cyT)', [RS, RUC, 'ACTIVO']);
   dS.querySelectorAll('.row')[2].querySelector('.l').textContent = 'Estado';
-  const dP = docCard(700, 'Póliza de seguro', 'Responsabilidad Civil Extracontractual', 'shield', 'var(--orT)', [RS, RUC, ACT]);
-  const dR = docCard(1270, 'Registro de Hidrocarburos', 'Solicitud del titular', 'doc', 'var(--blT)', [RS, RUC, ACT]);
+  const dP = docCard(700, 'Póliza de seguro', 'Responsabilidad Civil Extracontractual', 'poliza', 'var(--orT)', [RS, RUC, ACT]);
+  const dR = docCard(1270, 'Registro de Hidrocarburos', 'Solicitud del titular', 'registro', 'var(--blT)', [RS, RUC, ACT]);
   rise(dS, S('e4b') - 0.2, { r: -6 }); rise(dP, W('e4b', 'póliza', -0.2), { r: 5 }); rise(dR, W('e4b', 'Registro de Hidrocarburos', -0.6), { r: -4 });
   const mk = (d, i) => d.querySelectorAll('.mk')[i];
   const hl = (e, t) => tl.to(e, { scaleX: 1, duration: 0.5, ease: 'power2.inOut' }, t);
@@ -256,7 +281,7 @@ const card = (p, x, y, w, h, inner, css = '') => el(p, inner, `left:${x}px;top:$
   tl.to([corr, ver, ...okm], { autoAlpha: 0, duration: 0.3 }, t4 - 0.2);
   tl.to(dP, { rotationY: 90, transformPerspective: 1600, duration: 0.35, ease: 'power2.in' }, t4);
   tl.call(() => {}, [], t4);
-  const dB = docCard(700, 'Póliza de seguro', 'Responsabilidad Civil Extracontractual', 'shield', 'var(--orT)', ['INDUSTRIAS ANDINA S.A.', '20601234576', 'Comercialización de combustibles']);
+  const dB = docCard(700, 'Póliza de seguro', 'Responsabilidad Civil Extracontractual', 'poliza', 'var(--orT)', ['INDUSTRIAS ANDINA S.A.', '20601234576', 'Comercialización de combustibles']);
   dB.querySelectorAll('.mk').forEach(m => m.classList.add('r'));
   hide(dB, { rotationY: -90, transformPerspective: 1600 });
   tl.to(dB, { autoAlpha: 1, rotationY: 0, duration: 0.45, ease: 'back.out(1.6)' }, t4 + 0.35); tl.set(dP, { autoAlpha: 0 }, t4 + 0.36);
@@ -278,13 +303,13 @@ const ROUTE = { prog: [{ v: 0 }, { v: 0 }, { v: 0 }], segs: [], L: [], marker: n
   hud(SC.D[0] + 0.3, '08', 'Documentación');
   const k = words(c, 150, 150, 'Antes del expediente o la supervisión: / *contrastar con el Registro*', 60, { w: 1700 }); wordsIn(k, SC.D[0] + 0.4);
   const NV = '#0A1F4F';
-  const M = [[260, 720, 'doc', 'Solicitud', 'var(--blT)'], [760, 470, 'shield', 'Póliza', 'var(--orT)'], [1260, 740, 'search', 'Autorización', 'var(--cyT)'], [1700, 480, 'list', 'Supervisión', 'var(--yeT)']];
+  const M = [[260, 720, 'solicitud', 'Solicitud', '#fff'], [760, 470, 'poliza', 'Póliza', '#fff'], [1260, 740, 'autorizacion', 'Autorización', '#fff'], [1700, 480, 'supervision', 'Supervisión', '#fff']];
   const SEG = ['M260 720 C480 720 540 470 760 470', 'M760 470 C980 470 1040 740 1260 740', 'M1260 740 C1480 740 1480 480 1700 480'];
   const sv = el(c, `<svg width="1920" height="1080" fill="none">${SEG.map(d => `<path d="${d}" stroke="${NV}" stroke-width="30" stroke-linecap="round"/><path d="${d}" stroke="#fff" stroke-width="17" stroke-linecap="round"/>`).join('')}${SEG.map((d, i) => `<path class="rf" d="${d}" stroke="#FF7A00" stroke-width="17" stroke-linecap="round"/>`).join('')}</svg>`, 'left:0;top:0');
   hide(sv); tl.to(sv, { autoAlpha: 1, duration: 0.5 }, SC.D[0] + 0.8);
   ROUTE.segs = [...sv.querySelectorAll('.rf')]; ROUTE.L = ROUTE.segs.map(p => p.getTotalLength());
   const nodes = M.map(([x, y, n, l, bg], i) => {
-    const b = el(c, ic(n, NV, 1.9), `left:${x - 95}px;top:${y - 95}px;width:190px;height:190px;background:${bg}`, 'badge');
+    const b = el(c, ic9(n), `left:${x - 95}px;top:${y - 95}px;width:190px;height:190px;background:${bg}`, 'badge');
     const cp = el(c, l, `left:${x - 160}px;top:${y > 600 ? y + 110 : y - 160}px;width:320px;font-size:32px`, 'cap');
     pop(b, SC.D[0] + 1.0 + i * 0.3); rise(cp, SC.D[0] + 1.2 + i * 0.3, { y: 30 });
     return b;
@@ -296,7 +321,7 @@ const ROUTE = { prog: [{ v: 0 }, { v: 0 }, { v: 0 }], segs: [], L: [], marker: n
   mark(c, M[0][0] + 40, M[0][1] - 120, true, S('e8f') + 0.3);
   // e8g: checklist de diferencias
   tl.to([sv, ...nodes, ...c.querySelectorAll('.cap'), ROUTE.marker, ...c.querySelectorAll('.mark')], { autoAlpha: 0.12, duration: 0.5 }, S('e8g') - 0.3);
-  const cl = card(c, 560, 290, 800, 600, `<div class="dh" style="background:var(--blT)">${ic('list', NV)}<div><b>Documentación ⇄ Registro</b><small>Verificar que no existan diferencias</small></div></div>`);
+  const cl = card(c, 560, 290, 800, 600, `<div class="dh" style="background:var(--blT)">${ic9('supervision')}<div><b>Documentación ⇄ Registro</b><small>Verificar que no existan diferencias</small></div></div>`);
   rise(cl, S('e8g') - 0.2, { y: 200 });
   ['titular', 'actividad', 'ubicación', 'monto asegurado'].forEach((w, i) => {
     const r = el(cl, `<span style="display:inline-grid;place-items:center;width:50px;height:50px;border-radius:14px;border:4px solid ${NV};background:#fff;margin-right:20px;vertical-align:middle;position:relative" class="cb"></span>${['Titular', 'Actividad', 'Ubicación', 'Monto asegurado'][i]}`, `left:44px;top:${140 + i * 104}px;font-size:38px;font-weight:800`);
@@ -316,7 +341,7 @@ const ROUTE = { prog: [{ v: 0 }, { v: 0 }, { v: 0 }], segs: [], L: [], marker: n
   const q = words(c, 0, 330, 'La prevención comienza / con el *conocimiento*', 104, { w: 1920, a: 'center' }); wordsIn(q, S('e9g') + 0.1);
   const s2 = el(c, 'y se fortalece con una gestión rigurosa de los riesgos y de las coberturas contratadas', 'left:260px;top:620px;width:1400px;text-align:center;font-size:38px;font-weight:600;color:var(--mut);line-height:1.35');
   rise(s2, W('e9g', 'fortalece', -0.4), { y: 40 });
-  [['shield', 'var(--blT)'], ['users', 'var(--orT)'], ['leaf', 'var(--yeT)']].forEach(([n, bg], i) => pop(el(c, ic(n, '#0A1F4F', 1.9), `left:${760 + i * 150}px;top:160px;width:110px;height:110px;background:${bg}`, 'badge'), S('e9g') + 0.5 + i * 0.2));
+  [['poliza', '#fff'], ['terceros', '#fff'], ['ambiente', '#fff']].forEach(([n, bg], i) => pop(el(c, ic9(n), `left:${760 + i * 150}px;top:160px;width:110px;height:110px;background:${bg}`, 'badge'), S('e9g') + 0.5 + i * 0.2));
   out([q, s2], E('e9g') + 0.8);
   const end = el(c, `<div class="pill" style="position:relative;display:inline-block;background:var(--orT);margin-bottom:34px">Capacitación · Consumidor directo de GLP</div><div class="t" style="font-size:88px">Pólizas de Responsabilidad<br>Civil Extracontractual</div>`, 'left:0;top:330px;width:1920px;text-align:center');
   rise(end, E('e9g') + 1.2, { y: 80 });
