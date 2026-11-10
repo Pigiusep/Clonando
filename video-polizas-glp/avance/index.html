@@ -3,7 +3,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400..900&display=swap">
 <style>
 /* Avance formal: tarjetas ilustradas, paleta Solgas suave, Epilogue; fotos de fondo con velo claro y zoom lento. */
-:root{--nv:#0A1F4F;--bl:#0047BB;--blT:#D6E3F8;--bl2:#8FB0EA;--cyT:#D3F0FA;--orT:#FFE2C7;--yeT:#FFEDB8;--or:#FF7A00;--ok:#12B76A;--no:#E5484D;--mut:#4A5878}
+:root{--nv:#0A1F4F;--bl:#0047BB;--blT:#D6E3F8;--bl2:#8FB0EA;--cyT:#D3F0FA;--orT:#FFE2C7;--yeT:#FFEDB8;--or:#FF7A00;--ok:#12B76A;--no:#E5484D;--mut:#2A3A63}
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{width:1920px;height:1080px;overflow:hidden;background:#fff}
 #stage{position:relative;width:1920px;height:1080px;overflow:hidden;font-family:'Epilogue',sans-serif;color:var(--nv);background:#F7FAFE}
@@ -109,13 +109,13 @@ function scene(id) { const c = el(FX, '', '', 'sc'); tl.set(c, { visibility: 'vi
 // variantes de velo (?velo=N); sin parámetro se usa el velo blanco original
 const VELOS = {
   azul:    { c1: [226, 234, 248], c2: [226, 234, 248], a: [.84, .64, .26] },
-  celeste: { c1: [218, 241, 250], c2: [218, 241, 250], a: [.84, .64, .26] },
+  celeste: { c1: [218, 241, 250], c2: [218, 241, 250], a: [.88, .66, .26] },
   durazno: { c1: [255, 239, 226], c2: [255, 239, 226], a: [.84, .64, .26] },
   duo:     { c1: [226, 234, 248], c2: [255, 232, 212], a: [.86, .64, .30] },
   entonada:{ tint: ['#0047BB', .30, 'color'], c1: [238, 243, 252], c2: [238, 243, 252], a: [.80, .56, .18] },
   bruma:   { tint: ['#8FB0EA', .45, 'multiply'], c1: [244, 247, 253], c2: [255, 240, 228], a: [.80, .56, .16] },
 };
-const VEL = VELOS[new URLSearchParams(location.search).get('velo')];
+const VEL = VELOS[new URLSearchParams(location.search).get('velo') || 'celeste'];  // elegido: celeste suave
 const rgba = (c, a) => `rgba(${c[0]},${c[1]},${c[2]},${a})`;
 function veloFor(id) {
   const { c1, c2, a } = VEL;

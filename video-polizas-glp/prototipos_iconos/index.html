@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><title>Estilos de iconos</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400..900&display=swap">
+<style>
+:root{--nv:#0A1F4F;--mut:#3E4C6B}
+*{box-sizing:border-box;margin:0;padding:0}
+body{width:1920px;background:#E3F3FA;font-family:'Epilogue',sans-serif;color:var(--nv);padding:34px 30px}
+h1{font-size:44px;font-weight:900;letter-spacing:-.02em;margin:0 0 6px 10px}
+.sub{font-size:22px;font-weight:600;color:var(--mut);margin:0 0 26px 10px}
+.row{display:flex;align-items:center;background:#fff;border:4px solid var(--nv);border-radius:24px;box-shadow:8px 9px 0 var(--nv);margin:0 14px 30px 0;padding:18px 12px 14px 22px}
+.nm{width:285px;flex:none;padding-right:16px}
+.nm b{display:block;font-size:30px;font-weight:900;line-height:1.05}
+.nm b i{font-style:normal;display:inline-block;background:#FF7A00;color:var(--nv);border:3px solid var(--nv);border-radius:10px;padding:2px 9px;margin-right:10px;font-size:24px;vertical-align:3px}
+.nm span{display:block;font-size:17px;font-weight:600;color:var(--mut);margin-top:8px;line-height:1.3}
+.cell{width:150px;flex:none;text-align:center}
+.cell svg{width:108px;height:108px;display:block;margin:0 auto}
+.cell p{font-size:15px;font-weight:800;line-height:1.15;margin-top:8px;height:36px}
+</style></head><body>
+<h1 id="h"></h1><div class="sub" id="sb"></div><div id="rows"></div>
+<script>
+const C = { nv: '#0A1F4F', bl: '#0047BB', bl2: '#8FB0EA', blT: '#D6E3F8', cy: '#5BC2E7', cyT: '#D3F0FA', orT: '#FFE2C7', yeT: '#FFEDB8', or: '#FF7A00', ok: '#12B76A', w: '#fff' };
+// roles: b = cuerpo (forma cerrada), a = acento (forma cerrada), d = detalle interior, l = línea exterior, t = texto
+const P = (role, d) => ({ role, tag: 'path', d });
+const ICONS = [
+  ['Póliza de seguro', [P('b', 'M12 6 H38 L48 16 V56 H12 Z'), P('d', 'M38 6 V16 H48'), P('d', 'M19 22 H34'), P('d', 'M19 30 H40'), P('d', 'M19 38 H28'),
+    P('a', 'M42 34 L54 39 V46 C54 52 49 56 42 59 C35 56 30 52 30 46 V39 Z'), P('d', 'M37 46 L41 50 L47 43')]],
+  ['Monto asegurado', [P('b', 'M4 14 H46 V40 H4 Z'), P('d', 'M10 20 H16'), P('d', 'M34 34 H40'), { role: 'd', tag: 'circle', cx: 25, cy: 27, r: 6 },
+    { role: 'a', tag: 'circle', cx: 44, cy: 44, r: 15 }, { role: 't', x: 44, y: 49.5, s: 14, txt: 'S/' }]],
+  ['Tanque de GLP', [P('l', 'M20 46 V54'), P('l', 'M44 46 V54'), P('l', 'M8 55 H56'), P('a', 'M27 22 V15 H37 V22'), P('l', 'M24 13 H40'),
+    P('b', 'M16 22 H48 A12 12 0 0 1 48 46 H16 A12 12 0 0 1 16 22 Z'), P('d', 'M16 34 H48'), { role: 't', x: 32, y: 31.5, s: 8.5, txt: 'GLP' }]],
+  ['RUC / Razón social', [P('b', 'M5 14 H59 V50 H5 Z'), P('a', 'M5 14 H59 V23 H5 Z'), { role: 'd', tag: 'circle', cx: 19, cy: 33, r: 5 }, P('d', 'M11 45 C11 39 27 39 27 45'),
+    { role: 't', x: 44, y: 35, s: 10, txt: 'RUC' }, P('d', 'M34 42 H54')]],
+  ['Registro de Hidrocarburos', [P('b', 'M14 6 H50 V58 H18 A5 5 0 0 1 13 53 V11 A5 5 0 0 1 14 6 Z'), P('d', 'M13 50 A5 5 0 0 1 18 46 H50'), P('d', 'M21 6 V46'),
+    P('a', 'M36 14 C36 14 28 23 28 28 A8 8 0 0 0 44 28 C44 23 36 14 36 14 Z')]],
+  ['Supervisión', [P('b', 'M8 10 H40 V56 H8 Z'), P('a', 'M17 5 H31 V13 H17 Z'), P('d', 'M14 24 L17 27 L22 21'), P('d', 'M26 24 H34'), P('d', 'M14 37 L17 40 L22 34'), P('d', 'M26 37 H32'),
+    P('l', 'M50 50 L58 58'), { role: 'a', tag: 'circle', cx: 44, cy: 44, r: 10 }, { role: 'd', tag: 'circle', cx: 44, cy: 44, r: 4.5 }]],
+  ['Terceros', [{ role: 'b', tag: 'circle', cx: 44, cy: 20, r: 7 }, P('b', 'M30 54 C30 38 58 38 58 54 Z'), { role: 'a', tag: 'circle', cx: 22, cy: 22, r: 8 }, P('a', 'M5 56 C5 38 39 38 39 56 Z')]],
+  ['Medio ambiente', [P('a', 'M12 52 C8 26 28 10 56 8 C56 36 40 56 12 52 Z'), P('d', 'M12 52 C24 40 34 30 46 18'), P('d', 'M27 37 H38'), P('d', 'M34 30 V20'), P('l', 'M6 58 C10 55 14 54 18 54')]],
+  ['Ubicación', [P('b', 'M4 22 L20 16 L40 22 L60 16 V50 L40 56 L20 50 L4 56 Z'), P('d', 'M20 16 V50'), P('d', 'M40 22 V56'),
+    P('a', 'M32 4 C24.5 4 19 9.5 19 17 C19 27 32 38 32 38 C32 38 45 27 45 17 C45 9.5 39.5 4 32 4 Z'), { role: 'd', tag: 'circle', cx: 32, cy: 17, r: 4.5 }]],
+  ['Observaciones', [P('a', 'M32 7 L59 54 H5 Z'), P('d', 'M32 24 V38'), { role: 'd', tag: 'circle', cx: 32, cy: 46, r: 0.6 }]],
+];
+function shape(e, st) {
+  const a = Object.entries(st).map(([k, v]) => `${k}="${v}"`).join(' ');
+  if (e.tag === 'circle') return `<circle cx="${e.cx}" cy="${e.cy}" r="${e.r}" ${a}/>`;
+  return `<path d="${e.d}" ${a}/>`;
+}
+const text = (e, fill) => `<text x="${e.x}" y="${e.y}" font-family="Epilogue" font-weight="900" font-size="${e.s}" text-anchor="middle" fill="${fill}">${e.txt}</text>`;
+// cada estilo: colores por rol + extras (sombra, contenedor)
+function draw(icon, S) {
+  const sw = S.sw, base = { 'stroke-linecap': 'round', 'stroke-linejoin': 'round' };
+  let out = '';
+  if (S.shadow) icon.forEach(e => { if (e.role === 'b' || e.role === 'a') out += shape(e, { ...base, fill: C.nv, stroke: C.nv, 'stroke-width': sw, transform: 'translate(2.6 2.6)' }); });
+  icon.forEach(e => {
+    const r = S[e.role];
+    if (e.role === 't') { out += text(e, S.t); return; }
+    const st = { ...base, fill: r.f || 'none', stroke: r.s || 'none', 'stroke-width': r.w ?? sw };
+    if (e.tag === 'circle' && e.r < 1) { st.fill = r.s; st.r = 2; }
+    out += shape(e.tag === 'circle' && e.r < 1 ? { ...e, r: 2.4 } : e, st);
+  });
+  return out;
+}
+const svg = (inner, S) => {
+  const box = S.box ? S.box : '';
+  const g = S.box ? `<g transform="translate(${S.pad} ${S.pad}) scale(${(64 - 2 * S.pad) / 64})">${inner}</g>` : inner;
+  return `<svg viewBox="-4 -4 72 72"><defs><linearGradient id="gr" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5BC2E7"/><stop offset="1" stop-color="#0047BB"/></linearGradient></defs>${box}${g}</svg>`;
+};
+const N = C.nv, W = C.w;
+const STYLES = [
+  ['Lineal fino', 'Trazo delgado azul noche. Muy limpio y técnico, el más neutro.', { sw: 1.8, b: { s: N }, a: { s: N }, d: { s: N }, l: { s: N }, t: N }],
+  ['Lineal grueso', 'Trazo ancho redondeado. Se lee bien desde lejos y en el móvil.', { sw: 3.6, b: { s: N }, a: { s: N }, d: { s: N }, l: { s: N }, t: N }],
+  ['Duotono celeste', 'Contorno azul noche con relleno celeste suave en la forma principal.', { sw: 3, b: { s: N, f: C.cyT }, a: { s: N, f: C.blT }, d: { s: N }, l: { s: N }, t: N }],
+  ['Relleno sólido', 'Silueta llena azul noche con detalles calados y acento naranja.', { sw: 3, b: { f: N, s: N }, a: { f: C.or, s: C.or }, d: { s: W }, l: { s: N, w: 4 }, t: W }],
+  ['Insignia circular', 'Icono lineal dentro de un círculo celeste con borde, como en el video actual.', { sw: 3.4, b: { s: N }, a: { s: N }, d: { s: N }, l: { s: N }, t: N, pad: 13,
+    box: `<circle cx="32" cy="32" r="33" fill="${C.cyT}" stroke="${N}" stroke-width="3"/>` }],
+  ['Ilustrado con sombra', 'Mismo lenguaje que las tarjetas: blanco, contorno grueso y sombra sólida.', { sw: 3.2, shadow: 1, b: { s: N, f: W }, a: { s: N, f: C.yeT }, d: { s: N }, l: { s: N }, t: N }],
+  ['Degradado moderno', 'Forma principal con degradado celeste a azul Solgas y detalles blancos.', { sw: 3, b: { f: 'url(#gr)', s: 'url(#gr)' }, a: { f: C.or, s: C.or }, d: { s: W }, l: { s: C.bl, w: 4 }, t: W }],
+  ['Ícono de app', 'Glifo blanco sobre cuadrado azul Solgas redondeado, acento naranja.', { sw: 3.6, b: { s: W }, a: { s: W, f: C.or }, d: { s: W }, l: { s: W }, t: W, pad: 12,
+    box: `<rect x="-1" y="-1" width="66" height="66" rx="17" fill="${C.bl}"/>` }],
+  ['Línea con acento', 'Trazo azul noche y un solo detalle en naranja que guía la mirada.', { sw: 3, b: { s: N }, a: { s: C.or, f: C.orT }, d: { s: N }, l: { s: N }, t: N }],
+  ['Señalética', 'Tipo letrero de seguridad: placa con borde grueso y silueta sólida.', { sw: 3, b: { f: N, s: N }, a: { f: C.bl, s: N }, d: { s: C.cyT }, l: { s: N, w: 4 }, t: C.cyT, pad: 12,
+    box: `<rect x="-1" y="-1" width="66" height="66" rx="10" fill="${C.cyT}" stroke="${N}" stroke-width="4"/>` }],
+];
+const part = +(new URLSearchParams(location.search).get('p') || 1);
+document.getElementById('h').textContent = `Propuestas de iconos · ${part === 1 ? '1 a 5' : '6 a 10'}`;
+document.getElementById('sb').textContent = 'Los mismos 10 conceptos del video dibujados en 10 estilos. Elige el que se entienda mejor.';
+STYLES.slice((part - 1) * 5, part * 5).forEach(([n, desc, S], i) => {
+  const r = document.createElement('div'); r.className = 'row';
+  r.innerHTML = `<div class="nm"><b><i>${(part - 1) * 5 + i + 1}</i>${n}</b><span>${desc}</span></div>` + ICONS.map(([lab, ic]) => `<div class="cell">${svg(draw(ic, S), S)}<p>${lab}</p></div>`).join('');
+  document.getElementById('rows').appendChild(r);
+});
+document.fonts.ready.then(() => { window.READY = true; });
+</script></body></html>
