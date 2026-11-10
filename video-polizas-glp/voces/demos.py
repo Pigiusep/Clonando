@@ -22,7 +22,7 @@ FRASES = [
 VOCES = {
  'v1': ('Masculina · Alex (actual)', 'kokoro', 'kokoro-multi-lang-v1_0', 29, 1.0, False),
  'v2': ('Masculina · Alex pausada', 'kokoro', 'kokoro-multi-lang-v1_0', 29, 0.92, True),
- 'v3': ('Masculina · Santa (grave)', 'kokoro', 'kokoro-multi-lang-v1_0', 30, 0.95, True),
+ 'v3': ('Masculina · Santa (grave)', 'kokoro', 'kokoro-multi-lang-v1_0', 53, 0.95, True),
  'v4': ('Femenina · Dora', 'kokoro', 'kokoro-multi-lang-v1_0', 28, 0.95, True),
  'v5': ('Masculina · Claude (México)', 'vits', 'vits-piper-es_MX-claude-high', 0, 0.95, True),
  'v6': ('Masculina · Ald (México)', 'vits', 'vits-piper-es_MX-ald-medium', 0, 0.95, True),
