@@ -1,13 +1,21 @@
 # Pendientes y puntos a verificar: video "Pólizas de RCE – GLP"
 
+## 0. Estado de la versión final (v3)
+
+- **Estilo:** tarjetas ilustradas, paleta Solgas suave, tipografía Epilogue, iconos de línea con acento naranja (estilo 9), fotos de fondo con velo celeste suave. Sin planta ni personaje.
+- **Voz:** voz sintética local (Kokoro, mezcla 75 % Alex + 25 % Santa), elegida en las demos (A2). No es la voz de Lorenzo: si se generan los audios con su herramienta, se integran con la misma verificación.
+- **Verificación de la locución:** cada frase se generó en varias tomas y solo se aceptó la que dos reconocedores (whisper-small y whisper-turbo) transcriben igual al guion. Luego se repitió la verificación sobre la pista final masterizada. El resultado está en `final/reporte_voz.md`.
+- **RUC:** se lee como palabra ("ruk"), no deletreado. "rock"/"rook" se cuentan como error.
+- **Datos ficticios** en los comparativos: "INDUSTRIAS ANDINAS S.A.C.", RUC 20601234567, Av. Los Industriales 1250 (Lurín), vigencia 15/03/2026–15/03/2027, tanque de 5.000 galones, expediente "2025-XXXXXX".
+
 ## 1. Lo que no se pudo colocar tal cual pide el Word
 
 | # | Qué pide el Word | Qué se hizo | Qué falta |
 |---|---|---|---|
-| 1 | **Voz de Lorenzo** | No hay cuenta/API conectada. El servicio de voz de Microsoft (voz peruana es-PE) está bloqueado por la red del entorno. Se usó una **voz neuronal local masculina, neutra latina** (es_MX "claude"). | Conectar ElevenLabs → regenerar el audio. Las animaciones se re-sincronizan solas. |
-| 2 | **Tomas reales**: instalación industrial con tanque, tuberías, vaporizador, regulación y equipos de consumo; profesional inspeccionando (Esc. 1, 2, 7, 8). | No hay acceso a bancos de video ni a grabaciones. Se recreó todo como **ilustración animada** (cámara con paneos y zooms, gas fluyendo por tuberías, manómetros, llama del caldero, humo, inspector con tablet). | Si se quieren tomas reales: grabarlas o comprar stock y reemplazar los planos de la planta. |
+| 1 | **Voz de Lorenzo** | No hay cuenta/API conectada. El servicio de voz de Microsoft (voz peruana es-PE) está bloqueado por la red del entorno. Se usó una **voz sintética local masculina** (Kokoro A2, verificada con dos reconocedores). | Generar los audios con la herramienta de Lorenzo (`voz_lorenzo/`) → se verifican e integran; las animaciones se re-sincronizan solas. |
+| 2 | **Tomas reales**: instalación industrial con tanque, tuberías, vaporizador, regulación y equipos de consumo; profesional inspeccionando (Esc. 1, 2, 7, 8). | No hay acceso a bancos de video ni a grabaciones. Se usaron **fotos generadas en Gemini** (zona industrial y tanques de GLP) como fondo, con velo celeste, más tarjetas ilustradas. | Si se quieren tomas reales: grabarlas o comprar stock y reemplazar los planos de la planta. |
 | 3 | **Documentos normativos** (D.S. 01-94-EM) "como imagen". | Se recrearon como hoja de documento con el texto exacto de los Art. 31 y 32 del Word y resaltados animados. | Si se prefiere un escaneo o captura del documento oficial (El Peruano/SPIJ), enviarlo. |
-| 4 | Comparativos correcto/incorrecto (Esc. 4, 5, 6) con **datos de empresa**. | Se usaron **datos ficticios**: "INDUSTRIAS ANDINAS DEL SUR S.A.C.", RUC 20601234567, Av. Los Industriales 1250 (Lurín), vigencia 15/03/2026–15/03/2027, tanque de 5,000 gal, expediente "N.º 2025-XXXXXX", cláusulas de ejemplo (incluida "Daños por contaminación al medio ambiente" como exclusión). | Validar que se pueden usar datos ficticios o enviar ejemplos reales anonimizados. |
+| 4 | Comparativos correcto/incorrecto (Esc. 4, 5, 6) con **datos de empresa**. | Se usaron **datos ficticios**: "INDUSTRIAS ANDINAS S.A.C.", RUC 20601234567, Av. Los Industriales 1250 (Lurín), vigencia 15/03/2026–15/03/2027, tanque de 5,000 gal, expediente "N.º 2025-XXXXXX", cláusulas de ejemplo (incluida "Daños por contaminación al medio ambiente" como exclusión). | Validar que se pueden usar datos ficticios o enviar ejemplos reales anonimizados. |
 | 5 | **Logo / marca** (Futuro Azul). | Sin logo, como se pidió. No llegó la página web, así que la paleta (azul marino, cian, naranja) es provisional. | Enviar la web o el manual de marca para ajustar colores, tipografía y un cierre con logo. |
 | 6 | Música | No se especificó. Se agregó una **base musical sintetizada** muy suave (baja automáticamente cuando habla la voz) y efectos de sonido (whooshes, pops, checks). | Confirmar o enviar la pista con licencia que prefieras. |
 | 7 | Subtítulos | No incluidos, como se pidió. | — |

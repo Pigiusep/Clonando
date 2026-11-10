@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><title>Video RCE GLP</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400..900&display=swap">
+<style>
+/* Avance formal: tarjetas ilustradas, paleta Solgas suave, Epilogue; fotos de fondo con velo claro y zoom lento. */
+:root{--nv:#0A1F4F;--bl:#0047BB;--blT:#D6E3F8;--bl2:#8FB0EA;--cyT:#D3F0FA;--orT:#FFE2C7;--yeT:#FFEDB8;--or:#FF7A00;--ok:#12B76A;--no:#E5484D;--mut:#2A3A63}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1920px;height:1080px;overflow:hidden;background:#fff}
+#stage{position:relative;width:1920px;height:1080px;overflow:hidden;font-family:'Epilogue',sans-serif;color:var(--nv);background:#F7FAFE}
+.L{position:absolute;inset:0}
+.bgimg{position:absolute;inset:-40px;background-size:cover;background-position:center;opacity:0}
+.velo{position:absolute;inset:0;opacity:0}
+.sc{position:absolute;inset:0;visibility:hidden}
+.k{position:absolute;background:#fff;border:5px solid var(--nv);border-radius:30px;box-shadow:12px 14px 0 var(--nv)}
+.t{font-weight:900;letter-spacing:-.03em;line-height:1}
+.pill{position:absolute;font-weight:900;font-size:30px;padding:12px 28px;border:4px solid var(--nv);border-radius:999px;box-shadow:6px 6px 0 var(--nv);white-space:nowrap}
+.badge{position:absolute;border-radius:50%;border:5px solid var(--nv);box-shadow:9px 9px 0 var(--nv);display:grid;place-items:center}
+.badge svg{width:62%;height:62%}
+.cap{position:absolute;font-weight:900;font-size:34px;text-align:center;white-space:nowrap}
+.w{display:inline-block;overflow:hidden;vertical-align:top;padding-bottom:.08em}
+.w>span{display:inline-block}
+.hl{background:var(--yeT);border-radius:14px;padding:0 12px}
+.row{position:relative;padding:14px 0;border-bottom:2px solid #E6EBF3}
+.row .l{font-size:17px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--mut)}
+.row .v{position:relative;display:inline-block;font-size:27px;font-weight:800;margin-top:6px;z-index:1}
+.row .mk{position:absolute;left:-8px;right:-8px;top:6px;bottom:-2px;background:var(--yeT);z-index:-1;transform:scaleX(0);transform-origin:left;border-radius:6px}
+.row .mk.r{background:#FFD3D5}
+.dh{display:flex;align-items:center;gap:16px;padding:22px 30px;border-bottom:5px solid var(--nv);border-radius:25px 25px 0 0}
+.dh svg{width:52px;height:52px;flex:none}
+.dh b{display:block;font-size:28px;font-weight:900}
+.dh small{display:block;font-size:18px;font-weight:600;color:var(--mut)}
+.rows{padding:8px 30px 22px}
+.mark{position:absolute;width:76px;height:76px;border-radius:50%;border:5px solid var(--nv);display:grid;place-items:center;box-shadow:5px 5px 0 var(--nv)}
+.mark svg{width:42px;height:42px}
+#hud{position:absolute;left:56px;top:44px;display:flex;align-items:center;gap:14px;opacity:0}
+#hud .n{background:var(--or);color:var(--nv);font-weight:900;font-size:24px;padding:8px 14px;border:4px solid var(--nv);border-radius:12px;box-shadow:4px 4px 0 var(--nv)}
+#hud .tx{font-weight:900;font-size:24px;letter-spacing:.08em;text-transform:uppercase;background:#fff;padding:8px 16px;border:4px solid var(--nv);border-radius:12px;box-shadow:4px 4px 0 var(--nv)}
+#prog{position:absolute;left:0;right:0;bottom:0;height:10px;background:rgba(10,31,79,.08)}
+#prog i{display:block;height:100%;background:var(--or);transform-origin:left;transform:scaleX(0)}
+.wipe{position:absolute;top:-200px;height:1480px;width:900px;transform:translateX(-3000px) skewX(-14deg);border-left:6px solid var(--nv);border-right:6px solid var(--nv)}
+.bar{position:absolute;bottom:0;width:150px;border:5px solid var(--nv);border-radius:24px 24px 0 0;transform-origin:bottom}
+.ln{position:absolute;height:12px;border-radius:6px;background:#E4E9F2}
+.mk2{background-image:linear-gradient(var(--yeT),var(--yeT));background-repeat:no-repeat;background-size:0% 100%;-webkit-box-decoration-break:clone;box-decoration-break:clone;padding:0 4px;border-radius:5px;font-weight:800}
+.art{font-size:25px;line-height:1.5;font-weight:500;color:var(--nv)}
+.cap{color:var(--nv)}
+</style></head>
+<body><div id="stage">
+  <div class="L" id="bgs"></div>
+  <div class="L" id="fx"></div>
+  <div id="hud"><span class="n" id="hudn">01</span><span class="tx" id="hudt"></span></div>
+  <div id="prog"><i></i></div>
+  <div class="L" id="wipes"></div>
+</div>
+<script src="../node_modules/gsap/dist/gsap.min.js"></script>
+<script src="timeline.js"></script>
+<script>
+// ---------- utilidades ----------
+gsap.defaults({ ease: 'power3.out' });
+const tl = gsap.timeline({ paused: true });
+const SFX = []; window.SFX = SFX;
+const FX = document.getElementById('fx'), BGS = document.getElementById('bgs');
+const el = (p, html, css = '', cls = '') => { const d = document.createElement('div'); if (cls) d.className = cls; d.style.cssText = 'position:absolute;' + css; d.innerHTML = html; p.appendChild(d); return d; };
+const hide = (e, v = {}) => gsap.set(e, Object.assign({ autoAlpha: 0 }, v));
+function pop(e, t, o = {}) { SFX.push({ t, k: 'pop' }); hide(e, { scale: o.s ?? 0.4, rotation: o.r ?? -8 }); tl.to(e, { autoAlpha: 1, scale: 1, rotation: 0, duration: o.d ?? 0.8, ease: o.e ?? 'elastic.out(1,0.6)' }, t); return e; }
+function rise(e, t, o = {}) { SFX.push({ t, k: 'tick' }); hide(e, { y: o.y ?? 140, x: o.x ?? 0, rotation: o.r ?? 4 }); tl.to(e, { autoAlpha: 1, x: 0, y: 0, rotation: 0, duration: o.d ?? 1, ease: 'elastic.out(1,0.65)' }, t); return e; }
+function out(e, t, o = {}) { tl.to(e, Object.assign({ autoAlpha: 0, y: -40, duration: 0.4, ease: 'power2.in' }, o), t); }
+function words(p, x, y, text, size, o = {}) {
+  const HL = new Set(), toks = text.replace(/\*([^*]+)\*/g, (m, g) => { const k = g.split(' ').join('\u00a0'); HL.add(k); return k; }).split(' ');
+  const h = toks.map(w => w === '/' ? '<br>' : `<span class="w"><span${HL.has(w) ? ' class="hl"' : ''}>${w}</span></span>`).join(' ');
+  const d = el(p, h, `left:${x}px;top:${y}px;width:${o.w ?? 1500}px;font-size:${size}px;text-align:${o.a ?? 'left'};line-height:1.04`, 't');
+  hide(d); return d;
+}
+function wordsIn(d, t) { SFX.push({ t, k: 'swish' }); const ws = d.querySelectorAll('.w>span'); gsap.set(ws, { yPercent: 120 }); tl.set(d, { autoAlpha: 1 }, t); tl.to(ws, { yPercent: 0, duration: 0.8, ease: 'expo.out', stagger: 0.06 }, t); }
+const IC = {
+  doc: '<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M16 13H8"/><path d="M16 17H8"/>',
+  shield: '<path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/>',
+  search: '<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>',
+  users: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+  factory: '<path d="M2 20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8l-7 5V8l-7 5V4a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M17 18h1"/><path d="M12 18h1"/><path d="M7 18h1"/>',
+  leaf: '<path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/>',
+  check: '<path d="M20 6 9 17l-5-5"/>', x: '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
+  fuel: '<line x1="3" x2="15" y1="22" y2="22"/><line x1="4" x2="14" y1="9" y2="9"/><path d="M14 22V4a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v18"/><path d="M14 13h2a2 2 0 0 1 2 2v2a2 2 0 0 0 2 2a2 2 0 0 0 2-2V9.83a2 2 0 0 0-.59-1.42L18 5"/>',
+  alert: '<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/>',
+  list: '<path d="M13 5h8"/><path d="M13 12h8"/><path d="M13 19h8"/><path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/>',
+};
+const ic = (n, c = 'currentColor', sw = 2.2) => `<svg viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round">${IC[n]}</svg>`;
+
+// ---------- iconos estilo 9 · línea con acento (azul noche + un detalle naranja) ----------
+const P9 = (role, d) => ({ role, tag: 'path', d });
+const DOC9 = [P9('b', 'M12 6 H38 L48 16 V56 H12 Z'), P9('d', 'M38 6 V16 H48'), P9('d', 'M19 22 H34'), P9('d', 'M19 30 H40'), P9('d', 'M19 38 H28')];
+const ICON9 = {
+  poliza: [...DOC9, P9('a', 'M42 34 L54 39 V46 C54 52 49 56 42 59 C35 56 30 52 30 46 V39 Z'), P9('d', 'M37 46 L41 50 L47 43')],
+  solicitud: [...DOC9, P9('a', 'M34 54 L36 46 L52 30 L58 36 L42 52 Z'), P9('d', 'M48 34 L54 40')],
+  autorizacion: [...DOC9, { role: 'a', tag: 'circle', cx: 44, cy: 46, r: 12 }, P9('d', 'M38 46 L42 50 L50 42')],
+  ruc: [P9('b', 'M5 14 H59 V50 H5 Z'), P9('a', 'M5 14 H59 V23 H5 Z'), { role: 'd', tag: 'circle', cx: 19, cy: 33, r: 5 }, P9('d', 'M11 45 C11 39 27 39 27 45'), { role: 't', x: 44, y: 35, s: 10, txt: 'RUC' }, P9('d', 'M34 42 H54')],
+  registro: [P9('b', 'M14 6 H50 V58 H18 A5 5 0 0 1 13 53 V11 A5 5 0 0 1 14 6 Z'), P9('d', 'M13 50 A5 5 0 0 1 18 46 H50'), P9('d', 'M21 6 V46'), P9('a', 'M36 14 C36 14 28 23 28 28 A8 8 0 0 0 44 28 C44 23 36 14 36 14 Z')],
+  supervision: [P9('b', 'M8 10 H40 V56 H8 Z'), P9('a', 'M17 5 H31 V13 H17 Z'), P9('d', 'M14 24 L17 27 L22 21'), P9('d', 'M26 24 H34'), P9('d', 'M14 37 L17 40 L22 34'), P9('d', 'M26 37 H32'), P9('l', 'M50 50 L58 58'), { role: 'a', tag: 'circle', cx: 44, cy: 44, r: 10 }, { role: 'd', tag: 'circle', cx: 44, cy: 44, r: 4.5 }],
+  terceros: [{ role: 'b', tag: 'circle', cx: 44, cy: 20, r: 7 }, P9('b', 'M30 54 C30 38 58 38 58 54 Z'), { role: 'a', tag: 'circle', cx: 22, cy: 22, r: 8 }, P9('a', 'M5 56 C5 38 39 38 39 56 Z')],
+  ambiente: [P9('a', 'M12 52 C8 26 28 10 56 8 C56 36 40 56 12 52 Z'), P9('d', 'M12 52 C24 40 34 30 46 18'), P9('d', 'M27 37 H38'), P9('d', 'M34 30 V20'), P9('l', 'M6 58 C10 55 14 54 18 54')],
+  instalaciones: [P9('l', 'M2 56 H62'), P9('a', 'M48 56 V12 H56 V56'), P9('b', 'M6 56 V30 L19 22 V30 L32 22 V30 L45 22 V56 Z'), P9('d', 'M13 44 H19'), P9('d', 'M25 44 H31'), P9('d', 'M37 44 H40')],
+  automotor: [P9('l', 'M5 56 H41'), P9('b', 'M10 8 H36 V56 H10 Z'), P9('a', 'M16 14 H30 V27 H16 Z'), P9('d', 'M16 38 H30'), P9('l', 'M36 22 H41 A4 4 0 0 1 45 26 V44 A3.5 3.5 0 0 0 52 44 V21 L46 15')],
+};
+function ic9(name) {
+  const N = '#0A1F4F', A = '#FF7A00', AF = '#FFE2C7', sw = 3, base = 'stroke-linecap="round" stroke-linejoin="round"';
+  const body = ICON9[name].map(e => {
+    if (e.role === 't') return `<text x="${e.x}" y="${e.y}" font-family="Epilogue" font-weight="900" font-size="${e.s}" text-anchor="middle" fill="${N}">${e.txt}</text>`;
+    const st = e.role === 'a' ? `fill="${AF}" stroke="${A}"` : `fill="none" stroke="${N}"`;
+    return e.tag === 'circle' ? `<circle cx="${e.cx}" cy="${e.cy}" r="${e.r}" ${st} stroke-width="${sw}" ${base}/>` : `<path d="${e.d}" ${st} stroke-width="${sw}" ${base}/>`;
+  }).join('');
+  return `<svg viewBox="-4 -4 72 72">${body}</svg>`;
+}
+function mark(p, x, y, ok, t) { SFX.push({ t: t + 0.1, k: ok ? 'ok' : 'no' }); const m = el(p, ic(ok ? 'check' : 'x', '#fff', 3.4), `left:${x}px;top:${y}px;background:${ok ? 'var(--ok)' : 'var(--no)'}`, 'mark'); pop(m, t, { s: 0, r: -90, e: 'back.out(3)', d: 0.5 }); return m; }
+function scene_old(id) { const c = el(FX, '', '', 'sc'); tl.set(c, { visibility: 'visible' }, SC[id][0]); tl.set(c, { visibility: 'hidden' }, SC[id][1]); return c; }
+// fondo fotográfico con velo y zoom lento
+// variantes de velo (?velo=N); sin parámetro se usa el velo blanco original
+const VELOS = {
+  azul:    { c1: [226, 234, 248], c2: [226, 234, 248], a: [.84, .64, .26] },
+  celeste: { c1: [218, 241, 250], c2: [218, 241, 250], a: [.88, .66, .26] },
+  durazno: { c1: [255, 239, 226], c2: [255, 239, 226], a: [.84, .64, .26] },
+  duo:     { c1: [226, 234, 248], c2: [255, 232, 212], a: [.86, .64, .30] },
+  entonada:{ tint: ['#0047BB', .30, 'color'], c1: [238, 243, 252], c2: [238, 243, 252], a: [.80, .56, .18] },
+  bruma:   { tint: ['#8FB0EA', .45, 'multiply'], c1: [244, 247, 253], c2: [255, 240, 228], a: [.80, .56, .16] },
+};
+const VEL = VELOS[new URLSearchParams(location.search).get('velo') || 'celeste'];  // elegido: celeste suave
+const rgba = (c, a) => `rgba(${c[0]},${c[1]},${c[2]},${a})`;
+function veloFor(id) {
+  const { c1, c2, a } = VEL;
+  if (id === 'full') return `linear-gradient(90deg,${rgba(c1, a[0] * .97)},${rgba(c2, a[0] * .93)})`;
+  if (id === 'soft') return `linear-gradient(90deg,${rgba(c1, a[0])} 0%,${rgba(c1, a[1] + .14)} 55%,${rgba(c2, a[1] + .02)} 100%)`;
+  if (id === 'top') return `linear-gradient(180deg,${rgba(c1, a[0])} 0%,${rgba(c1, a[1] + .1)} 60%,${rgba(c2, a[2] + .15)} 100%)`;
+  return `linear-gradient(90deg,${rgba(c1, a[0])} 0%,${rgba(c1, a[1])} 45%,${rgba(c2, a[2])} 100%)`;
+}
+function photo(rng, src, shape = 'side', pos = 'center') {
+  let velo = '';
+  const b = el(BGS, '', `background-image:url(${src});background-position:${pos}`, 'bgimg');
+  const layers = [b];
+  if (VEL) { velo = veloFor(shape); if (VEL.tint) layers.push(el(BGS, '', `background:${VEL.tint[0]};mix-blend-mode:${VEL.tint[2]}`, 'velo')); }
+  const v = el(BGS, '', `background:${velo}`, 'velo'); layers.push(v);
+  const tint = VEL && VEL.tint ? layers[1] : null;
+  const [a, z] = rng;
+  tl.to([b, v], { opacity: 1, duration: 0.8, ease: 'power2.inOut' }, a);
+  if (tint) { tl.to(tint, { opacity: VEL.tint[1], duration: 0.8 }, a); tl.to(tint, { opacity: 0, duration: 0.6 }, z + 0.3); }
+  tl.fromTo(b, { scale: 1.0 }, { scale: 1.09, duration: z - a + 1, ease: 'none', immediateRender: false }, a);
+  tl.to([b, v], { opacity: 0, duration: 0.6 }, z + 0.3);
+}
+function texture(rng) {
+  let s = '';
+  for (let i = 0; i < 16; i++) for (let j = 0; j < 7; j++) { const x = i * 130 + (j % 2) * 65, y = j * 160 + 10, k = (i * 5 + j * 3) % 3;
+    s += `<g transform="translate(${x} ${y}) rotate(${(i + j) % 2 ? -8 : 8})" opacity=".1" fill="none" stroke="#0A1F4F" stroke-width="4" stroke-linecap="round">${k === 0 ? '<path d="M0 0 H44 L58 14 V76 H0 Z"/><path d="M12 30 H46 M12 44 H40"/>' : k === 1 ? '<circle cx="30" cy="38" r="26"/><path d="M18 38 l8 8 l16 -16"/>' : '<path d="M30 4 L56 14 V36 C56 54 42 64 30 70 C18 64 4 54 4 36 V14 Z"/>'}</g>`; }
+  const b = el(BGS, `<svg width="1920" height="1080"><rect width="1920" height="1080" fill="#F7FAFE"/><circle cx="260" cy="120" r="380" fill="#FFF1E3"/><circle cx="1760" cy="1000" r="480" fill="#EAF1FB"/>${s}</svg>`, '', 'bgimg');
+  const [a, z] = rng;
+  tl.to(b, { opacity: 1, duration: 0.6 }, a); tl.fromTo(b, { x: 0 }, { x: -40, duration: z - a, ease: 'none', immediateRender: false }, a); tl.to(b, { opacity: 0, duration: 0.5 }, z + 0.3);
+}
+function hud(t, n, txt) { tl.to('#hud', { opacity: 0, duration: 0.2 }, t - 0.2); tl.set('#hudn', { textContent: n }, t); tl.set('#hudt', { textContent: txt }, t); tl.to('#hud', { opacity: 1, duration: 0.4 }, t + 0.1); }
+function wipe(t) {
+  SFX.push({ t: t - 0.4, k: 'whoosh' });
+  ['var(--or)', 'var(--blT)', 'var(--bl)', '#fff'].forEach((c, i) => {
+    const w = el(document.getElementById('wipes'), '', `background:${c};left:0;width:${i === 3 ? 2600 : 900}px`, 'wipe');
+    tl.fromTo(w, { x: -3200 + i * 30 }, { x: 2700, duration: 1.15, ease: 'power3.inOut', immediateRender: false }, t - 0.6 + i * 0.06);
+  });
+}
+function chapter(c, t, num, title, sub) {
+  const box = el(c, `<div class="t" style="font-size:240px;color:transparent;-webkit-text-stroke:5px var(--or);line-height:1">${num}</div>`, 'left:150px;top:300px');
+  const tt = words(c, 470, 340, title, 96, { w: 1300 });
+  const sb = el(c, sub, 'left:474px;top:560px;font-size:34px;font-weight:600;color:var(--mut);width:1200px');
+  rise(box, t, { y: 80 }); wordsIn(tt, t + 0.1); rise(sb, t + 0.4, { y: 40 });
+  out([box, tt, sb], t + 2.1);
+}
+const card = (p, x, y, w, h, inner, css = '') => el(p, inner, `left:${x}px;top:${y}px;width:${w}px;height:${h}px;${css}`, 'k');
+
+</script>
+<script src="extra.js"></script>
+<script src="scenes.js"></script>
+</body></html>
