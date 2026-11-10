@@ -106,10 +106,32 @@ const ic = (n, c = 'currentColor', sw = 2.2) => `<svg viewBox="0 0 24 24" fill="
 function mark(p, x, y, ok, t) { SFX.push({ t: t + 0.1, k: ok ? 'ok' : 'no' }); const m = el(p, ic(ok ? 'check' : 'x', '#fff', 3.4), `left:${x}px;top:${y}px;background:${ok ? 'var(--ok)' : 'var(--no)'}`, 'mark'); pop(m, t, { s: 0, r: -90, e: 'back.out(3)', d: 0.5 }); return m; }
 function scene(id) { const c = el(FX, '', '', 'sc'); tl.set(c, { visibility: 'visible' }, SC[id][0]); tl.set(c, { visibility: 'hidden' }, SC[id][1]); return c; }
 // fondo fotográfico con velo y zoom lento
+// variantes de velo (?velo=N); sin parámetro se usa el velo blanco original
+const VELOS = {
+  azul:    { c1: [226, 234, 248], c2: [226, 234, 248], a: [.84, .64, .26] },
+  celeste: { c1: [218, 241, 250], c2: [218, 241, 250], a: [.84, .64, .26] },
+  durazno: { c1: [255, 239, 226], c2: [255, 239, 226], a: [.84, .64, .26] },
+  duo:     { c1: [226, 234, 248], c2: [255, 232, 212], a: [.86, .64, .30] },
+  entonada:{ tint: ['#0047BB', .30, 'color'], c1: [238, 243, 252], c2: [238, 243, 252], a: [.80, .56, .18] },
+  bruma:   { tint: ['#8FB0EA', .45, 'multiply'], c1: [244, 247, 253], c2: [255, 240, 228], a: [.80, .56, .16] },
+};
+const VEL = VELOS[new URLSearchParams(location.search).get('velo')];
+const rgba = (c, a) => `rgba(${c[0]},${c[1]},${c[2]},${a})`;
+function veloFor(id) {
+  const { c1, c2, a } = VEL;
+  if (id === 'D') return `linear-gradient(90deg,${rgba(c1, a[0] * .97)},${rgba(c2, a[0] * .93)})`;
+  if (id === 'E') return `linear-gradient(180deg,${rgba(c1, a[0])} 0%,${rgba(c1, a[1] + .1)} 60%,${rgba(c2, a[2] + .15)} 100%)`;
+  return `linear-gradient(90deg,${rgba(c1, a[0])} 0%,${rgba(c1, a[1])} 45%,${rgba(c2, a[2])} 100%)`;
+}
 function photo(id, src, velo, pos = 'center') {
-  const b = el(BGS, '', `background-image:url(${src});background-position:${pos}`, 'bgimg'), v = el(BGS, '', `background:${velo}`, 'velo');
+  const b = el(BGS, '', `background-image:url(${src});background-position:${pos}`, 'bgimg');
+  const layers = [b];
+  if (VEL) { velo = veloFor(id); if (VEL.tint) layers.push(el(BGS, '', `background:${VEL.tint[0]};mix-blend-mode:${VEL.tint[2]}`, 'velo')); }
+  const v = el(BGS, '', `background:${velo}`, 'velo'); layers.push(v);
+  const tint = VEL && VEL.tint ? layers[1] : null;
   const [a, z] = SC[id];
   tl.to([b, v], { opacity: 1, duration: 0.8, ease: 'power2.inOut' }, a);
+  if (tint) { tl.to(tint, { opacity: VEL.tint[1], duration: 0.8 }, a); tl.to(tint, { opacity: 0, duration: 0.6 }, z + 0.3); }
   tl.fromTo(b, { scale: 1.0 }, { scale: 1.09, duration: z - a + 1, ease: 'none', immediateRender: false }, a);
   tl.to([b, v], { opacity: 0, duration: 0.6 }, z + 0.3);
 }
