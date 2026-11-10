@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><title>Avance video RCE</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400..900&display=swap">
+<style>
+/* Avance formal: tarjetas ilustradas, paleta Solgas suave, Epilogue; fotos de fondo con velo claro y zoom lento. */
+:root{--nv:#0A1F4F;--bl:#0047BB;--blT:#D6E3F8;--bl2:#8FB0EA;--cyT:#D3F0FA;--orT:#FFE2C7;--yeT:#FFEDB8;--or:#FF7A00;--ok:#12B76A;--no:#E5484D;--mut:#4A5878}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1920px;height:1080px;overflow:hidden;background:#fff}
+#stage{position:relative;width:1920px;height:1080px;overflow:hidden;font-family:'Epilogue',sans-serif;color:var(--nv);background:#F7FAFE}
+.L{position:absolute;inset:0}
+.bgimg{position:absolute;inset:-40px;background-size:cover;background-position:center;opacity:0}
+.velo{position:absolute;inset:0;opacity:0}
+.sc{position:absolute;inset:0;visibility:hidden}
+.k{position:absolute;background:#fff;border:5px solid var(--nv);border-radius:30px;box-shadow:12px 14px 0 var(--nv)}
+.t{font-weight:900;letter-spacing:-.03em;line-height:1}
+.pill{position:absolute;font-weight:900;font-size:30px;padding:12px 28px;border:4px solid var(--nv);border-radius:999px;box-shadow:6px 6px 0 var(--nv);white-space:nowrap}
+.badge{position:absolute;border-radius:50%;border:5px solid var(--nv);box-shadow:9px 9px 0 var(--nv);display:grid;place-items:center}
+.badge svg{width:56%;height:56%}
+.cap{position:absolute;font-weight:900;font-size:34px;text-align:center;white-space:nowrap}
+.w{display:inline-block;overflow:hidden;vertical-align:top;padding-bottom:.08em}
+.w>span{display:inline-block}
+.hl{background:var(--yeT);border-radius:14px;padding:0 12px}
+.row{position:relative;padding:14px 0;border-bottom:2px solid #E6EBF3}
+.row .l{font-size:17px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--mut)}
+.row .v{position:relative;display:inline-block;font-size:27px;font-weight:800;margin-top:6px;z-index:1}
+.row .mk{position:absolute;left:-8px;right:-8px;top:6px;bottom:-2px;background:var(--yeT);z-index:-1;transform:scaleX(0);transform-origin:left;border-radius:6px}
+.row .mk.r{background:#FFD3D5}
+.dh{display:flex;align-items:center;gap:16px;padding:22px 30px;border-bottom:5px solid var(--nv);border-radius:25px 25px 0 0}
+.dh svg{width:44px;height:44px;flex:none}
+.dh b{display:block;font-size:28px;font-weight:900}
+.dh small{display:block;font-size:18px;font-weight:600;color:var(--mut)}
+.rows{padding:8px 30px 22px}
+.mark{position:absolute;width:76px;height:76px;border-radius:50%;border:5px solid var(--nv);display:grid;place-items:center;box-shadow:5px 5px 0 var(--nv)}
+.mark svg{width:42px;height:42px}
+#hud{position:absolute;left:56px;top:44px;display:flex;align-items:center;gap:14px;opacity:0}
+#hud .n{background:var(--or);color:var(--nv);font-weight:900;font-size:24px;padding:8px 14px;border:4px solid var(--nv);border-radius:12px;box-shadow:4px 4px 0 var(--nv)}
+#hud .tx{font-weight:900;font-size:24px;letter-spacing:.08em;text-transform:uppercase;background:#fff;padding:8px 16px;border:4px solid var(--nv);border-radius:12px;box-shadow:4px 4px 0 var(--nv)}
+#prog{position:absolute;left:0;right:0;bottom:0;height:10px;background:rgba(10,31,79,.08)}
+#prog i{display:block;height:100%;background:var(--or);transform-origin:left;transform:scaleX(0)}
+.wipe{position:absolute;top:-200px;height:1480px;width:900px;transform:translateX(-3000px) skewX(-14deg);border-left:6px solid var(--nv);border-right:6px solid var(--nv)}
+.bar{position:absolute;bottom:0;width:150px;border:5px solid var(--nv);border-radius:24px 24px 0 0;transform-origin:bottom}
+.ln{position:absolute;height:12px;border-radius:6px;background:#E4E9F2}
+</style></head>
+<body><div id="stage">
+  <div class="L" id="bgs"></div>
+  <div class="L" id="fx"></div>
+  <div id="hud"><span class="n" id="hudn">01</span><span class="tx" id="hudt"></span></div>
+  <div id="prog"><i></i></div>
+  <div class="L" id="wipes"></div>
+</div>
+<script src="../node_modules/gsap/dist/gsap.min.js"></script>
+<script>
+// ---------- datos de locución (duraciones reales de cada frase) ----------
+const VOZ = { e1a: 10.441, e1b: 12.539, e3a: 9.464, e3b: 4.4, e3c: 10.056, e4b: 11.604, e4c: 5.158, e4g: 10.382, e8f: 8.809, e8g: 6.5, e9g: 8.46 };
+const TXT = {
+  e1a: 'Para la autorización y operación de un consumidor directo de GLP, la gestión de la póliza de responsabilidad civil extracontractual no debe limitarse a disponer de un documento vigente,',
+  e1b: 'sino comprender que dicha póliza representa un elemento importante para la protección de Solgas frente a las consecuencias económicas de determinados accidentes que puedan afectar a las instalaciones, terceros y al medio ambiente.',
+  e3a: 'El monto mínimo asegurado de las pólizas de responsabilidad civil extracontractual para un consumidor directo de GLP depende de la capacidad de almacenamiento del tanque,',
+  e3b: 'siendo desde 100 UIT como mínimo hasta 300 UIT como máximo.',
+  e3c: 'Para el caso de Consumidores Directos de GLP con sistemas de despacho para uso automotor, el monto es de 300 UIT, independientemente de la capacidad de almacenamiento del tanque.',
+  e4b: 'La póliza debe consignar la Razón Social y el RUC, descritos tal cual se muestran en su consulta RUC SUNAT, y ser similar a los datos registrados como titular en la solicitud del Registro de Hidrocarburos,',
+  e4c: 'de manera que exista correspondencia entre la información del seguro y la información registral.',
+  e4g: 'Una póliza con datos de Razón Social, RUC y/o actividad escritos de forma inexacta puede generar observaciones para la autorización, y/o limitaciones en su activación ante una emergencia.',
+  e8f: 'Antes de presentar un expediente o atender una supervisión, resulta conveniente contrastar la documentación con la información del Registro de Hidrocarburos',
+  e8g: 'y verificar que no existan diferencias en la identidad del titular, la actividad, la ubicación o el monto asegurado.',
+  e9g: 'La prevención comienza con el conocimiento de las obligaciones y se fortalece mediante una gestión rigurosa de los riesgos y de las coberturas contratadas.',
+};
+// guion del avance: [escena, frase, inicio]
+const PLAN = [['A', 'e1a', 5.0], ['A', 'e1b', 15.8], ['B', 'e3a', 31.4], ['B', 'e3b', 41.2], ['B', 'e3c', 46.0], ['C', 'e4b', 59.6], ['C', 'e4c', 71.6], ['C', 'e4g', 77.4], ['D', 'e8f', 91.4], ['D', 'e8g', 100.6], ['E', 'e9g', 109.4]];
+const SC = { A: [0, 29], B: [29, 57.2], C: [57.2, 89], D: [89, 107.6], E: [107.6, 125] };
+const TOTAL = 125;
+const S = id => PLAN.find(p => p[1] === id)[2], E = id => S(id) + VOZ[id];
+const W = (id, w, off = 0) => { const i = TXT[id].indexOf(w); if (i < 0) throw new Error(id + ':' + w); return S(id) + 0.1 + i / TXT[id].length * (VOZ[id] - 0.2) + off; };
+window.PLAN = PLAN; window.VOZ = VOZ; window.TOTAL = TOTAL;
+
+// ---------- utilidades ----------
+gsap.defaults({ ease: 'power3.out' });
+const tl = gsap.timeline({ paused: true });
+const SFX = []; window.SFX = SFX;
+const FX = document.getElementById('fx'), BGS = document.getElementById('bgs');
+const el = (p, html, css = '', cls = '') => { const d = document.createElement('div'); if (cls) d.className = cls; d.style.cssText = 'position:absolute;' + css; d.innerHTML = html; p.appendChild(d); return d; };
+const hide = (e, v = {}) => gsap.set(e, Object.assign({ autoAlpha: 0 }, v));
+function pop(e, t, o = {}) { SFX.push({ t, k: 'pop' }); hide(e, { scale: o.s ?? 0.4, rotation: o.r ?? -8 }); tl.to(e, { autoAlpha: 1, scale: 1, rotation: 0, duration: o.d ?? 0.8, ease: o.e ?? 'elastic.out(1,0.6)' }, t); return e; }
+function rise(e, t, o = {}) { SFX.push({ t, k: 'tick' }); hide(e, { y: o.y ?? 140, x: o.x ?? 0, rotation: o.r ?? 4 }); tl.to(e, { autoAlpha: 1, x: 0, y: 0, rotation: 0, duration: o.d ?? 1, ease: 'elastic.out(1,0.65)' }, t); return e; }
+function out(e, t, o = {}) { tl.to(e, Object.assign({ autoAlpha: 0, y: -40, duration: 0.4, ease: 'power2.in' }, o), t); }
+function words(p, x, y, text, size, o = {}) {
+  const HL = new Set(), toks = text.replace(/\*([^*]+)\*/g, (m, g) => { const k = g.split(' ').join('\u00a0'); HL.add(k); return k; }).split(' ');
+  const h = toks.map(w => w === '/' ? '<br>' : `<span class="w"><span${HL.has(w) ? ' class="hl"' : ''}>${w}</span></span>`).join(' ');
+  const d = el(p, h, `left:${x}px;top:${y}px;width:${o.w ?? 1500}px;font-size:${size}px;text-align:${o.a ?? 'left'};line-height:1.04`, 't');
+  hide(d); return d;
+}
+function wordsIn(d, t) { SFX.push({ t, k: 'swish' }); const ws = d.querySelectorAll('.w>span'); gsap.set(ws, { yPercent: 120 }); tl.set(d, { autoAlpha: 1 }, t); tl.to(ws, { yPercent: 0, duration: 0.8, ease: 'expo.out', stagger: 0.06 }, t); }
+const IC = {
+  doc: '<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M16 13H8"/><path d="M16 17H8"/>',
+  shield: '<path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/>',
+  search: '<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>',
+  users: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+  factory: '<path d="M2 20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8l-7 5V8l-7 5V4a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M17 18h1"/><path d="M12 18h1"/><path d="M7 18h1"/>',
+  leaf: '<path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/>',
+  check: '<path d="M20 6 9 17l-5-5"/>', x: '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
+  fuel: '<line x1="3" x2="15" y1="22" y2="22"/><line x1="4" x2="14" y1="9" y2="9"/><path d="M14 22V4a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v18"/><path d="M14 13h2a2 2 0 0 1 2 2v2a2 2 0 0 0 2 2a2 2 0 0 0 2-2V9.83a2 2 0 0 0-.59-1.42L18 5"/>',
+  alert: '<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/>',
+  list: '<path d="M13 5h8"/><path d="M13 12h8"/><path d="M13 19h8"/><path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/>',
+};
+const ic = (n, c = 'currentColor', sw = 2.2) => `<svg viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round">${IC[n]}</svg>`;
+function mark(p, x, y, ok, t) { SFX.push({ t: t + 0.1, k: ok ? 'ok' : 'no' }); const m = el(p, ic(ok ? 'check' : 'x', '#fff', 3.4), `left:${x}px;top:${y}px;background:${ok ? 'var(--ok)' : 'var(--no)'}`, 'mark'); pop(m, t, { s: 0, r: -90, e: 'back.out(3)', d: 0.5 }); return m; }
+function scene(id) { const c = el(FX, '', '', 'sc'); tl.set(c, { visibility: 'visible' }, SC[id][0]); tl.set(c, { visibility: 'hidden' }, SC[id][1]); return c; }
+// fondo fotográfico con velo y zoom lento
+function photo(id, src, velo, pos = 'center') {
+  const b = el(BGS, '', `background-image:url(${src});background-position:${pos}`, 'bgimg'), v = el(BGS, '', `background:${velo}`, 'velo');
+  const [a, z] = SC[id];
+  tl.to([b, v], { opacity: 1, duration: 0.8, ease: 'power2.inOut' }, a);
+  tl.fromTo(b, { scale: 1.0 }, { scale: 1.09, duration: z - a + 1, ease: 'none', immediateRender: false }, a);
+  tl.to([b, v], { opacity: 0, duration: 0.6 }, z + 0.3);
+}
+function texture(id) {
+  let s = '';
+  for (let i = 0; i < 16; i++) for (let j = 0; j < 7; j++) { const x = i * 130 + (j % 2) * 65, y = j * 160 + 10, k = (i * 5 + j * 3) % 3;
+    s += `<g transform="translate(${x} ${y}) rotate(${(i + j) % 2 ? -8 : 8})" opacity=".1" fill="none" stroke="#0A1F4F" stroke-width="4" stroke-linecap="round">${k === 0 ? '<path d="M0 0 H44 L58 14 V76 H0 Z"/><path d="M12 30 H46 M12 44 H40"/>' : k === 1 ? '<circle cx="30" cy="38" r="26"/><path d="M18 38 l8 8 l16 -16"/>' : '<path d="M30 4 L56 14 V36 C56 54 42 64 30 70 C18 64 4 54 4 36 V14 Z"/>'}</g>`; }
+  const b = el(BGS, `<svg width="1920" height="1080"><rect width="1920" height="1080" fill="#F7FAFE"/><circle cx="260" cy="120" r="380" fill="#FFF1E3"/><circle cx="1760" cy="1000" r="480" fill="#EAF1FB"/>${s}</svg>`, '', 'bgimg');
+  const [a, z] = SC[id];
+  tl.to(b, { opacity: 1, duration: 0.6 }, a); tl.fromTo(b, { x: 0 }, { x: -40, duration: z - a, ease: 'none', immediateRender: false }, a); tl.to(b, { opacity: 0, duration: 0.5 }, z + 0.3);
+}
+function hud(t, n, txt) { tl.to('#hud', { opacity: 0, duration: 0.2 }, t - 0.2); tl.set('#hudn', { textContent: n }, t); tl.set('#hudt', { textContent: txt }, t); tl.to('#hud', { opacity: 1, duration: 0.4 }, t + 0.1); }
+function wipe(t) {
+  SFX.push({ t: t - 0.4, k: 'whoosh' });
+  ['var(--or)', 'var(--blT)', 'var(--bl)', '#fff'].forEach((c, i) => {
+    const w = el(document.getElementById('wipes'), '', `background:${c};left:0;width:${i === 3 ? 2600 : 900}px`, 'wipe');
+    tl.fromTo(w, { x: -3200 + i * 30 }, { x: 2700, duration: 1.15, ease: 'power3.inOut', immediateRender: false }, t - 0.6 + i * 0.06);
+  });
+}
+function chapter(c, t, num, title, sub) {
+  const box = el(c, `<div class="t" style="font-size:240px;color:transparent;-webkit-text-stroke:5px var(--or);line-height:1">${num}</div>`, 'left:150px;top:300px');
+  const tt = words(c, 470, 340, title, 96, { w: 1300 });
+  const sb = el(c, sub, 'left:474px;top:560px;font-size:34px;font-weight:600;color:var(--mut);width:1200px');
+  rise(box, t, { y: 80 }); wordsIn(tt, t + 0.1); rise(sb, t + 0.4, { y: 40 });
+  out([box, tt, sb], t + 2.1);
+}
+const card = (p, x, y, w, h, inner, css = '') => el(p, inner, `left:${x}px;top:${y}px;width:${w}px;height:${h}px;${css}`, 'k');
+
+// =============== A · INTRODUCCIÓN (foto zona industrial) ===============
+(() => {
+  const c = scene('A');
+  photo('A', '../fotos/foto6.jpg', 'linear-gradient(90deg,rgba(255,255,255,.93) 0%,rgba(255,255,255,.78) 45%,rgba(255,255,255,.35) 100%)');
+  const pill = el(c, 'Capacitación · Consumidor directo de GLP', 'left:150px;top:300px;background:var(--orT)', 'pill');
+  pop(pill, 0.5);
+  const t1 = words(c, 150, 380, 'Pólizas de Responsabilidad / Civil *Extracontractual*', 108, { w: 1600 }); wordsIn(t1, 0.8);
+  const sub = el(c, 'Aspectos clave para revisar la póliza y prevenir observaciones', 'left:154px;top:640px;font-size:36px;font-weight:600;color:var(--mut)');
+  rise(sub, 1.6, { y: 40 });
+  out([pill, t1, sub], 4.4);
+  hud(5.0, '01', 'Introducción');
+  // e1a: la póliza no es solo un documento vigente
+  const doc = card(c, 1180, 210, 560, 640, `<div class="dh" style="background:var(--blT)">${ic('shield', '#0A1F4F')}<div><b>Póliza RCE</b><small>Responsabilidad Civil Extracontractual</small></div></div>
+    <div class="rows">${['Asegurado', 'Vigencia', 'Coberturas', 'Monto asegurado'].map(l => `<div class="row"><div class="l">${l}</div><div style="height:14px;width:${240 + l.length * 8}px;background:#E4E9F2;border-radius:7px;margin-top:10px"></div></div>`).join('')}</div>`);
+  rise(doc, W('e1a', 'póliza', -0.4), { x: 300, y: 0, r: 8 });
+  const k1 = words(c, 150, 330, 'La póliza es / más que un / *documento vigente*', 86, { w: 980 }); wordsIn(k1, S('e1a') + 0.3);
+  const st = el(c, 'VIGENTE', 'left:1420px;top:740px;background:var(--ok);color:#fff;transform:rotate(-10deg)', 'pill');
+  pop(st, W('e1a', 'documento vigente'), { s: 2.4, r: -30, e: 'power4.in', d: 0.35 });
+  out([k1], E('e1a'));
+  // e1b: protección frente a consecuencias económicas
+  const k2 = words(c, 150, 190, 'Protección / para *Solgas*', 86, { w: 1000 }); wordsIn(k2, S('e1b') + 0.1);
+  const k3 = el(c, 'frente a las consecuencias económicas de accidentes que afecten a:', 'left:154px;top:400px;width:900px;font-size:34px;font-weight:700;color:var(--mut);line-height:1.3');
+  rise(k3, W('e1b', 'consecuencias', -0.4), { y: 40 });
+  [['factory', 'Instalaciones', 'var(--cyT)', 'instalaciones'], ['users', 'Terceros', 'var(--orT)', 'terceros'], ['leaf', 'Medio ambiente', 'var(--yeT)', 'medio ambiente']].forEach(([n, l, bg, w], i) => {
+    const b = el(c, ic(n, '#0A1F4F', 1.9), `left:${170 + i * 330}px;top:540px;width:210px;height:210px;background:${bg}`, 'badge');
+    const cp = el(c, l, `left:${120 + i * 330}px;top:785px;width:310px`, 'cap');
+    pop(b, W('e1b', w, -0.3)); rise(cp, W('e1b', w, -0.1), { y: 30 });
+  });
+  out(c.querySelectorAll('.k,.pill,.badge,.cap,.t,div[style*="top:400px"]'), SC.A[1] - 0.4);
+})();
+
+// =============== B · MONTOS MÍNIMOS (foto del tanque) ===============
+(() => {
+  const c = scene('B');
+  wipe(SC.B[0]);
+  photo('B', '../fotos/foto4.jpg', 'linear-gradient(90deg,rgba(255,255,255,.95) 0%,rgba(255,255,255,.86) 50%,rgba(255,255,255,.25) 100%)', '70% center');
+  chapter(c, SC.B[0] + 0.3, '03', 'Montos *mínimos*', 'Según la capacidad de almacenamiento del tanque');
+  hud(SC.B[0] + 2.4, '03', 'Montos mínimos');
+  const law = el(c, 'Art. 32 · D.S. N.º 01-94-EM', 'left:150px;top:160px;background:var(--blT)', 'pill');
+  pop(law, S('e3a') + 0.2);
+  const k = words(c, 150, 250, 'El monto depende de la / *capacidad del tanque*', 74, { w: 1100 }); wordsIn(k, S('e3a') + 0.5);
+  const ch = card(c, 150, 455, 1000, 480, '', 'background:#fff');
+  rise(ch, W('e3a', 'capacidad', -0.6));
+  [['Hasta', '1,000 gal', 100, 'var(--blT)'], ['Hasta', '10,000 gal', 200, 'var(--bl2)'], ['Mayor a', '10,000 gal', 300, 'var(--or)']].forEach(([a, b, v, col], i) => {
+    const x = 70 + i * 310, h = v * 0.75, t = W('e3a', 'capacidad', -0.2) + i * 0.35;
+    const bar = el(ch, '', `left:${x}px;bottom:110px;height:${h}px;background:${col}`, 'bar');
+    const num = el(ch, `<span class="n">0</span><span style="font-size:30px"> UIT</span>`, `left:${x - 20}px;bottom:${125 + h}px;width:190px;text-align:center;font-size:64px`, 't');
+    const lb = el(ch, `${a}<br><b style="font-size:30px;color:var(--nv)">${b}</b>`, `left:${x - 30}px;bottom:16px;width:210px;text-align:center;font-size:22px;font-weight:700;color:var(--mut)`);
+    gsap.set(bar, { scaleY: 0 }); tl.to(bar, { scaleY: 1, duration: 1, ease: 'elastic.out(1,0.55)' }, t);
+    rise(num, t + 0.1, { y: 60 }); tl.fromTo(num.querySelector('.n'), { innerText: 0 }, { innerText: v, snap: { innerText: 1 }, duration: 0.9, ease: 'power2.out', immediateRender: false }, t + 0.1);
+    rise(lb, t + 0.2, { y: 30 });
+  });
+  const mn = el(c, 'MÍNIMO 100 UIT', 'left:240px;top:430px;background:var(--cyT)', 'pill'), mx = el(c, 'MÁXIMO 300 UIT', 'left:830px;top:430px;background:var(--orT)', 'pill');
+  pop(mn, W('e3b', '100 UIT')); pop(mx, W('e3b', '300 UIT'));
+  out([k, ch, mn, mx, law], S('e3c') - 0.4);
+  // e3c: uso automotor
+  const k2 = words(c, 150, 200, 'Despacho para / *uso automotor*', 86, { w: 1000 }); wordsIn(k2, S('e3c') + 0.1);
+  const pump = el(c, ic('fuel', '#0A1F4F', 1.8), 'left:150px;top:470px;width:230px;height:230px;background:var(--orT)', 'badge');
+  pop(pump, W('e3c', 'despacho', -0.2));
+  const big = card(c, 440, 440, 620, 300, `<div style="position:absolute;left:44px;top:34px;font-size:26px;font-weight:800;color:var(--mut)">Monto mínimo</div><div class="t" style="position:absolute;left:40px;top:96px;font-size:150px"><span class="n">0</span><span style="font-size:60px"> UIT</span></div>`, 'background:var(--yeT)');
+  rise(big, W('e3c', 'el monto', -0.4), { x: 200, y: 0 });
+  tl.fromTo(big.querySelector('.n'), { innerText: 0 }, { innerText: 300, snap: { innerText: 1 }, duration: 1, ease: 'power2.out', immediateRender: false }, W('e3c', 'el monto'));
+  const ind = el(c, 'Independiente de la capacidad del tanque', 'left:150px;top:800px;background:#fff', 'pill');
+  pop(ind, W('e3c', 'independientemente', -0.2));
+  out([k2, pump, big, ind], SC.B[1] - 0.6);
+})();
+
+// =============== C · IDENTIFICACIÓN DEL ASEGURADO (textura documental) ===============
+(() => {
+  const c = scene('C');
+  wipe(SC.C[0]);
+  texture('C');
+  chapter(c, SC.C[0] + 0.3, '04', 'Identificación del *asegurado*', 'Razón social, RUC y actividad deben coincidir');
+  hud(SC.C[0] + 2.4, '04', 'Identificación del asegurado');
+  const RS = 'INDUSTRIAS ANDINAS S.A.C.', RUC = '20601234567', ACT = 'Consumidor directo de GLP';
+  const docCard = (x, title, sub, icn, bg, vals) => card(c, x, 250, 520, 470, `<div class="dh" style="background:${bg}">${ic(icn, '#0A1F4F')}<div><b>${title}</b><small>${sub}</small></div></div>
+    <div class="rows">${[['Razón social', vals[0]], ['RUC', vals[1]], ['Actividad', vals[2]]].map(([l, v], i) => `<div class="row" data-i="${i}"><div class="l">${l}</div><div class="v"><span class="mk"></span><span class="tx">${v}</span></div></div>`).join('')}</div>`);
+  const dS = docCard(130, 'Consulta RUC', 'SUNAT', 'search', 'var(--cyT)', [RS, RUC, 'ACTIVO']);
+  dS.querySelectorAll('.row')[2].querySelector('.l').textContent = 'Estado';
+  const dP = docCard(700, 'Póliza de seguro', 'Responsabilidad Civil Extracontractual', 'shield', 'var(--orT)', [RS, RUC, ACT]);
+  const dR = docCard(1270, 'Registro de Hidrocarburos', 'Solicitud del titular', 'doc', 'var(--blT)', [RS, RUC, ACT]);
+  rise(dS, S('e4b') - 0.2, { r: -6 }); rise(dP, W('e4b', 'póliza', -0.2), { r: 5 }); rise(dR, W('e4b', 'Registro de Hidrocarburos', -0.6), { r: -4 });
+  const mk = (d, i) => d.querySelectorAll('.mk')[i];
+  const hl = (e, t) => tl.to(e, { scaleX: 1, duration: 0.5, ease: 'power2.inOut' }, t);
+  hl(mk(dP, 0), W('e4b', 'Razón Social')); hl(mk(dP, 1), W('e4b', 'RUC,'));
+  hl(mk(dS, 0), W('e4b', 'consulta RUC')); hl(mk(dS, 1), W('e4b', 'consulta RUC', 0.3));
+  hl(mk(dR, 0), W('e4b', 'titular')); hl(mk(dR, 1), W('e4b', 'titular', 0.3));
+  const corr = el(c, 'Correspondencia seguro ⇄ registro', 'left:660px;top:150px;background:var(--ok);color:#fff', 'pill');
+  pop(corr, W('e4c', 'correspondencia', -0.3));
+  const okm = [mark(c, 1180, 375, true, W('e4c', 'información del seguro')), mark(c, 1180, 470, true, W('e4c', 'información registral'))];
+  const ver = el(c, 'CORRECTO', 'left:800px;top:790px;background:var(--ok);color:#fff;font-size:38px', 'pill'); pop(ver, E('e4c') - 0.6);
+  // e4g: versión incorrecta
+  const t4 = S('e4g');
+  tl.to([corr, ver, ...okm], { autoAlpha: 0, duration: 0.3 }, t4 - 0.2);
+  tl.to(dP, { rotationY: 90, transformPerspective: 1600, duration: 0.35, ease: 'power2.in' }, t4);
+  tl.call(() => {}, [], t4);
+  const dB = docCard(700, 'Póliza de seguro', 'Responsabilidad Civil Extracontractual', 'shield', 'var(--orT)', ['INDUSTRIAS ANDINA S.A.', '20601234576', 'Comercialización de combustibles']);
+  dB.querySelectorAll('.mk').forEach(m => m.classList.add('r'));
+  hide(dB, { rotationY: -90, transformPerspective: 1600 });
+  tl.to(dB, { autoAlpha: 1, rotationY: 0, duration: 0.45, ease: 'back.out(1.6)' }, t4 + 0.35); tl.set(dP, { autoAlpha: 0 }, t4 + 0.36);
+  ['Razón Social', 'RUC', 'actividad'].forEach((w, i) => hl(dB.querySelectorAll('.mk')[i], W('e4g', w)));
+  [375, 470, 565].forEach((y, i) => mark(c, 1180, y, false, W('e4g', 'forma inexacta') + i * 0.2));
+  const bad = el(c, 'INCORRECTO', 'left:810px;top:150px;background:var(--no);color:#fff;font-size:38px', 'pill'); pop(bad, W('e4g', 'forma inexacta', 0.3));
+  const cA = el(c, `<span style="display:inline-grid;place-items:center;width:46px;height:46px;border-radius:50%;background:var(--no);margin-right:14px;vertical-align:middle">${ic('alert', '#fff', 2.6).replace('<svg', '<svg width="26" height="26"')}</span>Observaciones a la autorización`, 'left:250px;top:800px;background:#fff', 'pill');
+  const cB = el(c, `<span style="display:inline-grid;place-items:center;width:46px;height:46px;border-radius:50%;background:var(--no);margin-right:14px;vertical-align:middle">${ic('alert', '#fff', 2.6).replace('<svg', '<svg width="26" height="26"')}</span>Limitaciones ante una emergencia`, 'left:1000px;top:800px;background:#fff', 'pill');
+  pop(cA, W('e4g', 'observaciones')); pop(cB, W('e4g', 'emergencia', -0.4));
+  out(c.children, SC.C[1] - 0.6);
+})();
+
+// =============== D · RUTA DEL TRÁMITE (foto con velo fuerte) ===============
+const ROUTE = { prog: [{ v: 0 }, { v: 0 }, { v: 0 }], segs: [], L: [], marker: null };
+(() => {
+  const c = scene('D');
+  wipe(SC.D[0]);
+  photo('D', '../fotos/foto6.jpg', 'rgba(247,250,254,.86)');
+  hud(SC.D[0] + 0.3, '08', 'Documentación');
+  const k = words(c, 150, 150, 'Antes del expediente o la supervisión: / *contrastar con el Registro*', 60, { w: 1700 }); wordsIn(k, SC.D[0] + 0.4);
+  const NV = '#0A1F4F';
+  const M = [[260, 720, 'doc', 'Solicitud', 'var(--blT)'], [760, 470, 'shield', 'Póliza', 'var(--orT)'], [1260, 740, 'search', 'Autorización', 'var(--cyT)'], [1700, 480, 'list', 'Supervisión', 'var(--yeT)']];
+  const SEG = ['M260 720 C480 720 540 470 760 470', 'M760 470 C980 470 1040 740 1260 740', 'M1260 740 C1480 740 1480 480 1700 480'];
+  const sv = el(c, `<svg width="1920" height="1080" fill="none">${SEG.map(d => `<path d="${d}" stroke="${NV}" stroke-width="30" stroke-linecap="round"/><path d="${d}" stroke="#fff" stroke-width="17" stroke-linecap="round"/>`).join('')}${SEG.map((d, i) => `<path class="rf" d="${d}" stroke="#FF7A00" stroke-width="17" stroke-linecap="round"/>`).join('')}</svg>`, 'left:0;top:0');
+  hide(sv); tl.to(sv, { autoAlpha: 1, duration: 0.5 }, SC.D[0] + 0.8);
+  ROUTE.segs = [...sv.querySelectorAll('.rf')]; ROUTE.L = ROUTE.segs.map(p => p.getTotalLength());
+  const nodes = M.map(([x, y, n, l, bg], i) => {
+    const b = el(c, ic(n, NV, 1.9), `left:${x - 95}px;top:${y - 95}px;width:190px;height:190px;background:${bg}`, 'badge');
+    const cp = el(c, l, `left:${x - 160}px;top:${y > 600 ? y + 110 : y - 160}px;width:320px;font-size:32px`, 'cap');
+    pop(b, SC.D[0] + 1.0 + i * 0.3); rise(cp, SC.D[0] + 1.2 + i * 0.3, { y: 30 });
+    return b;
+  });
+  ROUTE.marker = el(c, `<svg viewBox="0 0 100 100" width="96" height="96"><circle cx="50" cy="50" r="44" fill="#FF7A00" stroke="${NV}" stroke-width="6"/><path d="M33 26 H60 L70 36 V74 H33 Z" fill="#fff" stroke="${NV}" stroke-width="5" stroke-linejoin="round"/></svg>`, 'left:0;top:0;width:96px;height:96px;margin:-48px 0 0 -48px');
+  hide(ROUTE.marker); tl.to(ROUTE.marker, { autoAlpha: 1, duration: 0.3 }, S('e8f') + 0.2);
+  const tS = [S('e8f') + 0.4, W('e8f', 'supervisión', -0.6), W('e8f', 'contrastar')];
+  ROUTE.prog.forEach((o, i) => { tl.to(o, { v: 1, duration: 1.6, ease: 'power1.inOut' }, tS[i]); mark(c, M[i + 1][0] + 40, M[i + 1][1] - 120, true, tS[i] + 1.6); });
+  mark(c, M[0][0] + 40, M[0][1] - 120, true, S('e8f') + 0.3);
+  // e8g: checklist de diferencias
+  tl.to([sv, ...nodes, ...c.querySelectorAll('.cap'), ROUTE.marker, ...c.querySelectorAll('.mark')], { autoAlpha: 0.12, duration: 0.5 }, S('e8g') - 0.3);
+  const cl = card(c, 560, 290, 800, 600, `<div class="dh" style="background:var(--blT)">${ic('list', NV)}<div><b>Documentación ⇄ Registro</b><small>Verificar que no existan diferencias</small></div></div>`);
+  rise(cl, S('e8g') - 0.2, { y: 200 });
+  ['titular', 'actividad', 'ubicación', 'monto asegurado'].forEach((w, i) => {
+    const r = el(cl, `<span style="display:inline-grid;place-items:center;width:50px;height:50px;border-radius:14px;border:4px solid ${NV};background:#fff;margin-right:20px;vertical-align:middle;position:relative" class="cb"></span>${['Titular', 'Actividad', 'Ubicación', 'Monto asegurado'][i]}`, `left:44px;top:${140 + i * 104}px;font-size:38px;font-weight:800`);
+    rise(r, W('e8g', w, -0.5), { x: -80, y: 0 });
+    const ck = el(r.querySelector('.cb'), ic('check', '#fff', 3.6), 'inset:-4px;border-radius:14px;background:var(--ok);display:grid;place-items:center;border:4px solid ' + NV);
+    ck.querySelector('svg').setAttribute('width', 34); pop(ck, W('e8g', w, 0.1), { s: 0, e: 'back.out(3)', d: 0.4 });
+  });
+  out(c.children, SC.D[1] - 0.6);
+})();
+
+// =============== E · CIERRE ===============
+(() => {
+  const c = scene('E');
+  wipe(SC.E[0]);
+  photo('E', '../fotos/foto6.jpg', 'linear-gradient(180deg,rgba(255,255,255,.9) 0%,rgba(255,255,255,.75) 60%,rgba(255,255,255,.5) 100%)');
+  hud(SC.E[0] + 0.3, '09', 'Conclusiones');
+  const q = words(c, 0, 330, 'La prevención comienza / con el *conocimiento*', 104, { w: 1920, a: 'center' }); wordsIn(q, S('e9g') + 0.1);
+  const s2 = el(c, 'y se fortalece con una gestión rigurosa de los riesgos y de las coberturas contratadas', 'left:260px;top:620px;width:1400px;text-align:center;font-size:38px;font-weight:600;color:var(--mut);line-height:1.35');
+  rise(s2, W('e9g', 'fortalece', -0.4), { y: 40 });
+  [['shield', 'var(--blT)'], ['users', 'var(--orT)'], ['leaf', 'var(--yeT)']].forEach(([n, bg], i) => pop(el(c, ic(n, '#0A1F4F', 1.9), `left:${760 + i * 150}px;top:160px;width:110px;height:110px;background:${bg}`, 'badge'), S('e9g') + 0.5 + i * 0.2));
+  out([q, s2], E('e9g') + 0.8);
+  const end = el(c, `<div class="pill" style="position:relative;display:inline-block;background:var(--orT);margin-bottom:34px">Capacitación · Consumidor directo de GLP</div><div class="t" style="font-size:88px">Pólizas de Responsabilidad<br>Civil Extracontractual</div>`, 'left:0;top:330px;width:1920px;text-align:center');
+  rise(end, E('e9g') + 1.2, { y: 80 });
+  tl.to('#stage', { opacity: 0, duration: 1 }, TOTAL - 1);
+})();
+
+tl.to('#prog i', { scaleX: 1, duration: TOTAL, ease: 'none' }, 0);
+tl.to({}, { duration: 0.01 }, TOTAL);
+function applyRoute() {
+  if (!ROUTE.marker || !ROUTE.segs.length) return;
+  ROUTE.segs.forEach((p, i) => { p.style.strokeDasharray = `${ROUTE.L[i]} ${ROUTE.L[i]}`; p.style.strokeDashoffset = ROUTE.L[i] * (1 - ROUTE.prog[i].v); });
+  let i = ROUTE.prog.findIndex(o => o.v < 1); if (i < 0) i = 2;
+  const pt = ROUTE.segs[i].getPointAtLength(ROUTE.L[i] * ROUTE.prog[i].v);
+  ROUTE.marker.style.left = pt.x + 'px'; ROUTE.marker.style.top = pt.y + 'px';
+}
+window.renderAt = t => { tl.time(t, false); applyRoute(); };
+window.DURATION = TOTAL;
+window.renderAt(0);
+document.fonts.ready.then(() => { window.READY = true; });
+</script></body></html>
